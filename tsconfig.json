@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "moduleDetection": "force",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "baseUrl": "../",
+        "paths": {
+            "/*": ["./*"]
+        },
+        "allowImportingTsExtensions": false,
+        "resolveJsonModule": false,
+        "allowArbitraryExtensions": false,
+        "noResolve": false,
+        "allowJs": false,
+        "declaration": true,
+        "outDir": "./out",
+        "importsNotUsedAsValues": "remove",
+        "downlevelIteration": false,
+        "noEmitHelpers": true,
+        "noEmitOnError": false,
+        "preserveConstEnums": true,
+        "declarationDir": "./types",
+        "preserveValueImports": false,
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": false,
+        "forceConsistentCasingInFileNames": true,
+        "strict": false,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "useUnknownInCatchVariables": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true
+    },
+    "exclude": ["**/*.js"]
+}
