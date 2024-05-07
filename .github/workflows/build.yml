@@ -25,7 +25,7 @@ jobs:
       - name: Package hooks into tar
         run: 7z a -bb0 hooks.tar out/*
       - name: Compress hooks.tar 
-        run: 7z a -bb0 -mx9 -sdel hooks.tar.gz hooks.tar
+        run: 7z a -bb0 -sdel hooks.tar.gz hooks.tar
       - name: Package hooks types
         run: 7z a hooks.types.zip types/*
       - name: Release
