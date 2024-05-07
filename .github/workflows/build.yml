@@ -22,8 +22,10 @@ jobs:
         run: npm install typescript --save-dev
       - name: Run tsc
         run: npx tsc --noResolve
-      - name: Package hooks
-        run: 7z a hooks.zip out/*
+      - name: Package hooks into tar
+        run: 7z a -bb0 hooks.tar out/*
+      - name: Compress hooks.tar 
+        run: 7z a -bb0 -mx9 -sdel hooks.tar.gz hooks.tar
       - name: Package hooks types
         run: 7z a hooks.types.zip types/*
       - name: Release
@@ -31,5 +33,5 @@ jobs:
         with:
           files: |
             COPYING
-            hooks.zip
+            hooks.tar.gz
             hooks.types.zip
