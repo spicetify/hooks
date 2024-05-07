@@ -23,7 +23,7 @@ jobs:
       - name: Run tsc
         run: npx tsc --noResolve
       - name: Package hooks into tar
-        run: 7z a -bb0 hooks.tar out/*
+        run: pushd out; 7z a -bb0 hooks.tar *; mv hooks.tar ../; popd
       - name: Compress hooks.tar 
         run: 7z a -bb0 -sdel hooks.tar.gz hooks.tar
       - name: Package hooks types
