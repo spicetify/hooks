@@ -17,7 +17,9 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
 import { internalRegisterTransform } from "./index.js";
+
 
 internalRegisterTransform({
 	transform: emit => str => {
@@ -86,3 +88,4 @@ internalRegisterTransform({
 	},
 	glob: /^\/vendor~xpui\.js/,
 });
+*/

@@ -17,7 +17,7 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Module } from "../module.js";
+import type { AbstractModule } from "../module.js";
 import { Paths } from "../static.js";
 import { fetchText } from "../util.js";
 
@@ -58,7 +58,7 @@ export type MixinProps<A> = {
 export type RegisterTransformFN = ReturnType<typeof createRegisterTransform>;
 
 export const createRegisterTransform =
-	(module: Module) =>
+	(module: AbstractModule) =>
 	<A = void>({ transform, then = () => {}, glob, noAwait = false }: MixinProps<A>) => {
 		const p = new Promise<A>(resolve => {
 			const _sources = Paths.map((path, i) => glob.test(path) && sources[i]).filter(Boolean) as SourceFile[];

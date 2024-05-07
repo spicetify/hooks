@@ -17,6 +17,7 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// @ts-ignore
 const check = ({ props, name }: { props: Array<string>; name: string }) => {
 	const object = name.split(".").reduce((pobj, k) => pobj[k], globalThis as any);
 	const nonExistantProps = props.filter(prop => !object[prop]);

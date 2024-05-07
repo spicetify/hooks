@@ -57,7 +57,7 @@ export const matchLast = (str: string, pattern: RegExp) => {
 };
 
 export const visited = new Map();
-export const type = (obj, access: string): string => {
+export const type = (obj: any, access: string): string => {
 	if (typeof obj?.then === "function") return "Promise<any>";
 	if (obj instanceof Map) return "Map<any,any>";
 	if (obj instanceof Set) return "Set<any>";
@@ -65,7 +65,7 @@ export const type = (obj, access: string): string => {
 	if (obj instanceof HTMLElement) return "HTMLElement";
 	if (obj instanceof Element) return "Element";
 
-	const wrapVisited = obj => {
+	const wrapVisited = (obj: any) => {
 		const typeRef = visited.get(obj);
 		if (typeRef) return typeRef;
 		visited.set(obj, access);
@@ -116,7 +116,8 @@ export const type = (obj, access: string): string => {
 			if (cached) return cached;
 			if (Array.isArray(obj)) {
 				const types = obj.map((e, i) => type(e, `${access}[${i}]`));
-				const uniqueTypes = Object.values(Object.groupBy(types, t => t)).map(v => v[0]);
+				// @ts-ignore: Property 'groupBy' does not exist on type 'ObjectConstructor'.
+				const uniqueTypes = Object.values(Object.groupBy(types, t => t)).map(v => v![0]);
 				return `Array<${uniqueTypes.sort().join("|")}>`;
 			}
 

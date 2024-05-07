@@ -47,10 +47,15 @@ export interface Metadata {
 	spotifyVersions?: string;
 }
 
-export class Module {
+export class AbstractModule {
+	public awaitedMixins = new Array<Promise<void>>();
+
+	constructor(public metadata: Metadata) {}
+}
+
+export class Module extends AbstractModule {
 	public unloadJS: (() => Promise<void>) | null = null;
 	public unloadCSS: (() => void) | null = null;
-	public awaitedMixins = new Array<Promise<void>>();
 	private registerTransform = createRegisterTransform(this);
 	private dependants = new Set<Module>();
 	private mixinsEnabled = false;
@@ -59,22 +64,17 @@ export class Module {
 
 	static registry = new Map<string, Module>();
 
-	static INTERNAL = new Module(
-		{
-			name: "internal",
-			tags: ["internal"],
-			preview: "",
-			version: "dev",
-			authors: ["internal"],
-			readme: "",
-			entries: {},
-			description: "internal",
-			dependencies: [],
-		},
-		undefined,
-		undefined,
-		false,
-	);
+	static INTERNAL = new AbstractModule({
+		name: "internal",
+		tags: ["internal"],
+		preview: "",
+		version: "dev",
+		authors: ["internal"],
+		readme: "",
+		entries: {},
+		description: "internal",
+		dependencies: [],
+	});
 
 	static getModules() {
 		return Array.from(Module.registry.values());
@@ -100,6 +100,7 @@ export class Module {
 		public remoteMetadataURL?: string,
 		private shouldBeEnabled = true,
 	) {
+		super(metadata);
 		const identifier = this.getIdentifier();
 		if (Module.registry.has(identifier)) {
 			throw new Error(`A module with the same identifier "${identifier}" is already registered`);
@@ -230,7 +231,7 @@ export class Module {
 
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
-				const module = Module.registry.get(dependency);
+				const module = Module.registry.get(dependency)!;
 				module.dependants.add(this);
 				return module.enableMixinsRecur();
 			}),
@@ -238,6 +239,7 @@ export class Module {
 
 		await this.loadMixins();
 
+		// @ts-ignore
 		finishLoading();
 		this.loading = undefined;
 	}
@@ -254,7 +256,7 @@ export class Module {
 
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
-				const module = Module.registry.get(dependency);
+				const module = Module.registry.get(dependency)!;
 				return module.enableRecur(send);
 			}),
 		);
@@ -264,6 +266,7 @@ export class Module {
 		await Promise.all(this.awaitedMixins);
 		await this.loadJS();
 
+		// @ts-ignore
 		finishLoading();
 		this.loading = undefined;
 	}
@@ -294,6 +297,8 @@ export class Module {
 		send && ModuleManager.disable(this.getIdentifier());
 		await this.unloadCSS?.();
 		await this.unloadJS?.();
+
+		// @ts-ignore
 		finishLoading();
 		this.loading = undefined;
 	}
@@ -343,7 +348,7 @@ export class Module {
 	async dispose(send = false) {
 		await this.disable();
 		for (const dependency of this.metadata.dependencies) {
-			const module = Module.registry.get(dependency);
+			const module = Module.registry.get(dependency)!;
 			module.dependants.delete(this);
 		}
 		Module.registry.delete(this.getIdentifier());

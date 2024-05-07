@@ -58,4 +58,3 @@ export const applyTransforms = (path: string) => {
 	if (!source) return path;
 	return source.getObjectURL();
 };
-globalThis.__applyTransforms = applyTransforms;
