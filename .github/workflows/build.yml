@@ -1,0 +1,35 @@
+name: 'Build'
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node v20
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20
+      - name: Install TypeScript
+        run: npm install typescript --save-dev
+      - name: Run tsc
+        run: npx tsc --noResolve
+      - name: Package hooks
+        run: 7z a hooks.zip out/*
+      - name: Package hooks types
+        run: 7z a hooks.types.zip types/*
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            COPYING
+            hooks.zip
+            hooks.types.zip
