@@ -24,6 +24,20 @@ import { createRegisterTransform, sources } from "./transform.js";
 
 export const internalRegisterTransform = createRegisterTransform(Module.INTERNAL);
 
+declare global {
+	var __applyTransforms: typeof applyTransforms;
+}
+
+export const applyTransforms = (path: string) => {
+	const i = Paths.indexOf(path as any);
+	const source = sources[i];
+	console.info("loadResource", { path, source });
+	if (!source) return path;
+	return source.getObjectURL();
+};
+
+globalThis.__applyTransforms = applyTransforms;
+
 internalRegisterTransform({
 	transform: emit => str => {
 		str = str.replace(/(([a-zA-Z_\$][\w\$]*)=([a-zA-Z_\$][\w\$]*)\.p\+\3\.u\([a-zA-Z_\$][\w\$]*\))/, "$1,$2=await __applyTransforms($2)");
@@ -50,11 +64,3 @@ internalRegisterTransform({
 	},
 	glob: /^\/xpui\.js/,
 });
-
-export const applyTransforms = (path: string) => {
-	const i = Paths.indexOf(path as any);
-	const source = sources[i];
-	console.info("loadResource", { path, source });
-	if (!source) return path;
-	return source.getObjectURL();
-};
