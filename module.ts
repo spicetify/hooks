@@ -50,6 +50,18 @@ export interface Metadata {
 export class AbstractModule {
 	public awaitedMixins = new Array<Promise<void>>();
 
+	static INTERNAL = new AbstractModule({
+		name: "internal",
+		tags: ["internal"],
+		preview: "",
+		version: "dev",
+		authors: ["internal"],
+		readme: "",
+		entries: {},
+		description: "internal",
+		dependencies: [],
+	});
+
 	constructor(public metadata: Metadata) {}
 }
 
@@ -63,18 +75,6 @@ export class Module extends AbstractModule {
 	private loading: Promise<void> | undefined;
 
 	static registry = new Map<string, Module>();
-
-	static INTERNAL = new AbstractModule({
-		name: "internal",
-		tags: ["internal"],
-		preview: "",
-		version: "dev",
-		authors: ["internal"],
-		readme: "",
-		entries: {},
-		description: "internal",
-		dependencies: [],
-	});
 
 	static getModules() {
 		return Array.from(Module.registry.values());
