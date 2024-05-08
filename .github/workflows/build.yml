@@ -21,10 +21,10 @@ jobs:
       - name: Install TypeScript
         run: npm install typescript --save-dev
       - name: Run tsc
-        run: npx tsc --noResolve
+        run: npx tsc --outDir out/
       - name: Package hooks into tar
         run: pushd out; 7z a -bb0 hooks.tar *; mv hooks.tar ../; popd
-      - name: Compress hooks.tar 
+      - name: Compress hooks.tar
         run: 7z a -bb0 -sdel hooks.tar.gz hooks.tar
       - name: Package hooks types
         run: 7z a hooks.types.zip types/*
@@ -34,4 +34,3 @@ jobs:
           files: |
             COPYING
             hooks.tar.gz
-            hooks.types.zip
