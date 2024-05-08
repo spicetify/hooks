@@ -20,14 +20,24 @@
 import { createRegisterTransform } from "./transforms/transform.js";
 import { fetchJSON } from "./util.js";
 
-interface VaultModule {
-	enabled: boolean;
-	metadata: string;
-	remoteMetadata?: string;
+interface MetadataURL {
+	local?: string;
+	remote?: string;
+}
+
+type Author = string;
+type Name = string;
+type Version = string;
+
+type ByAuthors = Record<Author, ByNames>;
+type ByNames = Record<Name, ByVersions>;
+interface ByVersions {
+	enabled: Version;
+	metadatas: Record<Version, MetadataURL>;
 }
 
 interface Vault {
-	modules: Record<string, VaultModule>;
+	modules: ByAuthors;
 }
 
 export interface Metadata {
@@ -46,6 +56,19 @@ export interface Metadata {
 	dependencies: string[];
 	spotifyVersions?: string;
 }
+
+const dummy_metadata = {
+	name: "Placeholder",
+	tags: [],
+	preview: "https://www.getdummyimage.com/400/400",
+	version: "v0",
+	authors: [],
+	description: "This is a dummy Module",
+	readme: "https://example.com",
+	entries: {},
+	dependencies: [],
+	isDummy: true,
+};
 
 export class AbstractModule {
 	public awaitedMixins = new Array<Promise<void>>();
@@ -83,22 +106,22 @@ export class Module extends AbstractModule {
 	static async enableAllLoadableMixins() {
 		console.time("onSpotifyPreInit");
 		const modules = Module.getModules();
-		await Promise.all(modules.map(module => module.shouldBeEnabled && module.enableMixins()));
+		await Promise.all(modules.map(module => module.shouldEnableOnStartup && module.enableMixins()));
 		console.timeEnd("onSpotifyPreInit");
 	}
 
 	static async enableAllLoadable() {
 		console.time("onSpotifyPostInit");
 		const modules = Module.getModules();
-		await Promise.all(modules.map(module => module.shouldBeEnabled && module.enable()));
+		await Promise.all(modules.map(module => module.shouldEnableOnStartup && module.enable()));
 		console.timeEnd("onSpotifyPostInit");
 	}
 
 	constructor(
 		public metadata: Metadata,
-		public metadataURL: string,
+		public localMetadataURL?: string,
 		public remoteMetadataURL?: string,
-		private shouldBeEnabled = true,
+		private shouldEnableOnStartup = true,
 	) {
 		super(metadata);
 		const identifier = this.getIdentifier();
@@ -110,7 +133,7 @@ export class Module extends AbstractModule {
 	}
 
 	private getRelPath(rel: string) {
-		return `${this.metadataURL}/../${rel}`;
+		return `${this.localMetadataURL}/../${rel}`;
 	}
 
 	private async loadMixins() {
@@ -179,9 +202,9 @@ export class Module extends AbstractModule {
 		}
 	}
 
-	static async fromVault({ enabled, metadata: metadataURL, remoteMetadata: remoteMetadataURL }: VaultModule) {
-		const metadata: Metadata = await fetchJSON(metadataURL);
-		return new Module(metadata, metadataURL, remoteMetadataURL, enabled);
+	static async fromVault(enabled: boolean, { local: localMetadataURL, remote: remoteMetadataURL }: MetadataURL) {
+		const metadata: Metadata = localMetadataURL ? await fetchJSON(localMetadataURL) : dummy_metadata;
+		return new Module(metadata, localMetadataURL, remoteMetadataURL, enabled);
 	}
 
 	getAuthor() {
@@ -201,7 +224,7 @@ export class Module extends AbstractModule {
 	}
 
 	private canEnable(mixinPhase = false, forceEnable = false) {
-		if (!forceEnable && !this.shouldBeEnabled) {
+		if (!forceEnable && !this.shouldEnableOnStartup) {
 			return false;
 		}
 		if (!mixinPhase && !this.mixinsEnabled && this.metadata.entries.mixin) {
@@ -394,4 +417,10 @@ export const ModuleManager = {
 };
 
 const lock: Vault = await fetchJSON("/modules/vault.json");
-await Promise.all(Object.values(lock.modules).map(Module.fromVault));
+await Promise.all(
+	Object.entries(lock.modules).flatMap(([author, byNames]) =>
+		Object.entries(byNames).flatMap(([name, { enabled, metadatas }]) =>
+			Object.entries(metadatas).flatMap(([version, metadata]) => Module.fromVault(`${author}/${name}/${version}` === enabled, metadata)),
+		),
+	),
+);
