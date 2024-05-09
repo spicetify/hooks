@@ -17,12 +17,14 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { nsUrlHandlers } from "./module.js";
 import { Paths } from "./static.js";
 import { sources, type Transformer } from "./transform.js";
 import { matchLast } from "./util.js";
 
 declare global {
 	var __applyTransforms: typeof applyTransforms;
+	var __interceptNavigationControlMessage: typeof interceptNavigationControlMessage;
 }
 
 export const applyTransforms = (path: string) => {
@@ -34,6 +36,23 @@ export const applyTransforms = (path: string) => {
 };
 
 globalThis.__applyTransforms = applyTransforms;
+
+const bespokeProtocol = "spotify:app:rpc";
+function interceptNavigationControlMessage(e: Event): boolean {
+	const uri: string = (e as any).data.data;
+	if (!uri.startsWith(bespokeProtocol)) {
+		return true;
+	}
+	const trimmedUri = uri.slice(bespokeProtocol.length + 1);
+	if (trimmedUri === "reload") {
+		document.location.reload();
+	}
+	const ns = trimmedUri.match(/bespoke:[^:]+/)?.[0];
+	nsUrlHandlers.get(ns!)?.(trimmedUri);
+	return false;
+}
+
+globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessage;
 
 export default function (registerTransform: Transformer) {
 	registerTransform({
@@ -75,4 +94,18 @@ export default function (registerTransform: Transformer) {
 		},
 		glob: /^\/xpui\.js/,
 	});
+
+	registerTransform({
+		transform: emit => str => {
+			str = str.replace(
+				/(([a-zA-Z_\$][\w\$]*)\.data\.type===(?:[a-zA-Z_\$][\w\$]*\.){2}NAVIGATION&&)/,
+				"$1__interceptNavigationControlMessage($2)&&",
+			);
+			emit();
+			return str;
+		},
+		glob: /^\/xpui\.js/,
+	});
 }
+
+//

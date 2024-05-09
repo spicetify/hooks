@@ -117,7 +117,7 @@ export class Module {
 				Object.entries(metadataURLsByVersion).map(async ([version, metadatas]) => {
 					const moduleIdentifier = `${author}/${name}`;
 					const storeIdentifier = `${moduleIdentifier}/${version}`;
-					return [version, await LoadableModule.fromModule(moduleIdentifier, metadatas, storeIdentifier === enabled)];
+					return [version, await LoadableModule.fromModule(author, name, version, metadatas, storeIdentifier === enabled)];
 				}),
 			),
 		);
@@ -138,7 +138,7 @@ export class Module {
 	public async updateEnabled(enabled: string | null, syncWithFS: boolean) {
 		this.enabled = enabled;
 		if (syncWithFS) {
-			await ModuleManager.enable({ authors: [this.author], name: this.name, version: enabled } as Metadata);
+			await ModuleManager.enable(new LoadableModule(this.author, this.name, enabled ?? "", null as any, null as any));
 		}
 	}
 }
@@ -176,14 +176,21 @@ export class LoadableModule extends MixinModule {
 	private enabled = false;
 
 	public getName() {
-		return this.metadata.name;
+		return this.name;
 	}
 
 	public getAuthor() {
-		return this.metadata.authors[0];
+		return this.author;
+	}
+
+	public getVersion() {
+		return this.version;
 	}
 
 	constructor(
+		private author: string,
+		private name: string,
+		private version: string,
 		metadata: Metadata,
 		public installed: boolean,
 		public remoteMetadataURL?: string,
@@ -191,22 +198,14 @@ export class LoadableModule extends MixinModule {
 		super(metadata);
 	}
 
-	static async fromModule(moduleIdentifier: ModuleIdentifier, store: Store, shouldEnableAtStartup = false) {
+	static async fromModule(author: string, name: string, version: string, store: Store, shouldEnableAtStartup = false) {
 		const metadata =
-			shouldEnableAtStartup && store.installed ? await fetchJSON<Metadata>(`/modules/${moduleIdentifier}/metadata.json`) : dummy_metadata;
+			shouldEnableAtStartup && store.installed ? await fetchJSON<Metadata>(`/modules/${author}/${name}/metadata.json`) : dummy_metadata;
 
-		const m = new LoadableModule(metadata, store.installed, store.remote);
-		// @ts-ignore
-		if (metadata.isDummy) {
-			if (store.remote) {
-				fetchJSON<Metadata>(store.remote).then(metadata => m.updateMetadata(metadata));
-			}
-		}
-
-		return m;
+		return new LoadableModule(author, name, version, metadata, store.installed, store.remote);
 	}
 
-	public isLoaded() {
+	public isEnabled() {
 		return this.enabled;
 	}
 
@@ -217,6 +216,10 @@ export class LoadableModule extends MixinModule {
 
 	public getModuleIdentifier() {
 		return `${this.getAuthor()}/${this.getName()}`;
+	}
+
+	public getStoreIdentifier() {
+		return `${this.getModuleIdentifier()}/${this.getVersion()}`;
 	}
 
 	private getRelPath(rel: string) {
@@ -346,7 +349,7 @@ export class LoadableModule extends MixinModule {
 			}),
 		);
 
-		await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.metadata.version, syncWithFS);
+		await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.getVersion(), syncWithFS);
 		await this.loadCSS();
 		await Promise.all(this.awaitedMixins);
 		await this.loadJS();
@@ -447,7 +450,7 @@ export class LoadableModule extends MixinModule {
 
 	public async add(syncWithFS = false) {
 		let module = Module.registry.get(this.getModuleIdentifier());
-		if (module?.loadableModuleByVersion[this.metadata.version]) {
+		if (module?.loadableModuleByVersion[this.getVersion()]) {
 			return false;
 		}
 		if (syncWithFS) {
@@ -456,9 +459,9 @@ export class LoadableModule extends MixinModule {
 		if (!module) {
 			const author = this.getAuthor();
 			const name = this.getName();
-			module = new Module(author, name, null, { [this.metadata.version]: this });
+			module = new Module(author, name, null, { [this.getVersion()]: this });
 		}
-		module.loadableModuleByVersion[this.metadata.version] = this;
+		module.loadableModuleByVersion[this.getVersion()] = this;
 		return true;
 	}
 
@@ -469,29 +472,42 @@ export class LoadableModule extends MixinModule {
 		}
 		const moduleIdentifier = this.getModuleIdentifier();
 		const module = Module.registry.get(moduleIdentifier)!;
-		delete module.loadableModuleByVersion[this.metadata.version];
+		delete module.loadableModuleByVersion[this.getVersion()];
 		if (Object.keys(module.loadableModuleByVersion).length === 0) {
 			Module.registry.delete(moduleIdentifier);
 		}
 		if (syncWithFS) {
-			await ModuleManager.remove(this.metadata);
+			await ModuleManager.remove(this);
 		}
 		return true;
 	}
 }
 
 const bespokeProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
-const bespokeScheme = "bespoke";
+const websocketProtocol = "ws://localhost:7967/rpc";
+const bespokeScheme = () => `bespoke:${crypto.randomUUID()}`;
 
-let daemonConn: WebSocket | undefined;
-async function tryConnectToDaemon() {
-	const ws = new WebSocket("ws://localhost:7967/protocol");
-	let cb: { res: (e: Event) => void; rej: (e: Event) => void };
-	const p = new Promise((res, rej) => {
+function createPromise<T>() {
+	let cb: { res: (value: T | PromiseLike<T>) => void; rej: (reason?: any) => void };
+	const p = new Promise<T>((res, rej) => {
 		cb = { res, rej };
 	});
-	ws.onopen = e => cb.res(e);
-	ws.onclose = e => cb.rej(e);
+	// @ts-ignore
+	return Object.assign(p, cb);
+}
+
+let daemonConn: WebSocket | undefined;
+let lastDeamonConnAttempt = 0;
+async function tryConnectToDaemon() {
+	const timestamp = Date.now();
+	if (timestamp - lastDeamonConnAttempt < 5 * 60 * 1000) {
+		return;
+	}
+	lastDeamonConnAttempt = timestamp;
+	const ws = new WebSocket(websocketProtocol);
+	const p = createPromise<Event>();
+	ws.onopen = e => p.res(e);
+	ws.onclose = e => p.rej(e);
 	return p
 		.then(() => {
 			daemonConn = ws;
@@ -502,37 +518,50 @@ async function tryConnectToDaemon() {
 }
 tryConnectToDaemon();
 
-// TODO: Use protocol buffers instead?
-const sendProtocolMessage = (...messages: string[]) => {
-	const buffer = messages.join(":");
+export const nsUrlHandlers = new Map<string, (m: string) => void>();
+const sendProtocolMessage = async (...messages: string[]) => {
+	const p = createPromise<boolean>();
+	const ns = bespokeScheme();
+	const buffer = [ns, ...messages].join(":");
+
+	let cancelSubscription: () => void;
+
+	const handleIncomingMessage = (m: string) => {
+		if (m.startsWith(ns)) {
+			p.res(m.slice(ns.length + 1) === "1");
+			cancelSubscription();
+		}
+	};
+
+	daemonConn ?? (await tryConnectToDaemon());
 	if (daemonConn) {
 		daemonConn.send(buffer);
+		const listener = (e: any) => handleIncomingMessage(e.data);
+		cancelSubscription = () => daemonConn?.removeEventListener("message", listener);
+		daemonConn.addEventListener("message", listener);
 	} else {
 		open(bespokeProtocol + buffer);
+		cancelSubscription = () => nsUrlHandlers.delete(ns);
+		nsUrlHandlers.set(ns, handleIncomingMessage);
 	}
+
+	setTimeout(() => {
+		p.rej(new Error("RPC timed out"));
+		cancelSubscription();
+	}, 5000);
+
+	return p;
 };
 
-function getModuleIdentifierFromMetadata(metadata: Metadata) {
-	return `${metadata.authors[0]}:${metadata.name}`;
-}
-
-function getStoreIdentifierFromMetadata(metadata: Metadata): StoreIdentifier {
-	return `${getModuleIdentifierFromMetadata(metadata)}:${metadata.version ?? ""}`;
-}
-
-// TODO: wait for response
 export const ModuleManager = {
-	async add(murl: string) {
-		sendProtocolMessage(bespokeScheme, "add", murl);
+	add(murl: string) {
+		return sendProtocolMessage("add", murl);
 	},
-	async remove(metadata: Metadata) {
-		sendProtocolMessage(bespokeScheme, "remove", getStoreIdentifierFromMetadata(metadata));
+	remove(loadableModule: LoadableModule) {
+		return sendProtocolMessage("remove", loadableModule.getStoreIdentifier());
 	},
-	async enable(metadata: Metadata) {
-		sendProtocolMessage(bespokeScheme, "enable", getStoreIdentifierFromMetadata(metadata));
-	},
-	async disable(metadata: Metadata) {
-		sendProtocolMessage(bespokeScheme, "disable", getStoreIdentifierFromMetadata(metadata));
+	enable(loadableModule: LoadableModule) {
+		return sendProtocolMessage("enable", loadableModule.getStoreIdentifier());
 	},
 };
 
