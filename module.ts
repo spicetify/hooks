@@ -23,8 +23,8 @@ import { deepMerge, fetchJSON } from "./util.js";
 type ModuleIdentifier = string;
 type StoreIdentifier = string;
 
-interface MetadataURL {
-	local?: string;
+interface Store {
+	installed: boolean;
 	remote?: string;
 }
 
@@ -36,7 +36,7 @@ type ByAuthors = Record<Author, ByNames>;
 type ByNames = Record<Name, ByVersions>;
 interface ByVersions {
 	enabled: Version;
-	metadatas: Record<Version, MetadataURL>;
+	v: Record<Version, Store>;
 }
 
 interface Vault {
@@ -107,17 +107,18 @@ export class Module {
 		Module.registry.set(identifier, this);
 	}
 
-	static async fromVault(author: string, name: string, enabled: string | null, metadataURLsByVersion: Record<Version, MetadataURL>) {
+	static async fromVault(author: string, name: string, enabled: string | null, metadataURLsByVersion: Record<Version, Store>) {
 		if (!enabled?.length) {
 			enabled = null;
 		}
 
 		const loadableModuleByVersion = Object.fromEntries(
 			await Promise.all(
-				Object.entries(metadataURLsByVersion).map(async ([version, metadatas]) => [
-					version,
-					await LoadableModule.fromMetadataURLs(metadatas, `${author}/${name}/${version}` === enabled),
-				]),
+				Object.entries(metadataURLsByVersion).map(async ([version, metadatas]) => {
+					const moduleIdentifier = `${author}/${name}`;
+					const storeIdentifier = `${moduleIdentifier}/${version}`;
+					return [version, await LoadableModule.fromModule(moduleIdentifier, metadatas, storeIdentifier === enabled)];
+				}),
 			),
 		);
 
@@ -134,9 +135,11 @@ export class Module {
 	}
 
 	// ?
-	public updateEnabled(enabled: string | null, syncWithFS = false) {
+	public async updateEnabled(enabled: string | null, syncWithFS: boolean) {
 		this.enabled = enabled;
-		syncWithFS && ModuleManager.enable({ authors: [this.author], name: this.name, version: enabled } as Metadata);
+		if (syncWithFS) {
+			await ModuleManager.enable({ authors: [this.author], name: this.name, version: enabled } as Metadata);
+		}
 	}
 }
 
@@ -182,25 +185,29 @@ export class LoadableModule extends MixinModule {
 
 	constructor(
 		metadata: Metadata,
-		public localMetadataURL?: string,
+		public installed: boolean,
 		public remoteMetadataURL?: string,
 	) {
 		super(metadata);
 	}
 
-	static async fromMetadataURLs(metadatas: MetadataURL, shouldEnableAtStartup = false) {
-		const metadata = shouldEnableAtStartup && metadatas.local ? await fetchJSON<Metadata>(metadatas.local) : dummy_metadata;
+	static async fromModule(moduleIdentifier: ModuleIdentifier, store: Store, shouldEnableAtStartup = false) {
+		const metadata =
+			shouldEnableAtStartup && store.installed ? await fetchJSON<Metadata>(`/modules/${moduleIdentifier}/metadata.json`) : dummy_metadata;
 
-		const m = new LoadableModule(metadata, metadatas.local, metadatas.remote);
+		const m = new LoadableModule(metadata, store.installed, store.remote);
 		// @ts-ignore
 		if (metadata.isDummy) {
-			const url = metadatas.local ?? metadatas.remote;
-			if (url) {
-				fetchJSON<Metadata>(url).then(metadata => m.updateMetadata(metadata));
+			if (store.remote) {
+				fetchJSON<Metadata>(store.remote).then(metadata => m.updateMetadata(metadata));
 			}
 		}
 
 		return m;
+	}
+
+	public isLoaded() {
+		return this.enabled;
 	}
 
 	// ?
@@ -310,7 +317,6 @@ export class LoadableModule extends MixinModule {
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
 				const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
-				module.dependants.add(this);
 				return module.enableMixinsRecur();
 			}),
 		);
@@ -335,11 +341,12 @@ export class LoadableModule extends MixinModule {
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
 				const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
+				module.dependants.add(this);
 				return module.enableRecur(syncWithFS);
 			}),
 		);
 
-		Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.metadata.version, syncWithFS);
+		await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.metadata.version, syncWithFS);
 		await this.loadCSS();
 		await Promise.all(this.awaitedMixins);
 		await this.loadJS();
@@ -349,6 +356,7 @@ export class LoadableModule extends MixinModule {
 		this.loading = undefined;
 	}
 
+	// ? As is, this always returns true. Recur Impl for easier future modification
 	private canDisableRecur() {
 		if (this.enabled) {
 			for (const dependant of this.dependants) {
@@ -370,9 +378,13 @@ export class LoadableModule extends MixinModule {
 			finishLoading = res;
 		});
 
+		for (const dependencyIdentifier of this.metadata.dependencies) {
+			const dependency = Module.registry.get(dependencyIdentifier)!.getEnabledLoadableModule()!;
+			dependency.dependants.delete(this);
+		}
 		await Promise.all(Array.from(this.dependants).map(dependant => dependant.disableRecur()));
 
-		Module.registry.get(this.getModuleIdentifier())!.updateEnabled(null, syncWithFS);
+		await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(null, syncWithFS);
 		await this.unloadCSS?.();
 		await this.unloadJS?.();
 
@@ -395,13 +407,23 @@ export class LoadableModule extends MixinModule {
 		return false;
 	}
 
-	async enable(send = false) {
+	public async enable(syncWithFS = false) {
 		if (this.enabled) {
 			await this.loading;
 			return false;
 		}
 		if (this.canEnableRecur(false)) {
-			await this.enableRecur(send);
+			const previouslyEnabledLoadedModule = Module.registry.get(this.getModuleIdentifier())!.getEnabledLoadableModule();
+			if (previouslyEnabledLoadedModule) {
+				if (!syncWithFS) {
+					return false;
+				}
+				await previouslyEnabledLoadedModule.disable(true);
+				if (previouslyEnabledLoadedModule.enabled) {
+					return false;
+				}
+			}
+			await this.enableRecur(syncWithFS);
 			return true;
 		}
 
@@ -409,7 +431,7 @@ export class LoadableModule extends MixinModule {
 		return false;
 	}
 
-	async disable(syncWithFS = false) {
+	public async disable(syncWithFS = false) {
 		if (!this.enabled) {
 			await this.loading;
 			return false;
@@ -423,14 +445,38 @@ export class LoadableModule extends MixinModule {
 		return false;
 	}
 
-	async dispose(syncWithFS = false) {
-		await this.disable();
-		for (const dependency of this.metadata.dependencies) {
-			const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
-			module.dependants.delete(this);
+	public async add(syncWithFS = false) {
+		let module = Module.registry.get(this.getModuleIdentifier());
+		if (module?.loadableModuleByVersion[this.metadata.version]) {
+			return false;
 		}
-		Module.registry.delete(this.getModuleIdentifier());
-		syncWithFS && ModuleManager.remove(this.metadata);
+		if (syncWithFS) {
+			await ModuleManager.add(this.remoteMetadataURL!);
+		}
+		if (!module) {
+			const author = this.getAuthor();
+			const name = this.getName();
+			module = new Module(author, name, null, { [this.metadata.version]: this });
+		}
+		module.loadableModuleByVersion[this.metadata.version] = this;
+		return true;
+	}
+
+	public async remove(syncWithFS = false) {
+		await this.disable();
+		if (this.enabled) {
+			return false;
+		}
+		const moduleIdentifier = this.getModuleIdentifier();
+		const module = Module.registry.get(moduleIdentifier)!;
+		delete module.loadableModuleByVersion[this.metadata.version];
+		if (Object.keys(module.loadableModuleByVersion).length === 0) {
+			Module.registry.delete(moduleIdentifier);
+		}
+		if (syncWithFS) {
+			await ModuleManager.remove(this.metadata);
+		}
+		return true;
 	}
 }
 
@@ -471,20 +517,21 @@ function getModuleIdentifierFromMetadata(metadata: Metadata) {
 }
 
 function getStoreIdentifierFromMetadata(metadata: Metadata): StoreIdentifier {
-	return `${getModuleIdentifierFromMetadata(metadata)}:${metadata.version}`;
+	return `${getModuleIdentifierFromMetadata(metadata)}:${metadata.version ?? ""}`;
 }
 
+// TODO: wait for response
 export const ModuleManager = {
-	add(murl: string) {
+	async add(murl: string) {
 		sendProtocolMessage(bespokeScheme, "add", murl);
 	},
-	remove(metadata: Metadata) {
+	async remove(metadata: Metadata) {
 		sendProtocolMessage(bespokeScheme, "remove", getStoreIdentifierFromMetadata(metadata));
 	},
-	enable(metadata: Metadata) {
+	async enable(metadata: Metadata) {
 		sendProtocolMessage(bespokeScheme, "enable", getStoreIdentifierFromMetadata(metadata));
 	},
-	disable(metadata: Metadata) {
+	async disable(metadata: Metadata) {
 		sendProtocolMessage(bespokeScheme, "disable", getStoreIdentifierFromMetadata(metadata));
 	},
 };
@@ -492,6 +539,6 @@ export const ModuleManager = {
 const lock: Vault = deepMerge(await fetchJSON("/modules/vault.json"), await fetchJSON("/hooks/repo.json"));
 await Promise.all(
 	Object.entries(lock.modules).flatMap(([author, byNames]) =>
-		Object.entries(byNames).flatMap(([name, { enabled, metadatas }]) => Module.fromVault(author, name, enabled, metadatas)),
+		Object.entries(byNames).flatMap(([name, { enabled, v: metadatas }]) => Module.fromVault(author, name, enabled, metadatas)),
 	),
 );
