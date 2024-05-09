@@ -17,8 +17,11 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createRegisterTransform } from "./transforms/transform.js";
-import { fetchJSON } from "./util.js";
+import { createTransformer } from "./transform.js";
+import { deepMerge, fetchJSON } from "./util.js";
+
+type ModuleIdentifier = string;
+type StoreIdentifier = string;
 
 interface MetadataURL {
 	local?: string;
@@ -57,23 +60,93 @@ export interface Metadata {
 	spotifyVersions?: string;
 }
 
-const dummy_metadata = {
+const dummy_metadata = Object.freeze({
 	name: "Placeholder",
 	tags: [],
 	preview: "https://www.getdummyimage.com/400/400",
 	version: "v0",
-	authors: [],
+	authors: ["John Doe", "Jane Doe"],
 	description: "This is a dummy Module",
 	readme: "https://example.com",
 	entries: {},
 	dependencies: [],
 	isDummy: true,
-};
+});
 
-export class AbstractModule {
+export class Module {
+	static registry = new Map<ModuleIdentifier, Module>();
+
+	static getModules() {
+		return Array.from(Module.registry.values());
+	}
+
+	static async enableAllLoadableMixins() {
+		console.time("onSpotifyPreInit");
+		const modules = Module.getModules();
+		await Promise.all(modules.map(module => module.getEnabledLoadableModule()?.enableMixins()));
+		console.timeEnd("onSpotifyPreInit");
+	}
+
+	static async enableAllLoadable() {
+		console.time("onSpotifyPostInit");
+		const modules = Module.getModules();
+		await Promise.all(modules.map(module => module.getEnabledLoadableModule()?.enable()));
+		console.timeEnd("onSpotifyPostInit");
+	}
+
+	constructor(
+		public author: string,
+		public name: string,
+		public enabled: string | null,
+		public loadableModuleByVersion: Record<Version, LoadableModule>,
+	) {
+		const identifier = this.getModuleIdentifier();
+		if (Module.registry.has(identifier)) {
+			throw new Error(`A module with the same identifier "${identifier}" is already registered`);
+		}
+		Module.registry.set(identifier, this);
+	}
+
+	static async fromVault(author: string, name: string, enabled: string | null, metadataURLsByVersion: Record<Version, MetadataURL>) {
+		if (!enabled?.length) {
+			enabled = null;
+		}
+
+		const loadableModuleByVersion = Object.fromEntries(
+			await Promise.all(
+				Object.entries(metadataURLsByVersion).map(([version, metadatas]) => [version, LoadableModule.fromMetadataURLs(metadatas)]),
+			),
+		);
+
+		return new Module(author, name, enabled, loadableModuleByVersion);
+	}
+
+	public getModuleIdentifier() {
+		return `${this.author}/${this.name}`;
+	}
+
+	public getEnabledLoadableModule(): LoadableModule {
+		// @ts-ignore
+		return this.loadableModuleByVersion[this.enabled];
+	}
+
+	// ?
+	public updateEnabled(enabled: string | null, syncWithFS = false) {
+		this.enabled = enabled;
+		syncWithFS && ModuleManager.enable({ authors: [this.author], name: this.name, version: enabled } as Metadata);
+	}
+}
+
+export class MixinModule {
+	private _transformer = createTransformer(this);
+
+	get transformer() {
+		return this._transformer;
+	}
+
 	public awaitedMixins = new Array<Promise<void>>();
 
-	static INTERNAL = new AbstractModule({
+	static INTERNAL = new MixinModule({
 		name: "internal",
 		tags: ["internal"],
 		preview: "",
@@ -88,52 +161,53 @@ export class AbstractModule {
 	constructor(public metadata: Metadata) {}
 }
 
-export class Module extends AbstractModule {
+export class LoadableModule extends MixinModule {
 	public unloadJS: (() => Promise<void>) | null = null;
 	public unloadCSS: (() => void) | null = null;
-	private registerTransform = createRegisterTransform(this);
-	private dependants = new Set<Module>();
 	private mixinsEnabled = false;
-	private enabled = false;
 	private loading: Promise<void> | undefined;
+	private dependants = new Set<LoadableModule>();
+	private enabled = false;
 
-	static registry = new Map<string, Module>();
-
-	static getModules() {
-		return Array.from(Module.registry.values());
+	public getName() {
+		return this.metadata.name;
 	}
 
-	static async enableAllLoadableMixins() {
-		console.time("onSpotifyPreInit");
-		const modules = Module.getModules();
-		await Promise.all(modules.map(module => module.shouldEnableOnStartup && module.enableMixins()));
-		console.timeEnd("onSpotifyPreInit");
-	}
-
-	static async enableAllLoadable() {
-		console.time("onSpotifyPostInit");
-		const modules = Module.getModules();
-		await Promise.all(modules.map(module => module.shouldEnableOnStartup && module.enable()));
-		console.timeEnd("onSpotifyPostInit");
+	public getAuthor() {
+		return this.metadata.authors[0];
 	}
 
 	constructor(
-		public metadata: Metadata,
+		metadata: Metadata,
 		public localMetadataURL?: string,
 		public remoteMetadataURL?: string,
-		private shouldEnableOnStartup = true,
 	) {
 		super(metadata);
-		const identifier = this.getIdentifier();
-		if (Module.registry.has(identifier)) {
-			throw new Error(`A module with the same identifier "${identifier}" is already registered`);
+	}
+
+	static async fromMetadataURLs(metadatas: MetadataURL) {
+		const metadata = metadatas.local ? await fetchJSON<Metadata>(metadatas.local) : dummy_metadata;
+
+		const m = new LoadableModule(metadata, metadatas.local, metadatas.remote);
+		// @ts-ignore
+		if (metadata.isDummy && metadatas.remote) {
+			fetchJSON<Metadata>(metadatas.remote).then(metadata => m.updateMetadata(metadata));
 		}
 
-		Module.registry.set(identifier, this);
+		return m;
+	}
+
+	// ?
+	public updateMetadata(metadata: Metadata) {
+		this.metadata = metadata;
+	}
+
+	public getModuleIdentifier() {
+		return `${this.getAuthor()}/${this.getName()}`;
 	}
 
 	private getRelPath(rel: string) {
-		return `${this.localMetadataURL}/../${rel}`;
+		return `/modules/${this.getModuleIdentifier()}/../${rel}`;
 	}
 
 	private async loadMixins() {
@@ -142,17 +216,17 @@ export class Module extends AbstractModule {
 			return;
 		}
 
-		console.time(`${this.getIdentifier()}#loadMixin`);
+		console.time(`${this.getModuleIdentifier()}#loadMixin`);
 		const mixin = await import(this.getRelPath(entry));
-		await mixin.default(this.registerTransform);
-		console.timeEnd(`${this.getIdentifier()}#loadMixin`);
+		await mixin.default(this.transformer);
+		console.timeEnd(`${this.getModuleIdentifier()}#loadMixin`);
 
-		console.groupCollapsed(`${this.getIdentifier()}#awaitMixins`);
+		console.groupCollapsed(`${this.getModuleIdentifier()}#awaitMixins`);
 		console.info(...this.awaitedMixins);
 		console.groupEnd();
 
-		console.time(`${this.getIdentifier()}#awaitMixins`);
-		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getIdentifier()}#awaitMixins`));
+		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
+		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
 	}
 
 	private async loadJS() {
@@ -165,7 +239,7 @@ export class Module extends AbstractModule {
 			this.unloadJS = null;
 		};
 
-		console.time(`${this.getIdentifier()}#loadJS`);
+		console.time(`${this.getModuleIdentifier()}#loadJS`);
 
 		try {
 			const fullPath = this.getRelPath(entry);
@@ -178,16 +252,16 @@ export class Module extends AbstractModule {
 			};
 		} catch (e) {
 			this.unloadJS();
-			console.error(`Error loading ${this.getIdentifier()}:`, e);
+			console.error(`Error loading ${this.getModuleIdentifier()}:`, e);
 		}
 
-		console.timeEnd(`${this.getIdentifier()}#loadJS`);
+		console.timeEnd(`${this.getModuleIdentifier()}#loadJS`);
 	}
 
 	private loadCSS() {
 		const entry = this.metadata.entries.css;
 		if (entry) {
-			const id = `${this.getIdentifier()}-styles`;
+			const id = `${this.getModuleIdentifier()}-styles`;
 			const fullPath = this.getRelPath(entry);
 			const link = document.createElement("link");
 			link.id = id;
@@ -202,39 +276,14 @@ export class Module extends AbstractModule {
 		}
 	}
 
-	static async fromVault(enabled: boolean, { local: localMetadataURL, remote: remoteMetadataURL }: MetadataURL) {
-		const metadata: Metadata = localMetadataURL ? await fetchJSON(localMetadataURL) : dummy_metadata;
-		return new Module(metadata, localMetadataURL, remoteMetadataURL, enabled);
-	}
-
-	getAuthor() {
-		return this.metadata.authors[0];
-	}
-
-	getName() {
-		return this.metadata.name;
-	}
-
-	getLocalMeta() {
-		return `/modules/${this.getIdentifier()}/metadata.json`;
-	}
-
-	getIdentifier() {
-		return `${this.getAuthor()}/${this.getName()}`;
-	}
-
-	private canEnable(mixinPhase = false, forceEnable = false) {
-		if (!forceEnable && !this.shouldEnableOnStartup) {
-			return false;
-		}
+	private canEnableRecur(mixinPhase = false) {
 		if (!mixinPhase && !this.mixinsEnabled && this.metadata.entries.mixin) {
 			return false;
 		}
 		if (!this.enabled) {
-			// !this.enabling
 			for (const dependency of this.metadata.dependencies) {
-				const module = Module.registry.get(dependency);
-				if (!module?.canEnable(mixinPhase)) {
+				const module = Module.registry.get(dependency)?.getEnabledLoadableModule();
+				if (!module?.canEnableRecur(mixinPhase)) {
 					return false;
 				}
 			}
@@ -254,7 +303,7 @@ export class Module extends AbstractModule {
 
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
-				const module = Module.registry.get(dependency)!;
+				const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
 				module.dependants.add(this);
 				return module.enableMixinsRecur();
 			}),
@@ -267,7 +316,7 @@ export class Module extends AbstractModule {
 		this.loading = undefined;
 	}
 
-	private async enableRecur(send = false) {
+	private async enableRecur(syncWithFS = false) {
 		if (this.enabled) {
 			return this.loading;
 		}
@@ -279,12 +328,12 @@ export class Module extends AbstractModule {
 
 		await Promise.all(
 			this.metadata.dependencies.map(dependency => {
-				const module = Module.registry.get(dependency)!;
-				return module.enableRecur(send);
+				const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
+				return module.enableRecur(syncWithFS);
 			}),
 		);
 
-		send && ModuleManager.enable(this.getIdentifier());
+		Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.metadata.version, syncWithFS);
 		await this.loadCSS();
 		await Promise.all(this.awaitedMixins);
 		await this.loadJS();
@@ -294,10 +343,10 @@ export class Module extends AbstractModule {
 		this.loading = undefined;
 	}
 
-	private canDisable() {
+	private canDisableRecur() {
 		if (this.enabled) {
 			for (const dependant of this.dependants) {
-				if (!dependant.canDisable()) {
+				if (!dependant.canDisableRecur()) {
 					return false;
 				}
 			}
@@ -305,7 +354,7 @@ export class Module extends AbstractModule {
 		return true;
 	}
 
-	private async disableRecur(send = false) {
+	private async disableRecur(syncWithFS = false) {
 		if (!this.enabled) {
 			return this.loading;
 		}
@@ -317,7 +366,7 @@ export class Module extends AbstractModule {
 
 		await Promise.all(Array.from(this.dependants).map(dependant => dependant.disableRecur()));
 
-		send && ModuleManager.disable(this.getIdentifier());
+		Module.registry.get(this.getModuleIdentifier())!.updateEnabled(null, syncWithFS);
 		await this.unloadCSS?.();
 		await this.unloadJS?.();
 
@@ -331,96 +380,112 @@ export class Module extends AbstractModule {
 			await this.loading;
 			return false;
 		}
-		if (this.canEnable(true)) {
+		if (this.canEnableRecur(true)) {
 			await this.enableMixinsRecur();
 			return true;
 		}
 
-		console.warn("Can't enable mixins for", this.getIdentifier(), " reason: Dependencies not met");
+		console.warn("Can't enable mixins for", this.getModuleIdentifier(), " reason: Dependencies not met");
 		return false;
 	}
 
-	async enable(send = false, forceEnable = false) {
+	async enable(send = false) {
 		if (this.enabled) {
 			await this.loading;
 			return false;
 		}
-		if (this.canEnable(false, forceEnable)) {
+		if (this.canEnableRecur(false)) {
 			await this.enableRecur(send);
 			return true;
 		}
 
-		console.warn("Can't enable", this.getIdentifier(), " reason: Dependencies not met");
+		console.warn("Can't enable", this.getModuleIdentifier(), " reason: Dependencies not met");
 		return false;
 	}
 
-	async disable(send = false) {
+	async disable(syncWithFS = false) {
 		if (!this.enabled) {
 			await this.loading;
 			return false;
 		}
-		if (this.canDisable()) {
-			await this.disableRecur(send);
+		if (this.canDisableRecur()) {
+			await this.disableRecur(syncWithFS);
 			return true;
 		}
 
-		console.warn("Can't disable", this.getIdentifier(), " reason: Module required by enabled dependencies");
+		console.warn("Can't disable", this.getModuleIdentifier(), " reason: Module required by enabled dependencies");
 		return false;
 	}
 
-	async dispose(send = false) {
+	async dispose(syncWithFS = false) {
 		await this.disable();
 		for (const dependency of this.metadata.dependencies) {
-			const module = Module.registry.get(dependency)!;
+			const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
 			module.dependants.delete(this);
 		}
-		Module.registry.delete(this.getIdentifier());
-		send && ModuleManager.remove(this.getIdentifier());
-	}
-
-	isEnabled() {
-		return this.enabled;
+		Module.registry.delete(this.getModuleIdentifier());
+		syncWithFS && ModuleManager.remove(this.metadata);
 	}
 }
 
 const bespokeProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
-const bespokeScheme = "bespoke:";
+const bespokeScheme = "bespoke";
 
-let fallback = false;
+let daemonConn: WebSocket | undefined;
+async function tryConnectToDaemon() {
+	const ws = new WebSocket("ws://localhost:7967/protocol");
+	let cb: { res: (e: Event) => void; rej: (e: Event) => void };
+	const p = new Promise((res, rej) => {
+		cb = { res, rej };
+	});
+	ws.onopen = e => cb.res(e);
+	ws.onclose = e => cb.rej(e);
+	return p
+		.then(() => {
+			daemonConn = ws;
+		})
+		.catch(() => {
+			daemonConn = undefined;
+		});
+}
+tryConnectToDaemon();
 
-const ws = new WebSocket("ws://localhost:7967/protocol");
-ws.onclose = () => {
-	fallback = true;
-};
-
-const sendProtocolMessage = (message: string) => {
-	if (fallback) {
-		open(bespokeProtocol + message);
+// TODO: Use protocol buffers instead?
+const sendProtocolMessage = (...messages: string[]) => {
+	const buffer = messages.join(":");
+	if (daemonConn) {
+		daemonConn.send(buffer);
 	} else {
-		ws.send(message);
+		open(bespokeProtocol + buffer);
 	}
 };
 
+function getModuleIdentifierFromMetadata(metadata: Metadata) {
+	return `${metadata.authors[0]}:${metadata.name}`;
+}
+
+function getStoreIdentifierFromMetadata(metadata: Metadata): StoreIdentifier {
+	return `${getModuleIdentifierFromMetadata(metadata)}:${metadata.version}`;
+}
+
 export const ModuleManager = {
-	add: (murl: string) => {
-		sendProtocolMessage(`${bespokeScheme}add:${murl}`);
+	add(murl: string) {
+		sendProtocolMessage(bespokeScheme, "add", murl);
 	},
-	remove: (identifier: string) => {
-		sendProtocolMessage(`${bespokeScheme}remove:${identifier}`);
+	remove(metadata: Metadata) {
+		sendProtocolMessage(bespokeScheme, "remove", getStoreIdentifierFromMetadata(metadata));
 	},
-	enable: (identifier: string) => {
-		sendProtocolMessage(`${bespokeScheme}enable:${identifier}`);
+	enable(metadata: Metadata) {
+		sendProtocolMessage(bespokeScheme, "enable", getStoreIdentifierFromMetadata(metadata));
 	},
-	disable: (identifier: string) => {
-		sendProtocolMessage(`${bespokeScheme}disable:${identifier}`);
+	disable(metadata: Metadata) {
+		sendProtocolMessage(bespokeScheme, "disable", getStoreIdentifierFromMetadata(metadata));
 	},
 };
 
-const lock: Vault = await fetchJSON("/modules/vault.json");
+const lock: Vault = deepMerge(await fetchJSON("/modules/vault.json"), await fetchJSON("/hooks/repo.json"));
 await Promise.all(
 	Object.entries(lock.modules).flatMap(([author, byNames]) =>
-		Object.entries(byNames).flatMap(([name, { enabled, metadatas }]) =>
-			Object.entries(metadatas).flatMap(([version, metadata]) => Module.fromVault(`${author}/${name}/${version}` === enabled, metadata)),
-		),
+		Object.entries(byNames).flatMap(([name, { enabled, metadatas }]) => Module.fromVault(author, name, enabled, metadatas)),
 	),
 );

@@ -139,3 +139,20 @@ export const type = (obj: any, access: string): string => {
 			return typeof obj;
 	}
 };
+
+// @ts-ignore
+export function deepMerge(target: any, source: any, override = (curr: any, val: any, key: any) => val) {
+	for (const [key, val] of Object.entries(source)) {
+		if (Object.hasOwn(target, key)) {
+			const curr = target[key];
+			if (!Array.isArray(curr) && typeof curr === "object" && typeof val === "object") {
+				deepMerge(curr, val, override);
+				continue;
+			}
+			target[key] = override(curr, val, key);
+		} else {
+			target[key] = val;
+		}
+	}
+	return target;
+}

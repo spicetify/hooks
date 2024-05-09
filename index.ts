@@ -17,15 +17,13 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Module } from "./module.js";
-import { applyTransforms } from "./transforms/index.js";
-import "./transforms/devtools.js";
-import "./transforms/styledComponents.js";
+import { MixinModule, Module } from "./module.js";
+import { applyTransforms } from "./mixins.js";
 
 await Module.enableAllLoadableMixins();
 
 // initialize spotify
 await Promise.all(["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async p => import(await p)));
-await Promise.all(Module.INTERNAL.awaitedMixins);
 
+await Promise.all(MixinModule.INTERNAL.awaitedMixins);
 await Module.enableAllLoadable();
