@@ -114,7 +114,10 @@ export class Module {
 
 		const loadableModuleByVersion = Object.fromEntries(
 			await Promise.all(
-				Object.entries(metadataURLsByVersion).map(([version, metadatas]) => [version, LoadableModule.fromMetadataURLs(metadatas)]),
+				Object.entries(metadataURLsByVersion).map(async ([version, metadatas]) => [
+					version,
+					await LoadableModule.fromMetadataURLs(metadatas, `${author}/${name}/${version}` === enabled),
+				]),
 			),
 		);
 
@@ -185,13 +188,16 @@ export class LoadableModule extends MixinModule {
 		super(metadata);
 	}
 
-	static async fromMetadataURLs(metadatas: MetadataURL) {
-		const metadata = metadatas.local ? await fetchJSON<Metadata>(metadatas.local) : dummy_metadata;
+	static async fromMetadataURLs(metadatas: MetadataURL, shouldEnableAtStartup = false) {
+		const metadata = shouldEnableAtStartup && metadatas.local ? await fetchJSON<Metadata>(metadatas.local) : dummy_metadata;
 
 		const m = new LoadableModule(metadata, metadatas.local, metadatas.remote);
 		// @ts-ignore
-		if (metadata.isDummy && metadatas.remote) {
-			fetchJSON<Metadata>(metadatas.remote).then(metadata => m.updateMetadata(metadata));
+		if (metadata.isDummy) {
+			const url = metadatas.local ?? metadatas.remote;
+			if (url) {
+				fetchJSON<Metadata>(url).then(metadata => m.updateMetadata(metadata));
+			}
 		}
 
 		return m;
