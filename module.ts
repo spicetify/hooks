@@ -214,11 +214,11 @@ export class LoadableModule extends MixinModule {
 		this.metadata = metadata;
 	}
 
-	public getModuleIdentifier() {
+	public getModuleIdentifier(): ModuleIdentifier {
 		return `${this.getAuthor()}/${this.getName()}`;
 	}
 
-	public getStoreIdentifier() {
+	public getStoreIdentifier(): StoreIdentifier {
 		return `${this.getModuleIdentifier()}/${this.getVersion()}`;
 	}
 
