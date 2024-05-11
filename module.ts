@@ -24,8 +24,8 @@ type ModuleIdentifier = string;
 type StoreIdentifier = string;
 
 interface Store {
-	installed: boolean;
-	remote?: string;
+	local: boolean;
+	remote: string | null;
 }
 
 type Author = string;
@@ -114,10 +114,11 @@ export class Module {
 
 		const loadableModuleByVersion = Object.fromEntries(
 			await Promise.all(
-				Object.entries(metadataURLsByVersion).map(async ([version, metadatas]) => {
-					const moduleIdentifier = `${author}/${name}`;
-					const storeIdentifier = `${moduleIdentifier}/${version}`;
-					return [version, await LoadableModule.fromModule(author, name, version, metadatas, storeIdentifier === enabled)];
+				Object.entries(metadataURLsByVersion).map(async ([version, store]) => {
+					if (!store.remote?.length) {
+						store.remote = null;
+					}
+					return [version, await LoadableModule.fromModule(author, name, version, store, version === enabled)];
 				}),
 			),
 		);
@@ -136,9 +137,9 @@ export class Module {
 
 	// ?
 	public async updateEnabled(enabled: string | null, syncWithFS: boolean) {
-		this.enabled = enabled;
+		this.enabled = enabled?.length ? enabled : null;
 		if (syncWithFS) {
-			await ModuleManager.enable(new LoadableModule(this.author, this.name, enabled ?? "", null as any, null as any));
+			await ModuleManager.enable(new LoadableModule(this.author, this.name, this.enabled ?? "", null as any, null as any, null));
 		}
 	}
 }
@@ -193,16 +194,16 @@ export class LoadableModule extends MixinModule {
 		private version: string,
 		metadata: Metadata,
 		public installed: boolean,
-		public remoteMetadataURL?: string,
+		public remoteMetadataURL: string | null,
 	) {
 		super(metadata);
 	}
 
 	static async fromModule(author: string, name: string, version: string, store: Store, shouldEnableAtStartup = false) {
 		const metadata =
-			shouldEnableAtStartup && store.installed ? await fetchJSON<Metadata>(`/modules/${author}/${name}/metadata.json`) : dummy_metadata;
+			shouldEnableAtStartup && store.local ? await fetchJSON<Metadata>(`/modules/${author}/${name}/metadata.json`) : dummy_metadata;
 
-		return new LoadableModule(author, name, version, metadata, store.installed, store.remote);
+		return new LoadableModule(author, name, version, metadata, store.local, store.remote);
 	}
 
 	public isEnabled() {
@@ -223,7 +224,7 @@ export class LoadableModule extends MixinModule {
 	}
 
 	private getRelPath(rel: string) {
-		return `/modules/${this.getModuleIdentifier()}/../${rel}`;
+		return `/modules/${this.getModuleIdentifier()}/${rel}`;
 	}
 
 	private async loadMixins() {
