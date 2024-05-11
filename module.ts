@@ -293,6 +293,7 @@ export class LoadableModule extends MixinModule {
 		}
 	}
 
+	// TODO: add check for spotifyVersions
 	private canEnableRecur(mixinPhase = false) {
 		if (!mixinPhase && !this.mixinsEnabled && this.metadata.entries.mixin) {
 			return false;
