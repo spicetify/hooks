@@ -37,7 +37,7 @@ export type PlatformAutoGen = {
          focusState: {
             addFocusListener: () => any;
             hasFocus: () => boolean;
-            listeners: Array<ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]>;
+            listeners: Array<ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ]>;
             removeAllFocusListeners: () => any;
             removeFocusListener: () => any;
          };
@@ -46,7 +46,7 @@ export type PlatformAutoGen = {
             block: () => () => undefined;
             canGo: () => boolean;
             createHref: () => any;
-            entries: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+            entries: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             go: () => any;
             goBack: () => any;
             goForward: () => any;
@@ -54,63 +54,63 @@ export type PlatformAutoGen = {
             length: number;
             listen: () => () => undefined;
             location: undefined;
-            push: (a) => any;
-            replace: (a) => any;
+            push: ( a ) => any;
+            replace: ( a ) => any;
          };
          onFocusChanged: () => any;
-         setAdStateKey: (a) => any;
+         setAdStateKey: ( a ) => any;
       };
       audio: {
          audioApi: {
-            addNewSlot: (a) => any;
+            addNewSlot: ( a ) => any;
             cosmosConnector: {
-               addNewSlot: (a) => any;
-               configureSlot: (a, b) => any;
-               enableSlot: (a) => any;
-               fetchAdForSlot: (a) => any;
-               getAdForSlot: (a, b) => any;
-               getAdSlotConfig: (a) => any;
+               addNewSlot: ( a ) => any;
+               configureSlot: ( a, b ) => any;
+               enableSlot: ( a ) => any;
+               fetchAdForSlot: ( a ) => any;
+               getAdForSlot: ( a, b ) => any;
+               getAdSlotConfig: ( a ) => any;
                getAdState: () => Promise<any>;
                getEpisodeSponsors: () => Promise<any>;
-               getFeatureFlags: (a) => any;
+               getFeatureFlags: ( a ) => any;
                getShowSponsors: () => Promise<any>;
-               getSlotConfiguration: (a) => any;
+               getSlotConfiguration: ( a ) => any;
                getSlotConfigurations: () => Promise<any>;
                getSponsoredUris: () => Promise<any>;
                getSponsorshipAd: () => Promise<any>;
                getState: () => Promise<any>;
-               increaseStreamTime: (a) => any;
-               loadAdPod: (a) => any;
+               increaseStreamTime: ( a ) => any;
+               loadAdPod: ( a ) => any;
                logAudioVolume: () => Promise<any>;
-               overrideCountry: (a) => any;
+               overrideCountry: ( a ) => any;
                overridePodcastMetadata: () => Promise<any>;
-               patchTargeting: (a) => any;
-               postEvent: (a, b) => any;
-               postToSlot: (a, b) => any;
-               removeRequestHeader: (a) => any;
-               requestPreviewAd: (a) => any;
+               patchTargeting: ( a ) => any;
+               postEvent: ( a, b ) => any;
+               postToSlot: ( a, b ) => any;
+               removeRequestHeader: ( a ) => any;
+               requestPreviewAd: ( a ) => any;
                setAdSlotEndpoint: () => undefined;
-               setAdState: (a) => any;
-               setAdStateKey: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["setAdStateKey"];
-               setAdStatePusherEndpoint: (a) => any;
-               setRequestHeader: (a, b) => any;
+               setAdState: ( a ) => any;
+               setAdStateKey: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "setAdStateKey" ];
+               setAdStatePusherEndpoint: ( a ) => any;
+               setRequestHeader: ( a, b ) => any;
                setSponsoredUri: () => undefined;
                subToAdState: () => undefined;
                subToState: () => undefined;
-               subscribeToAdsProductState: () => { cancel: () => undefined };
+               subscribeToAdsProductState: () => { cancel: () => undefined; };
                subscribeToAllFormats: () => undefined;
-               subscribeToEvent: (a, b, c) => any;
-               subscribeToFormat: (a) => any;
-               subscribeToProductState: (a) => any;
-               subscribeToSlot: (a) => any;
-               subscribeToSlotType: (a) => any;
-               triggerSlotClear: (a) => any;
-               triggerSlotClearAll: (a) => any;
-               triggerSlotFetch: (a) => any;
-               triggerSlotPlay: (a) => any;
+               subscribeToEvent: ( a, b, c ) => any;
+               subscribeToFormat: ( a ) => any;
+               subscribeToProductState: ( a ) => any;
+               subscribeToSlot: ( a ) => any;
+               subscribeToSlotType: ( a ) => any;
+               triggerSlotClear: ( a ) => any;
+               triggerSlotClearAll: ( a ) => any;
+               triggerSlotFetch: ( a ) => any;
+               triggerSlotPlay: ( a ) => any;
             };
-            postEvent: (a, b) => any;
-            subscribeToSlotType: (a) => any;
+            postEvent: ( a, b ) => any;
+            subscribeToSlotType: ( a ) => any;
          };
          disable: () => Promise<any>;
          enable: () => Promise<any>;
@@ -119,12 +119,12 @@ export type PlatformAutoGen = {
          getEnabled: () => any;
          inStreamApi: {
             adsCoreConnector: {
-               addNewSlot: (a) => any;
+               addNewSlot: ( a ) => any;
                enableSlot: () => Promise<any>;
                fetchAdForSlot: () => Promise<any>;
                getSponsoredUris: () => Promise<any>;
-               subscribeToInStreamAds: () => { cancel: () => undefined };
-               subscribeToSlot: (a) => any;
+               subscribeToInStreamAds: () => { cancel: () => undefined; };
+               subscribeToSlot: ( a ) => any;
             };
             disable: () => any;
             enable: () => any;
@@ -136,26 +136,26 @@ export type PlatformAutoGen = {
             subscribeToInStreamAds: () => any;
          };
          isNewAdsNpvEnabled: boolean;
-         logClick: (a) => any;
-         onAdMessage: (a) => any;
+         logClick: ( a ) => any;
+         onAdMessage: ( a ) => any;
          resetSubscriptions: () => any;
          subscriptions: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["adStateReporter"]["focusState"]["listeners"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
       };
       billboard: {
          activating: boolean;
          adClick: () => any;
          billboardApi: {
-            addNewSlot: (a) => any;
+            addNewSlot: ( a ) => any;
             cosmosConnector: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["audio"]["audioApi"]["cosmosConnector"];
-            getSlotConfiguration: (a) => any;
-            patchTargeting: (a) => any;
-            postEvent: (a, b) => any;
-            postToSlot: (a) => any;
-            subscribeToSlotType: (a) => any;
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "audio" ][ "audioApi" ][ "cosmosConnector" ];
+            getSlotConfiguration: ( a ) => any;
+            patchTargeting: ( a ) => any;
+            postEvent: ( a, b ) => any;
+            postToSlot: ( a ) => any;
+            subscribeToSlotType: ( a ) => any;
             triggerSlotClearAll: () => any;
          };
          clearSlot: () => any;
@@ -165,18 +165,18 @@ export type PlatformAutoGen = {
          enabled: boolean;
          finish: () => undefined;
          focusMinimize: () => undefined;
-         focusState: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"];
+         focusState: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ];
          getFocusTimeoutMs: () => Promise<any>;
          handleApplicationGainedFocus: () => Promise<any>;
          handleApplicationLostFocus: () => Promise<any>;
          handleDiscard: () => any;
          handlePreview: () => any;
          isPreviewServiceAd: () => undefined;
-         logEvent: (a) => any;
+         logEvent: ( a ) => any;
          mapBillboardData: () => any;
          minimize: () => any;
-         onActivity: (a) => any;
-         onAdMessage: (a) => any;
+         onActivity: ( a ) => any;
+         onAdMessage: ( a ) => any;
          onError: () => any;
          onFinish: () => any;
          onFocusChanged: () => any;
@@ -189,32 +189,32 @@ export type PlatformAutoGen = {
       hpto: {
          appStartupId: string;
          createTrackingList: () => any;
-         createTrackingPixelImage: (a) => any;
+         createTrackingPixelImage: ( a ) => any;
          fetchCreative: () => any;
          fetchTemplate: () => any;
-         focusState: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"];
-         getNativeData: (a) => any;
-         handleTrackingUrl: (a) => any;
+         focusState: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ];
+         getNativeData: ( a ) => any;
+         handleTrackingUrl: ( a ) => any;
          hptoApi: {
             cosmosConnector: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["audio"]["audioApi"]["cosmosConnector"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "audio" ][ "audioApi" ][ "cosmosConnector" ];
             eventSender: {
-               _dispatchFromStore: (a) => any;
+               _dispatchFromStore: ( a ) => any;
                _listeners: {};
-               _metaListeners: { add: {}; remove: {} };
-               addListener: (a, b) => any;
+               _metaListeners: { add: {}; remove: {}; };
+               addListener: ( a, b ) => any;
                addListeners: () => undefined;
-               buildEvent: (a) => any;
-               commitAndUploadESStats: (a, b, c, d) => any;
-               createEvent: (a) => any;
+               buildEvent: ( a ) => any;
+               commitAndUploadESStats: ( a, b, c, d ) => any;
+               createEvent: ( a ) => any;
                destroy: () => any;
                droppedEventsTracker: {
                   getDroppedEventCounters: () => any;
                   getDroppedEventsCountersPerSequenceId: () => any;
                   storageManager: {
-                     addItemInDroppedCountersStorage: (a) => any;
-                     addItemInEventsStorage: (a) => any;
+                     addItemInDroppedCountersStorage: ( a ) => any;
+                     addItemInEventsStorage: ( a ) => any;
                      canMakeDroppedCountersStorageFull: () => any;
                      canMakeEventsStorageFull: () => any;
                      clear: () => any;
@@ -222,17 +222,17 @@ export type PlatformAutoGen = {
                      createStorage: () => any;
                      currentTotalSizeForDroppedCounters: number;
                      currentTotalSizeForEvents: number;
-                     flushStrategy: { interval: number; kind: string };
+                     flushStrategy: { interval: number; kind: string; };
                      getItem: () => any;
-                     getItemSizeInBytes: (a) => any;
+                     getItemSizeInBytes: ( a ) => any;
                      getKeys: () => any;
-                     getOrCreateId: (a) => any;
+                     getOrCreateId: ( a ) => any;
                      maxStorageCapacityForDroppedCountersInBytes: number;
                      maxStorageCapacityForEventsInBytes: number;
                      removeItemInDroppedCountersStorage: () => any;
                      removeItemInEventsStorage: () => any;
-                     setCounterItem: (a, b) => any;
-                     setItem: (a) => any;
+                     setCounterItem: ( a, b ) => any;
+                     setItem: ( a ) => any;
                      setTotalDroppedCountersStorageSizeAtStartup: () => undefined;
                      setTotalEventStorageSizeAtStartup: () => undefined;
                      storage: {
@@ -240,34 +240,34 @@ export type PlatformAutoGen = {
                            clear: () => undefined;
                            getItem: () => null;
                            getKeys: () => ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                            removeItem: () => undefined;
-                           setItem: (a) => any;
+                           setItem: ( a ) => any;
                         };
                         flushStrategy: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["hpto"]["hptoApi"]["eventSender"]["droppedEventsTracker"]["storageManager"]["flushStrategy"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "droppedEventsTracker" ][ "storageManager" ][ "flushStrategy" ];
                         maxCapacityForDroppedInPercentage: number;
                         maxCapacityInBytes: number;
                      };
                      storageAdapter: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["droppedEventsTracker"]["storageManager"]["storage"]["adapter"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "droppedEventsTracker" ][ "storageManager" ][ "storage" ][ "adapter" ];
                      storageKeyPrefix: string;
                      storageType: string;
-                     updateItemInDroppedCountersStorage: (a) => any;
-                     updateItemInEventsStorage: (a) => any;
+                     updateItemInDroppedCountersStorage: ( a ) => any;
+                     updateItemInEventsStorage: ( a ) => any;
                   };
-                  updateDroppedEventCount: (a) => any;
+                  updateDroppedEventCount: ( a ) => any;
                   updateReportedEventCounters: () => any;
                };
-               emit: (a) => any;
-               emitAndWait: (a, b) => any;
+               emit: ( a ) => any;
+               emitAndWait: ( a, b ) => any;
                emitEvent: () => undefined;
-               emitEventAndWait: (a) => any;
+               emitEventAndWait: ( a ) => any;
                emitEventSync: () => any;
-               emitSync: (a) => any;
+               emitSync: ( a ) => any;
                essLastSent: {
                   getDate: () => any;
                   getDay: () => any;
@@ -314,28 +314,28 @@ export type PlatformAutoGen = {
                   toString: () => any;
                   toTimeString: () => any;
                   toUTCString: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["essLastSent"]["toGMTString"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "essLastSent" ][ "toGMTString" ];
                   valueOf: () => any;
                };
                eventsManager: {
-                  addEvent: (a) => any;
+                  addEvent: ( a ) => any;
                   getEvent: () => any;
-                  getEventKey: (a) => any;
+                  getEventKey: ( a ) => any;
                   getEvents: () => any;
                   getEventsKeys: () => any;
                   getEventsKeysPerSequenceId: () => any;
                   getGlobalSequenceNumberFromEventKey: () => any;
                   removeEvents: () => any;
                   storageManager: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["droppedEventsTracker"]["storageManager"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "droppedEventsTracker" ][ "storageManager" ];
                };
                finalFlush: () => any;
                flush: () => Promise<any>;
                fullESS2NALastSent: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["hpto"]["hptoApi"]["eventSender"]["essLastSent"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "essLastSent" ];
                getEvents: () => any;
                getSpecificContext: () => any;
                getStorageId: () => any;
@@ -346,8 +346,8 @@ export type PlatformAutoGen = {
                initializeContexts: () => undefined;
                installationId: string;
                instanceContexts: {
-                  context_application_desktop: { version_code: number; version_string: string };
-                  context_client_id: { value: string };
+                  context_application_desktop: { version_code: number; version_string: string; };
+                  context_client_id: { value: string; };
                   context_device_desktop: {
                      device_id: string;
                      device_manufacturer: string;
@@ -355,60 +355,60 @@ export type PlatformAutoGen = {
                      os_version: string;
                      platform_type: string;
                   };
-                  context_installation_id: { value: string };
+                  context_installation_id: { value: string; };
                };
                isUsingESS2NAOptimization: () => any;
                lastFlush: () => Promise<any>;
-               on: (a, b) => any;
-               onAddListener: (a, b) => any;
+               on: ( a, b ) => any;
+               onAddListener: ( a, b ) => any;
                onBeforeDisconnect: () => any;
-               onRemoveListener: (a, b) => any;
+               onRemoveListener: ( a, b ) => any;
                onSuccessfullySentESStats: () => any;
-               once: (a) => any;
+               once: ( a ) => any;
                ownerProvider: () => string;
                previousESS2NA: undefined;
-               proxyEmit: (a, b) => any;
-               proxyEmitAll: (a) => any;
-               proxyEmitAllSync: (a) => any;
-               proxyEmitSync: (a, b) => any;
+               proxyEmit: ( a, b ) => any;
+               proxyEmitAll: ( a ) => any;
+               proxyEmitAllSync: ( a ) => any;
+               proxyEmitSync: ( a, b ) => any;
                removeAllListeners: () => any;
-               removeListener: (a, b) => any;
+               removeListener: ( a, b ) => any;
                removeListeners: () => undefined;
-               send: (a) => any;
-               sendESS2NAWithOptimization: (a, b, c) => any;
+               send: ( a ) => any;
+               sendESS2NAWithOptimization: ( a, b, c ) => any;
                sendESStats: () => Promise<any>;
                sendEvents: () => Promise<any>;
                sendEventsInterval: number;
-               sendToGabito: (a) => any;
-               sequenceIdProvider: { getId: (a) => any; getIdHash: () => any; installationId: string };
+               sendToGabito: ( a ) => any;
+               sequenceIdProvider: { getId: ( a ) => any; getIdHash: () => any; installationId: string; };
                sequenceNumberProvider: {
-                  commitSequenceNumber: (a) => any;
-                  generateNextEventSequenceNumber: (a) => any;
+                  commitSequenceNumber: ( a ) => any;
+                  generateNextEventSequenceNumber: ( a ) => any;
                   generateNextGlobalSequenceNumber: () => any;
                   generateNextSequenceNumber: () => any;
                   getEventsSequenceNumbers: () => any;
                   getNextSequenceNumber: () => any;
                   getSequenceNumbersPerSequenceId: () => any;
                   storageManager: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["droppedEventsTracker"]["storageManager"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "droppedEventsTracker" ][ "storageManager" ];
                };
                setupInstallationId: () => any;
                statsProvider: {
-                  addDroppedEventsCounters: (a, b) => any;
-                  addDroppedEventsCountersData: (a) => any;
-                  addEventsToESSData: (a) => any;
+                  addDroppedEventsCounters: ( a, b ) => any;
+                  addDroppedEventsCountersData: ( a ) => any;
+                  addEventsToESSData: ( a ) => any;
                   addLossStatsData: () => any;
                   getInitialESSData: () => any;
-                  provideEventSenderStats: (a, b) => any;
+                  provideEventSenderStats: ( a, b ) => any;
                };
                storageManager: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["hpto"]["hptoApi"]["eventSender"]["droppedEventsTracker"]["storageManager"];
-               storeEvent: (a) => any;
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "droppedEventsTracker" ][ "storageManager" ];
+               storeEvent: ( a ) => any;
                transport: {
-                  _Fetch: { __esModule: boolean; isSupported: () => boolean; request: () => any };
-                  _XHR: { __esModule: boolean; request: () => any };
+                  _Fetch: { __esModule: boolean; isSupported: () => boolean; request: () => any; };
+                  _XHR: { __esModule: boolean; request: () => any; };
                   _authenticate: () => any;
                   _authenticateCalled: boolean;
                   _authenticateWithToken: () => Promise<any>;
@@ -418,60 +418,60 @@ export type PlatformAutoGen = {
                   _connectToEndpoints: () => Promise<any>;
                   _connectionObserver: {
                      _dispatchFromStore: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["_dispatchFromStore"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "_dispatchFromStore" ];
                      _listeners: {
                         beforeunload: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         offline: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         online: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      };
-                     _metaListeners: { add: {}; remove: {} };
+                     _metaListeners: { add: {}; remove: {}; };
                      _navigator: {
                         appCodeName: string;
                         appName: string;
                         appVersion: string;
                         bluetooth: {
-                           addEventListener: (a, b) => any;
+                           addEventListener: ( a, b ) => any;
                            dispatchEvent: () => any;
                            getAvailability: () => Promise<any>;
-                           removeEventListener: (a, b) => any;
+                           removeEventListener: ( a, b ) => any;
                            requestDevice: () => Promise<any>;
                         };
                         clearAppBadge: () => Promise<any>;
                         clipboard: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            read: () => Promise<any>;
                            readText: () => Promise<any>;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            write: () => Promise<any>;
                            writeText: () => Promise<any>;
                         };
                         connection: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            downlink: number;
                            effectiveType: string;
                            onchange: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            rtt: number;
                            saveData: boolean;
                         };
@@ -508,20 +508,20 @@ export type PlatformAutoGen = {
                         hardwareConcurrency: number;
                         hid: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getDevices: () => Promise<any>;
                            onconnect: null;
                            ondisconnect: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            requestDevice: () => Promise<any>;
                         };
-                        ink: { requestPresenter: () => Promise<any> };
+                        ink: { requestPresenter: () => Promise<any>; };
                         javaEnabled: () => any;
                         keyboard: {
                            getLayoutMap: () => Promise<any>;
@@ -530,22 +530,22 @@ export type PlatformAutoGen = {
                         };
                         language: string;
                         languages: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
-                        locks: { query: () => Promise<any>; request: () => Promise<any> };
-                        login: { setStatus: () => Promise<any> };
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
+                        locks: { query: () => Promise<any>; request: () => Promise<any>; };
+                        login: { setStatus: () => Promise<any>; };
                         managed: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getManagedConfiguration: () => Promise<any>;
                            onmanagedconfigurationchange: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                         };
                         maxTouchPoints: number;
                         mediaCapabilities: {
@@ -554,19 +554,19 @@ export type PlatformAutoGen = {
                         };
                         mediaDevices: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            enumerateDevices: () => Promise<any>;
                            getDisplayMedia: () => Promise<any>;
                            getSupportedConstraints: () => any;
                            getUserMedia: () => Promise<any>;
                            ondevicechange: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            setCaptureHandleConfig: () => any;
                         };
                         mediaSession: {
@@ -582,14 +582,14 @@ export type PlatformAutoGen = {
                               description: string;
                               enabledPlugin: {
                                  "0": ReturnType<
-                                    PlatformAutoGen["getAdManagers"]
-                                 >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                                    PlatformAutoGen[ "getAdManagers" ]
+                                 >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                                  "1": ReturnType<
-                                    PlatformAutoGen["getAdManagers"]
-                                 >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                                    PlatformAutoGen[ "getAdManagers" ]
+                                 >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                                  "application/pdf": ReturnType<
-                                    PlatformAutoGen["getAdManagers"]
-                                 >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                                    PlatformAutoGen[ "getAdManagers" ]
+                                 >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                                  description: string;
                                  filename: string;
                                  item: () => any;
@@ -597,96 +597,96 @@ export type PlatformAutoGen = {
                                  name: string;
                                  namedItem: () => any;
                                  "text/pdf": ReturnType<
-                                    PlatformAutoGen["getAdManagers"]
-                                 >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                                    PlatformAutoGen[ "getAdManagers" ]
+                                 >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                               };
                               suffixes: string;
                               type: string;
                            };
                            "1": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                            "application/pdf": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                            item: () => any;
                            length: number;
                            namedItem: () => any;
                            "text/pdf": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ];
                         };
                         onLine: boolean;
                         pdfViewerEnabled: boolean;
-                        permissions: { query: () => Promise<any> };
+                        permissions: { query: () => Promise<any>; };
                         platform: string;
                         plugins: {
                            "0": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "1": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "2": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "3": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "4": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "Chrome PDF Viewer": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "Chromium PDF Viewer": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "Microsoft Edge PDF Viewer": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "PDF Viewer": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            "WebKit built-in PDF": ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["mimeTypes"]["0"]["enabledPlugin"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "mimeTypes" ][ "0" ][ "enabledPlugin" ];
                            item: () => any;
                            length: number;
                            namedItem: () => any;
                            refresh: () => any;
                         };
-                        presentation: { defaultRequest: null; receiver: null };
+                        presentation: { defaultRequest: null; receiver: null; };
                         product: string;
                         productSub: string;
                         registerProtocolHandler: () => any;
                         requestMIDIAccess: () => Promise<any>;
-                        requestMediaKeySystemAccess: (a) => any;
-                        scheduling: { isInputPending: () => any };
+                        requestMediaKeySystemAccess: ( a ) => any;
+                        scheduling: { isInputPending: () => any; };
                         sendBeacon: () => any;
                         serial: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getPorts: () => Promise<any>;
                            onconnect: null;
                            ondisconnect: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            requestPort: () => Promise<any>;
                         };
                         serviceWorker: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            controller: null;
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getRegistration: () => Promise<any>;
                            getRegistrations: () => Promise<any>;
                            oncontrollerchange: null;
@@ -695,48 +695,48 @@ export type PlatformAutoGen = {
                            ready: Promise<any>;
                            register: () => Promise<any>;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            startMessages: () => any;
                         };
                         setAppBadge: () => Promise<any>;
                         storage: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            estimate: () => Promise<any>;
                            getDirectory: () => Promise<any>;
                            persist: () => Promise<any>;
                            persisted: () => Promise<any>;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                         };
                         unregisterProtocolHandler: () => any;
                         usb: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getDevices: () => Promise<any>;
                            onconnect: null;
                            ondisconnect: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            requestDevice: () => Promise<any>;
                         };
-                        userActivation: { hasBeenActive: boolean; isActive: boolean };
+                        userActivation: { hasBeenActive: boolean; isActive: boolean; };
                         userAgent: string;
                         userAgentData: {
                            brands: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                            getHighEntropyValues: () => Promise<any>;
                            mobile: boolean;
                            platform: string;
@@ -747,8 +747,8 @@ export type PlatformAutoGen = {
                         vibrate: () => any;
                         virtualKeyboard: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            boundingRect: {
                               bottom: number;
                               height: number;
@@ -761,112 +761,112 @@ export type PlatformAutoGen = {
                               y: number;
                            };
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            hide: () => any;
                            ongeometrychange: null;
                            overlaysContent: boolean;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            show: () => any;
                         };
-                        wakeLock: { request: () => Promise<any> };
+                        wakeLock: { request: () => Promise<any>; };
                         webdriver: boolean;
                         webkitGetUserMedia: () => any;
-                        webkitPersistentStorage: { queryUsageAndQuota: () => any; requestQuota: () => any };
+                        webkitPersistentStorage: { queryUsageAndQuota: () => any; requestQuota: () => any; };
                         webkitTemporaryStorage: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["webkitPersistentStorage"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "webkitPersistentStorage" ];
                         windowControlsOverlay: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            getTitlebarAreaRect: () => any;
                            ongeometrychange: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            visible: boolean;
                         };
                         xr: {
                            addEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                            dispatchEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                            isSessionSupported: () => Promise<any>;
                            ondevicechange: null;
                            removeEventListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                            requestSession: () => Promise<any>;
                            supportsSession: () => Promise<any>;
                         };
                      };
                      addListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListener" ];
                      addListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListeners" ];
                      createEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["createEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "createEvent" ];
                      emit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emit" ];
                      emitAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitAndWait" ];
                      emitEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEvent" ];
                      emitEventAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventAndWait" ];
                      emitEventSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventSync" ];
                      emitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitSync" ];
                      isOnline: () => any;
-                     on: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["on"];
+                     on: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "on" ];
                      onAddListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onAddListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onAddListener" ];
                      onRemoveListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onRemoveListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onRemoveListener" ];
                      once: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["once"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "once" ];
                      proxyEmit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmit" ];
                      proxyEmitAll: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAll"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAll" ];
                      proxyEmitAllSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAllSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAllSync" ];
                      proxyEmitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitSync" ];
                      removeAllListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeAllListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeAllListeners" ];
                      removeListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListener" ];
                      removeListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListeners" ];
                   };
                   _counter: {
                      _baseTime: number;
@@ -880,9 +880,9 @@ export type PlatformAutoGen = {
                   _disconnect: () => any;
                   _disconnectBeforeUnload: boolean;
                   _dispatchFromStore: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["_dispatchFromStore"];
-                  _endpoints: { webapi: string; webgate: string };
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "_dispatchFromStore" ];
+                  _endpoints: { webapi: string; webgate: string; };
                   _endpointsProvider: () => Promise<any>;
                   _forcePolyfillTypes: {};
                   _getQuickDisconnectTimeout: () => any;
@@ -895,64 +895,64 @@ export type PlatformAutoGen = {
                   _lastTokenExpiry: number;
                   _listeners: {
                      access_token: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      authenticated: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      authentication_failed: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      connected: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      disconnected: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      endpoints_resolved: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      logged_out: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      offline: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      online: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      reconnected: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      reconnecting: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   };
                   _metaListeners: {
                      add: {
                         authenticated: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         connected: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         connection_id: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      };
                      remove: {
                         authenticated: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         connected: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         connection_id: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      };
                   };
-                  _onAddListener: (a) => any;
+                  _onAddListener: ( a ) => any;
                   _onAuthenticated: () => any;
                   _onAuthenticationFailed: () => any;
                   _onConnected: () => Promise<any>;
@@ -960,117 +960,117 @@ export type PlatformAutoGen = {
                   _onOffline: () => any;
                   _onOnline: () => any;
                   _onPluginDisconnected: () => any;
-                  _onRemoveListener: (a) => any;
+                  _onRemoveListener: ( a ) => any;
                   _ownerRef: {};
                   _parseProvidedToken: () => any;
                   _performConnect: () => any;
                   _performDisconnect: () => any;
                   _pluginMediator: {
                      _dispatchFromStore: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["_dispatchFromStore"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "_dispatchFromStore" ];
                      _listeners: {
                         plugin_connection_info: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         plugin_disconnected: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         plugin_message: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         transport_authenticate: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         transport_before_process_request: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         transport_before_send_request: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         transport_connect: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         transport_disconnect: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      };
                      _metaListeners: {
                         add: {
                            transport_authenticate: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                            transport_connect: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         };
                         remove: {
                            transport_authenticate: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                            transport_connect: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["adStateReporter"]["focusState"]["listeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         };
                      };
                      addListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListener" ];
                      addListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListeners" ];
                      createEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["createEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "createEvent" ];
                      emit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emit" ];
                      emitAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitAndWait" ];
                      emitEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEvent" ];
                      emitEventAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventAndWait" ];
                      emitEventSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventSync" ];
                      emitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitSync"];
-                     on: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["on"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitSync" ];
+                     on: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "on" ];
                      onAddListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onAddListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onAddListener" ];
                      onRemoveListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onRemoveListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onRemoveListener" ];
                      once: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["once"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "once" ];
                      proxyEmit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmit" ];
                      proxyEmitAll: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAll"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAll" ];
                      proxyEmitAllSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAllSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAllSync" ];
                      proxyEmitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitSync" ];
                      removeAllListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeAllListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeAllListeners" ];
                      removeListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListener" ];
                      removeListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListeners" ];
                   };
                   _plugins: {
                      dealer: {
@@ -1080,8 +1080,8 @@ export type PlatformAutoGen = {
                            _connectionId: string;
                            _connectionURI: string;
                            _dispatchFromStore: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["_dispatchFromStore"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "_dispatchFromStore" ];
                            _endpoint: string;
                            _handleClose: () => any;
                            _handleError: () => any;
@@ -1093,41 +1093,41 @@ export type PlatformAutoGen = {
                            _lastPingDeferred: null;
                            _listeners: {
                               connection_id: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["adStateReporter"]["focusState"]["listeners"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                               disconnected: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["adStateReporter"]["focusState"]["listeners"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                               error: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["adStateReporter"]["focusState"]["listeners"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                               message: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["adStateReporter"]["focusState"]["listeners"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                               request: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["adStateReporter"]["focusState"]["listeners"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                            };
-                           _metaListeners: { add: {}; remove: {} };
+                           _metaListeners: { add: {}; remove: {}; };
                            _onHeartbeatError: () => any;
                            _onHeartbeatSuccess: () => any;
                            _parseMessage: () => undefined;
                            _prepareConnectionId: () => any;
-                           _reply: (a) => any;
+                           _reply: ( a ) => any;
                            _socket: {
                               CLOSED: number;
                               CLOSING: number;
                               CONNECTING: number;
                               OPEN: number;
                               addEventListener: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["addEventListener"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "addEventListener" ];
                               binaryType: string;
                               bufferedAmount: number;
                               close: () => any;
                               dispatchEvent: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                               extensions: string;
                               onclose: () => any;
                               onerror: () => undefined;
@@ -1136,8 +1136,8 @@ export type PlatformAutoGen = {
                               protocol: string;
                               readyState: number;
                               removeEventListener: ReturnType<
-                                 PlatformAutoGen["getAdManagers"]
-                              >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                                 PlatformAutoGen[ "getAdManagers" ]
+                              >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                               send: () => any;
                               url: string;
                            };
@@ -1145,76 +1145,76 @@ export type PlatformAutoGen = {
                            _stopHeartbeat: () => any;
                            _waitingForConnectionId: boolean;
                            addListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["addListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListener" ];
                            addListeners: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["addListeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListeners" ];
                            authenticate: () => any;
                            connect: () => any;
                            createEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["createEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "createEvent" ];
                            disconnect: () => any;
                            emit: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emit"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emit" ];
                            emitAndWait: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emitAndWait"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitAndWait" ];
                            emitEvent: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emitEvent"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEvent" ];
                            emitEventAndWait: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emitEventAndWait"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventAndWait" ];
                            emitEventSync: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emitEventSync"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventSync" ];
                            emitSync: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["emitSync"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitSync" ];
                            getConnectionId: () => any;
                            getConnectionInfo: () => any;
                            hasConnectionId: () => any;
                            on: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["on"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "on" ];
                            onAddListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["onAddListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onAddListener" ];
                            onRemoveListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["onRemoveListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onRemoveListener" ];
                            once: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["once"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "once" ];
                            ping: () => any;
                            proxyEmit: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["proxyEmit"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmit" ];
                            proxyEmitAll: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAll"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAll" ];
                            proxyEmitAllSync: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAllSync"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAllSync" ];
                            proxyEmitSync: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["proxyEmitSync"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitSync" ];
                            removeAllListeners: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["removeAllListeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeAllListeners" ];
                            removeListener: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["removeListener"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListener" ];
                            removeListeners: ReturnType<
-                              PlatformAutoGen["getAdManagers"]
-                           >["hpto"]["hptoApi"]["eventSender"]["removeListeners"];
+                              PlatformAutoGen[ "getAdManagers" ]
+                           >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListeners" ];
                         };
                         _mediator: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
                         _onDealerConnectionId: () => any;
                         _onDealerDisconnected: () => any;
                         _onDealerError: () => any;
@@ -1223,9 +1223,9 @@ export type PlatformAutoGen = {
                         _onTransportAuthenticate: () => any;
                         _onTransportConnect: () => any;
                         _onTransportDisconnect: () => undefined;
-                        api: { getConnectionInfo: () => Promise<any>; hasConnectionInfo: () => boolean };
-                        attach: (a) => any;
-                        detach: (a) => any;
+                        api: { getConnectionInfo: () => Promise<any>; hasConnectionInfo: () => boolean; };
+                        attach: ( a ) => any;
+                        detach: ( a ) => any;
                         name: string;
                      };
                      "desktop-lifecycle-plugin": {
@@ -1240,10 +1240,10 @@ export type PlatformAutoGen = {
                         _authTimeoutId: null;
                         _onAuthenticationFailed: () => undefined;
                         _transport: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["hpto"]["hptoApi"]["eventSender"]["transport"];
-                        attach: (a) => any;
-                        detach: (a) => any;
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ];
+                        attach: ( a ) => any;
+                        detach: ( a ) => any;
                         name: string;
                         onAuthenticated: () => undefined;
                         onAuthenticationFailed: () => undefined;
@@ -1254,36 +1254,36 @@ export type PlatformAutoGen = {
                         tryAuthenticate: () => any;
                      };
                   };
-                  _processRequestArgs: (a) => any;
+                  _processRequestArgs: ( a ) => any;
                   _quickDisconnectCount: number;
                   _reconnectTimeout: number;
                   _reconnectionRetries: number;
                   _refreshToken: () => any;
                   _refreshTokenPromise: null;
                   _requestMode: string;
-                  _runStateAwareQueues: (a) => any;
+                  _runStateAwareQueues: ( a ) => any;
                   _sendFireAndForgetRequest: () => any;
-                  _sendRequest: (a, b) => any;
-                  _sendRetriedRequest: (a) => any;
-                  _setAuthHeader: (a) => any;
+                  _sendRequest: ( a, b ) => any;
+                  _sendRetriedRequest: ( a ) => any;
+                  _setAuthHeader: ( a ) => any;
                   _stateAwareListeners: {
                      authenticated: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      connected: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      connection_id: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      transport_authenticate: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      transport_connect: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   };
-                  _stateAwareOperationMetrics: { authenticated: { end_time: number; start_time: number } };
+                  _stateAwareOperationMetrics: { authenticated: { end_time: number; start_time: number; }; };
                   _stateAwareRunners: {
                      authenticated: null;
                      connected: null;
@@ -1296,36 +1296,36 @@ export type PlatformAutoGen = {
                   _tryExpandSpecialURL: () => any;
                   _tryToReconnect: () => any;
                   addListener: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["addListener"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListener" ];
                   addListeners: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["addListeners"];
-                  addPlugin: (a) => any;
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListeners" ];
+                  addPlugin: ( a ) => any;
                   appendLastTokenQuery: () => any;
                   appendTokenQuery: () => any;
                   authenticate: () => Promise<any>;
                   connect: () => any;
                   createEvent: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["createEvent"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "createEvent" ];
                   disconnect: () => any;
-                  emit: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["emit"];
+                  emit: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emit" ];
                   emitAndWait: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["emitAndWait"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitAndWait" ];
                   emitEvent: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["emitEvent"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEvent" ];
                   emitEventAndWait: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["emitEventAndWait"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventAndWait" ];
                   emitEventSync: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["emitEventSync"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventSync" ];
                   emitSync: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["emitSync"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitSync" ];
                   forceDisconnect: () => any;
                   forceTokenRefresh: () => any;
                   getConnectionId: () => any;
@@ -1333,142 +1333,142 @@ export type PlatformAutoGen = {
                   getInitTime: () => any;
                   getLastToken: () => any;
                   getPluginAPI: () => any;
-                  handlePushRequests: (a, b) => any;
+                  handlePushRequests: ( a, b ) => any;
                   hasOwnerRef: () => any;
                   hasPlugin: () => any;
                   isAuthenticated: () => any;
                   isConnected: () => any;
                   isOnline: () => any;
                   isReconnecting: () => any;
-                  matchMessages: (a, b) => any;
-                  on: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["on"];
+                  matchMessages: ( a, b ) => any;
+                  on: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "on" ];
                   onAddListener: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["onAddListener"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onAddListener" ];
                   onRemoveListener: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["onRemoveListener"];
-                  once: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["once"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onRemoveListener" ];
+                  once: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "once" ];
                   proxyEmit: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["proxyEmit"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmit" ];
                   proxyEmitAll: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAll"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAll" ];
                   proxyEmitAllSync: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAllSync"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAllSync" ];
                   proxyEmitSync: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["proxyEmitSync"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitSync" ];
                   removeAllListeners: () => undefined;
                   removeListener: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["removeListener"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListener" ];
                   removeListeners: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["removeListeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListeners" ];
                   removePlugin: () => any;
-                  request: (a) => any;
+                  request: ( a ) => any;
                   toPublic: () => any;
-                  unhandlePushRequests: (a, b) => any;
-                  unmatchMessages: (a, b) => any;
+                  unhandlePushRequests: ( a, b ) => any;
+                  unmatchMessages: ( a, b ) => any;
                };
                uploaders: {
                   authorized: {
                      _authorize: boolean;
                      _backoff: boolean;
                      _dispatchFromStore: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["_dispatchFromStore"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "_dispatchFromStore" ];
                      _endpoint: string;
                      _listeners: {
                         upload_failed: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         upload_request_failed: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                         upload_succeeded: ReturnType<
-                           PlatformAutoGen["getAdManagers"]
-                        >["adStateReporter"]["focusState"]["listeners"];
+                           PlatformAutoGen[ "getAdManagers" ]
+                        >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      };
-                     _metaListeners: { add: {}; remove: {} };
-                     _parseUploadResponse: (a, b) => any;
+                     _metaListeners: { add: {}; remove: {}; };
+                     _parseUploadResponse: ( a, b ) => any;
                      _suppressPersist: boolean;
                      _transport: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["transport"];
-                     _uploadBatch: (a) => any;
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ];
+                     _uploadBatch: ( a ) => any;
                      addListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListener" ];
                      addListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["addListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "addListeners" ];
                      createEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["createEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "createEvent" ];
                      emit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emit" ];
                      emitAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitAndWait" ];
                      emitEvent: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEvent"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEvent" ];
                      emitEventAndWait: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventAndWait"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventAndWait" ];
                      emitEventSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitEventSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitEventSync" ];
                      emitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["emitSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "emitSync" ];
                      lastUpload: () => any;
-                     on: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["on"];
+                     on: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "on" ];
                      onAddListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onAddListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onAddListener" ];
                      onRemoveListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["onRemoveListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "onRemoveListener" ];
                      once: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["once"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "once" ];
                      proxyEmit: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmit"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmit" ];
                      proxyEmitAll: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAll"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAll" ];
                      proxyEmitAllSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitAllSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitAllSync" ];
                      proxyEmitSync: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["proxyEmitSync"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "proxyEmitSync" ];
                      removeAllListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeAllListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeAllListeners" ];
                      removeListener: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListener"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListener" ];
                      removeListeners: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["hpto"]["hptoApi"]["eventSender"]["removeListeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "removeListeners" ];
                      shouldBackoff: () => any;
                      upload: () => any;
                   };
                   unauthorized: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["uploaders"]["authorized"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "uploaders" ][ "authorized" ];
                };
                uploadingInProgress: boolean;
                useOptimizedESS2NA: boolean;
-               validateEventData: (a, b) => any;
+               validateEventData: ( a, b ) => any;
             };
             getAlbum: () => any;
             getAlgoPlaylistInfo: () => Promise<any>;
@@ -1481,7 +1481,7 @@ export type PlatformAutoGen = {
             logEvent: () => Promise<any>;
             previewParser: {
                createInteractiveIframe: () => HTMLElement;
-               getKeyByValue: (a) => any;
+               getKeyByValue: ( a ) => any;
                handleNativeEl: () => any;
                isPreviewServiceAd: () => any;
                parsePreview: () => any;
@@ -1490,21 +1490,21 @@ export type PlatformAutoGen = {
             subscribeToPreview: () => Promise<any>;
             webApi: {
                endpoints: {
-                  Album: { __esModule: boolean; getAlbum: (a) => any };
-                  Artist: { __esModule: boolean; getArtist: (a) => any; getArtistAlbums: (a, b) => any };
+                  Album: { __esModule: boolean; getAlbum: ( a ) => any; };
+                  Artist: { __esModule: boolean; getArtist: ( a ) => any; getArtistAlbums: ( a, b ) => any; };
                   Playlist: {
                      __esModule: boolean;
                      getOnDemandPlaylists: () => any;
-                     getPlaylist: (a, b) => any;
-                     getPlaylistPermissionForUser: (a) => any;
+                     getPlaylist: ( a, b ) => any;
+                     getPlaylistPermissionForUser: ( a ) => any;
                   };
                   Show: {
                      __esModule: boolean;
-                     createCheckoutSession: (a) => any;
-                     getEpisode: (a, b) => any;
-                     getShow: (a, b) => any;
+                     createCheckoutSession: ( a ) => any;
+                     getEpisode: ( a, b ) => any;
+                     getShow: ( a, b ) => any;
                   };
-                  Track: { __esModule: boolean; getTrack: (a) => any };
+                  Track: { __esModule: boolean; getTrack: ( a ) => any; };
                };
                getAlbum: () => any;
                getArtist: () => any;
@@ -1512,23 +1512,23 @@ export type PlatformAutoGen = {
                getPlaylist: () => any;
                getShow: () => any;
                getTrack: () => any;
-               imageSelection: (a) => any;
+               imageSelection: ( a ) => any;
                mapDefaultData: () => any;
-               mapEpisode: (a) => any;
-               mapTrack: (a) => any;
+               mapEpisode: ( a ) => any;
+               mapTrack: ( a ) => any;
                spotifyTransport: {
-                  _RequestImplementation: (a) => any;
+                  _RequestImplementation: ( a ) => any;
                   _accessToken: string;
                   _globalRequestHeaders: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   _locale: string;
                   _market: string;
                   accessToken: string;
                   build: () => any;
                   globalRequestHeaders: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   locale: string;
                   market: string;
                   pendingRequests: Set<any>;
@@ -1536,18 +1536,18 @@ export type PlatformAutoGen = {
                };
             };
          };
-         log: (a) => any;
-         logAdEventError: (a) => any;
+         log: ( a ) => any;
+         logAdEventError: ( a ) => any;
          logErrorEvent: () => any;
-         logEvent: (a) => any;
+         logEvent: ( a ) => any;
          logViewed: () => any;
-         mapData: (a) => any;
-         maybeModifyUrl: (a) => any;
+         mapData: ( a ) => any;
+         maybeModifyUrl: ( a ) => any;
          maybeTriggerRefresh: () => any;
-         offlineObserver: { getOnlineStatus: () => any; isOnline: boolean };
+         offlineObserver: { getOnlineStatus: () => any; isOnline: boolean; };
          onFocusChanged: () => any;
          onRefresh: () => any;
-         onVisibilityChanged: (a) => any;
+         onVisibilityChanged: ( a ) => any;
          refreshCallback: () => Promise<any>;
          subscribeToPreview: () => any;
          timeOfLastViewUpdate: number;
@@ -1557,7 +1557,7 @@ export type PlatformAutoGen = {
          viewDestroyed: () => any;
          viewRendered: () => any;
          visibilityObserver: {
-            callback: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["onVisibilityChanged"];
+            callback: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "onVisibilityChanged" ];
             currentState: string;
             disconnect: () => any;
             intersectionObserver: {
@@ -1569,55 +1569,55 @@ export type PlatformAutoGen = {
                scrollMargin: string;
                takeRecords: () => any;
                thresholds: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                trackVisibility: boolean;
                unobserve: () => any;
             };
-            observe: (a) => any;
-            onObservation: (a) => any;
+            observe: ( a ) => any;
+            onObservation: ( a ) => any;
          };
          visibilityState: string;
       };
-      inStreamApi: ReturnType<PlatformAutoGen["getAdManagers"]>["audio"]["inStreamApi"];
+      inStreamApi: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "audio" ][ "inStreamApi" ];
       leaderboard: {
-         adFrameLoaded: (a, b) => any;
+         adFrameLoaded: ( a, b ) => any;
          appStartupId: string;
-         currentAd: { creativeId: null; lineitemId: null };
+         currentAd: { creativeId: null; lineitemId: null; };
          disableLeaderboard: () => any;
          disableLeaderboardMessageHandler: () => any;
          enableLeaderboard: () => any;
          enableLeaderboardMessageHandler: () => any;
          enabled: boolean;
-         eventSender: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+         eventSender: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
          fetchAndDisplayLeaderboard: () => Promise<any>;
          fetching: boolean;
-         focusState: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"];
+         focusState: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ];
          frameSrc: string;
          getFrameSrcOrigin: () => any;
          handleBadLeaderboard: () => any;
-         handleLeaderboardMessage: (a) => any;
-         history: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["history"];
+         handleLeaderboardMessage: ( a ) => any;
+         history: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "history" ];
          isPreviewServiceAd: () => undefined;
          leaderboardApi: {
             addSlot: () => Promise<any>;
             cosmosConnector: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["audio"]["audioApi"]["cosmosConnector"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "audio" ][ "audioApi" ][ "cosmosConnector" ];
             getConfig: () => Promise<any>;
             getSlot: () => Promise<any>;
-            normalizeConfig: () => { displayTimeIntervalMs: number; timeInViewThresholdMs: number };
-            subscribeToSlotType: (a) => any;
+            normalizeConfig: () => { displayTimeIntervalMs: number; timeInViewThresholdMs: number; };
+            subscribeToSlotType: ( a ) => any;
          };
          leaderboardWrapper: null;
          logLeaderboardEvent: () => any;
-         offlineObserver: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["offlineObserver"];
-         onAdMessage: (a) => any;
+         offlineObserver: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "offlineObserver" ];
+         onAdMessage: ( a ) => any;
          onFocusChanged: () => any;
          onNavigationChanged: () => any;
          refreshDecisioner: {
-            delegate: ReturnType<PlatformAutoGen["getAdManagers"]>["leaderboard"];
-            focusState: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"];
+            delegate: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "leaderboard" ];
+            focusState: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ];
             isPastViewThreshold: () => any;
             lastOnlineStatus: boolean;
             notifyRefreshIfPossible: () => Promise<any>;
@@ -1635,7 +1635,7 @@ export type PlatformAutoGen = {
             viewTimer: number;
          };
          refreshLeaderboard: () => any;
-         renderLeaderboard: (a, b) => any;
+         renderLeaderboard: ( a, b ) => any;
          requestConfig: () => Promise<any>;
          requestSlot: () => any;
          setLeaderboardElement: () => any;
@@ -1649,7 +1649,7 @@ export type PlatformAutoGen = {
          requestSponsoredPlaylistAd: () => Promise<any>;
          requestSponsoredPlaylists: () => Promise<any>;
          sponsoredPlaylistApi: {
-            eventSender: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+            eventSender: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
             getSponsoredUris: () => Promise<any>;
             getSponsorshipAd: () => Promise<any>;
             logEvent: () => Promise<any>;
@@ -1657,7 +1657,7 @@ export type PlatformAutoGen = {
          };
       };
       vto: {
-         factories: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+         factories: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
          manager: {
             active: boolean;
             createEventData: () => any;
@@ -1665,38 +1665,38 @@ export type PlatformAutoGen = {
             enable: () => Promise<any>;
             enabled: boolean;
             fireImpressionOnStart: boolean;
-            focusState: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"];
+            focusState: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ];
             getEnabled: () => any;
             getPreferredCompanionAd: () => any;
             handleApplicationGainedFocus: () => Promise<any>;
             handleApplicationLostFocus: () => Promise<any>;
-            inStreamApi: ReturnType<PlatformAutoGen["getAdManagers"]>["audio"]["inStreamApi"];
+            inStreamApi: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "audio" ][ "inStreamApi" ];
             isNewAdsNpvEnabled: boolean;
-            isPreferred: (a) => any;
-            log: (a, b, c, d) => any;
-            logEvent: (a, b) => any;
-            onAdMessage: (a) => any;
+            isPreferred: ( a ) => any;
+            log: ( a, b, c, d ) => any;
+            logEvent: ( a, b ) => any;
+            onAdMessage: ( a ) => any;
             onCreated: () => any;
-            onEnded: (a) => any;
+            onEnded: ( a ) => any;
             onFocusChanged: () => any;
             onReady: () => any;
             onRender: () => any;
             onStarted: () => any;
             onStateUpdate: () => any;
-            parseInfo: (a) => any;
+            parseInfo: ( a ) => any;
             resetState: () => any;
             resetSubscriptions: () => any;
             subscriptions: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             videoTakeoverApi: {
-               addNewSlot: (a) => any;
+               addNewSlot: ( a ) => any;
                cosmosConnector: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["audio"]["audioApi"]["cosmosConnector"];
-               patchTargeting: (a) => any;
-               postEvent: (a, b) => any;
-               subscribeToSlotType: (a) => any;
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "audio" ][ "audioApi" ][ "cosmosConnector" ];
+               patchTargeting: ( a ) => any;
+               postEvent: ( a, b ) => any;
+               subscribeToSlotType: ( a ) => any;
             };
          };
       };
@@ -1704,250 +1704,250 @@ export type PlatformAutoGen = {
    getAudiobooksPremiumConsumptionCapObserverAPI: () => {
       _playerApi: {
          _collection: {
-            add: (a) => any;
-            addUnplayed: (a) => any;
-            ban: (a) => any;
-            contains: (a) => any;
-            decorate: (a) => any;
-            getAlbumTrackList: (a) => any;
-            getAlbumView: (a) => any;
-            getArtistTrackList: (a) => any;
-            getArtistView: (a) => any;
-            getBans: (a) => any;
-            getBucketSyncStatus: (a) => any;
-            getEpisodeList: (a) => any;
-            getResumePoints: (a) => any;
-            getShowList: (a) => any;
-            getTrackList: (a) => any;
-            getTrackListMetadata: (a) => any;
-            getUnplayedEpisodes: (a) => any;
-            offlineAlbum: (a) => any;
-            offlineArtist: (a) => any;
-            offlineTracks: (a) => any;
+            add: ( a ) => any;
+            addUnplayed: ( a ) => any;
+            ban: ( a ) => any;
+            contains: ( a ) => any;
+            decorate: ( a ) => any;
+            getAlbumTrackList: ( a ) => any;
+            getAlbumView: ( a ) => any;
+            getArtistTrackList: ( a ) => any;
+            getArtistView: ( a ) => any;
+            getBans: ( a ) => any;
+            getBucketSyncStatus: ( a ) => any;
+            getEpisodeList: ( a ) => any;
+            getResumePoints: ( a ) => any;
+            getShowList: ( a ) => any;
+            getTrackList: ( a ) => any;
+            getTrackListMetadata: ( a ) => any;
+            getUnplayedEpisodes: ( a ) => any;
+            offlineAlbum: ( a ) => any;
+            offlineArtist: ( a ) => any;
+            offlineTracks: ( a ) => any;
             options: {};
-            playAlbum: (a) => any;
-            playArtist: (a) => any;
-            playTracks: (a) => any;
-            remove: (a) => any;
-            removeOfflineAlbum: (a) => any;
-            removeOfflineArtist: (a) => any;
-            removeOfflineTracks: (a) => any;
-            removeUnplayed: (a) => any;
-            streamAlbumTrackList: (a) => any;
-            streamAlbumView: (a) => any;
-            streamArtistTrackList: (a) => any;
-            streamArtistView: (a) => any;
-            streamBans: (a) => any;
-            streamChanges: (a) => any;
-            streamContains: (a) => any;
-            streamDecorate: (a) => any;
-            streamEpisodeList: (a) => any;
-            streamShowList: (a) => any;
-            streamTagsInfo: (a) => any;
-            streamTrackList: (a) => any;
-            streamTrackListMetadata: (a) => any;
-            streamUnplayedEpisodes: (a) => any;
-            tracksOfflineStatus: (a) => any;
+            playAlbum: ( a ) => any;
+            playArtist: ( a ) => any;
+            playTracks: ( a ) => any;
+            remove: ( a ) => any;
+            removeOfflineAlbum: ( a ) => any;
+            removeOfflineArtist: ( a ) => any;
+            removeOfflineTracks: ( a ) => any;
+            removeUnplayed: ( a ) => any;
+            streamAlbumTrackList: ( a ) => any;
+            streamAlbumView: ( a ) => any;
+            streamArtistTrackList: ( a ) => any;
+            streamArtistView: ( a ) => any;
+            streamBans: ( a ) => any;
+            streamChanges: ( a ) => any;
+            streamContains: ( a ) => any;
+            streamDecorate: ( a ) => any;
+            streamEpisodeList: ( a ) => any;
+            streamShowList: ( a ) => any;
+            streamTagsInfo: ( a ) => any;
+            streamTrackList: ( a ) => any;
+            streamTrackListMetadata: ( a ) => any;
+            streamUnplayedEpisodes: ( a ) => any;
+            tracksOfflineStatus: ( a ) => any;
             transport: {
-               call: (a, b, c) => any;
-               callSingle: (a) => any;
-               callStream: (a) => any;
+               call: ( a, b, c ) => any;
+               callSingle: ( a ) => any;
+               callStream: ( a ) => any;
                cancel: () => any;
                send: () => any;
             };
-            unban: (a) => any;
+            unban: ( a ) => any;
          };
          _contextPlayer: {
-            addToQueue: (a) => any;
-            deleteSession: (a) => any;
-            getError: (a) => any;
-            getPlayHistory: (a) => any;
-            getPositionState: (a) => any;
-            getQueue: (a) => any;
-            getState: (a) => any;
+            addToQueue: ( a ) => any;
+            deleteSession: ( a ) => any;
+            getError: ( a ) => any;
+            getPlayHistory: ( a ) => any;
+            getPositionState: ( a ) => any;
+            getQueue: ( a ) => any;
+            getState: ( a ) => any;
             options: {};
-            pause: (a) => any;
-            play: (a) => any;
-            playAsNextInQueue: (a) => any;
-            playPrepared: (a) => any;
-            preparePlay: (a) => any;
-            resume: (a) => any;
-            seekTo: (a) => any;
-            setOptions: (a) => any;
-            setQueue: (a) => any;
-            setRepeatingContext: (a) => any;
-            setRepeatingTrack: (a) => any;
-            setShufflingContext: (a) => any;
-            signal: (a) => any;
-            skipNext: (a) => any;
-            skipPrev: (a) => any;
-            stop: (a) => any;
+            pause: ( a ) => any;
+            play: ( a ) => any;
+            playAsNextInQueue: ( a ) => any;
+            playPrepared: ( a ) => any;
+            preparePlay: ( a ) => any;
+            resume: ( a ) => any;
+            seekTo: ( a ) => any;
+            setOptions: ( a ) => any;
+            setQueue: ( a ) => any;
+            setRepeatingContext: ( a ) => any;
+            setRepeatingTrack: ( a ) => any;
+            setShufflingContext: ( a ) => any;
+            signal: ( a ) => any;
+            skipNext: ( a ) => any;
+            skipPrev: ( a ) => any;
+            stop: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
-            updateContext: (a) => any;
-            updateContextPage: (a) => any;
-            updateContextTrack: (a) => any;
-            updateViewUri: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
+            updateContext: ( a ) => any;
+            updateContextPage: ( a ) => any;
+            updateContextTrack: ( a ) => any;
+            updateViewUri: ( a ) => any;
          };
          _contextualShuffle: {
             _indexedDbAPI: {
                _channel: {
-                  addEventListener: (a, b) => any;
+                  addEventListener: ( a, b ) => any;
                   close: () => any;
                   dispatchEvent: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["dispatchEvent"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "dispatchEvent" ];
                   name: string;
                   onmessage: null;
                   onmessageerror: null;
                   postMessage: () => any;
                   removeEventListener: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["transport"]["_connectionObserver"]["_navigator"]["bluetooth"]["removeEventListener"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_connectionObserver" ][ "_navigator" ][ "bluetooth" ][ "removeEventListener" ];
                };
                _events: {
                   _emitter: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
-                  addListener: (a, b) => any;
-                  emit: (a) => any;
-                  emitSync: (a) => any;
-                  onAddListener: (a) => any;
-                  onRemoveListener: (a) => any;
-                  removeListener: (a, b) => any;
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
+                  addListener: ( a, b ) => any;
+                  emit: ( a ) => any;
+                  emitSync: ( a ) => any;
+                  onAddListener: ( a ) => any;
+                  onRemoveListener: ( a ) => any;
+                  removeListener: ( a, b ) => any;
                };
-               deleteItem: (a) => any;
+               deleteItem: ( a ) => any;
                getEvents: () => any;
-               getItem: (a) => any;
+               getItem: ( a ) => any;
                name: string;
                openDb: () => Promise<any>;
-               setItem: (a, b) => any;
+               setItem: ( a, b ) => any;
                version: number;
             };
             getContextualShuffleMode: () => Promise<any>;
             getEvents: () => any;
-            setContextualShuffleMode: (a) => any;
+            setContextualShuffleMode: ( a ) => any;
          };
          _cosmos: {
-            del: (a, b) => any;
-            get: (a, b) => any;
-            head: (a) => any;
-            patch: (a, b) => any;
-            post: (a, b) => any;
-            postSub: (a, b, c) => any;
-            put: (a, b) => any;
-            request: (a, b, c) => any;
+            del: ( a, b ) => any;
+            get: ( a, b ) => any;
+            head: ( a ) => any;
+            patch: ( a, b ) => any;
+            post: ( a, b ) => any;
+            postSub: ( a, b, c ) => any;
+            put: ( a, b ) => any;
+            request: ( a, b, c ) => any;
             requestFactory: () => any;
-            resolve: (a, b, c) => any;
+            resolve: ( a, b, c ) => any;
             resolver: {
                cancel: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"]["cancel"];
-               onFailure: (a, b, c) => any;
-               onSuccess: (a, b, c) => any;
-               resolve: (a, b) => any;
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ][ "cancel" ];
+               onFailure: ( a, b, c ) => any;
+               onSuccess: ( a, b, c ) => any;
+               resolve: ( a, b ) => any;
                send: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"]["send"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ][ "send" ];
             };
-            sub: (a, b) => any;
+            sub: ( a, b ) => any;
          };
          _defaultFeatureVersion: string;
          _events: {
             _client: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextPlayer"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextPlayer" ];
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
             emitPauseSync: () => any;
-            emitPlaySync: (a, b) => any;
-            emitQueueActionComplete: (a) => any;
+            emitPlaySync: ( a, b ) => any;
+            emitQueueActionComplete: ( a ) => any;
             emitQueueActionSync: () => any;
             emitQueueUpdate: () => any;
             emitResumeSync: () => any;
             emitSkipToNextSync: () => any;
             emitSkipToPreviousSync: () => any;
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
          _isResyncBeforePlayPlaylistEnabled: boolean;
          _isSmartShuffleEnabled: boolean;
          _playlistResyncerAPI: {
             _playlistServiceClient: {
-               clearToken: (a) => any;
-               contains: (a) => any;
-               getMembers: (a) => any;
-               modify: (a) => any;
+               clearToken: ( a ) => any;
+               contains: ( a ) => any;
+               getMembers: ( a ) => any;
+               modify: ( a ) => any;
                options: {};
-               requestLenses: (a) => any;
-               resync: (a) => any;
-               setBasePermission: (a) => any;
-               setMemberPermission: (a) => any;
-               setOfflineState: (a) => any;
-               setToken: (a) => any;
-               signal: (a) => any;
-               signalItem: (a) => any;
-               subscribeToMembers: (a) => any;
+               requestLenses: ( a ) => any;
+               resync: ( a ) => any;
+               setBasePermission: ( a ) => any;
+               setMemberPermission: ( a ) => any;
+               setOfflineState: ( a ) => any;
+               setToken: ( a ) => any;
+               signal: ( a ) => any;
+               signalItem: ( a ) => any;
+               subscribeToMembers: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
             };
             lastSync: Map<any, any>;
             maybeResync: () => Promise<any>;
             resync: () => Promise<any>;
          };
          _playlistServiceClient: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_playlistResyncerAPI"]["_playlistServiceClient"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_playlistResyncerAPI" ][ "_playlistServiceClient" ];
          _prefs: {
-            create: (a) => any;
-            get: (a) => any;
-            getAll: (a) => any;
+            create: ( a ) => any;
+            get: ( a ) => any;
+            getAll: ( a ) => any;
             options: {};
-            set: (a) => any;
-            sub: (a) => any;
-            subAll: (a) => any;
+            set: ( a ) => any;
+            sub: ( a ) => any;
+            subAll: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
          };
          _queue: {
             _client: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextPlayer"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextPlayer" ];
             _events: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_events"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_events" ];
             _queue: {
                nextTracks: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                prevTracks: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                queueRevision: string;
                track: {
                   blocked: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   contextTrack: {
                      metadata: {
                         "actions.skipping_next_past_track": string;
@@ -1994,34 +1994,34 @@ export type PlatformAutoGen = {
                   };
                   provider: string;
                   removed: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                };
             };
             _queueState: {
                current: {
                   album: {
                      images: ReturnType<
-                        PlatformAutoGen["getAdManagers"]
-                     >["adStateReporter"]["focusState"]["listeners"];
+                        PlatformAutoGen[ "getAdManagers" ]
+                     >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                      name: string;
                      type: string;
                      uri: string;
                   };
                   artists: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
-                  duration: { milliseconds: number };
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
+                  duration: { milliseconds: number; };
                   images: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   is19PlusOnly: boolean;
                   isExplicit: boolean;
                   isLocal: boolean;
                   mediaType: string;
                   metadata: ReturnType<
-                     PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-                  >["_playerApi"]["_queue"]["_queue"]["track"]["contextTrack"]["metadata"];
+                     PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+                  >[ "_playerApi" ][ "_queue" ][ "_queue" ][ "track" ][ "contextTrack" ][ "metadata" ];
                   name: string;
                   provider: string;
                   type: string;
@@ -2029,62 +2029,62 @@ export type PlatformAutoGen = {
                   uri: string;
                };
                nextUp: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                queued: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             };
             addToQueue: () => Promise<any>;
             clearQueue: () => Promise<any>;
-            convertQueueState: (a) => any;
-            createQueueItem: (a) => any;
+            convertQueueState: ( a ) => any;
+            createQueueItem: ( a ) => any;
             getInternalQueue: () => any;
             getQueue: () => any;
             getRepeatMode: () => number;
-            insertIntoQueue: (a) => any;
+            insertIntoQueue: ( a ) => any;
             isQueued: () => any;
-            isSameItem: (a) => any;
+            isSameItem: ( a ) => any;
             markAsQueued: () => any;
             removeFromQueue: () => Promise<any>;
-            reorderQueue: (a) => any;
+            reorderQueue: ( a ) => any;
          };
          _smartShuffleEligibility: {
             _metadataServiceClient: {
-               expire: (a) => any;
-               fetch: (a) => any;
-               observe: (a) => any;
+               expire: ( a ) => any;
+               fetch: ( a ) => any;
+               observe: ( a ) => any;
                options: {};
-               purge: (a) => any;
+               purge: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
             };
             getEligibility: () => Promise<any>;
          };
          _state: {
-            context: { metadata: { "player.arch": string }; uri: string; url: string };
+            context: { metadata: { "player.arch": string; }; uri: string; url: string; };
             duration: number;
             hasContext: boolean;
-            index: { itemIndex: number; pageIndex: number; pageURI: null };
+            index: { itemIndex: number; pageIndex: number; pageURI: null; };
             isBuffering: boolean;
             isPaused: boolean;
             item: {
                album: {
                   images: ReturnType<
-                     PlatformAutoGen["getAdManagers"]
-                  >["adStateReporter"]["focusState"]["listeners"];
+                     PlatformAutoGen[ "getAdManagers" ]
+                  >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                   name: string;
                   type: string;
                   uri: string;
                };
                artists: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
-               duration: { milliseconds: number };
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
+               duration: { milliseconds: number; };
                images: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                is19PlusOnly: boolean;
                isExplicit: boolean;
                isLocal: boolean;
@@ -2141,8 +2141,8 @@ export type PlatformAutoGen = {
                uri: string;
             };
             nextItems: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             playbackId: string;
             playbackQuality: {
                bitrateLevel: number;
@@ -2153,8 +2153,8 @@ export type PlatformAutoGen = {
             };
             positionAsOfTimestamp: number;
             previousItems: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             repeat: number;
             restrictions: {
                canPause: boolean;
@@ -2166,36 +2166,36 @@ export type PlatformAutoGen = {
                canToggleRepeatTrack: boolean;
                canToggleShuffle: boolean;
                disallowPausingReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowResumingReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowSeekingReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowSkippingNextReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowSkippingPreviousReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowTogglingRepeatContextReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowTogglingRepeatTrackReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowTogglingShuffleReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                disallowTransferringPlaybackReasons: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             };
             sessionId: string;
             shuffle: boolean;
-            signals: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+            signals: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             speed: number;
             timestamp: number;
          };
@@ -2216,14 +2216,14 @@ export type PlatformAutoGen = {
          getQueue: () => any;
          getReferrer: () => any;
          getState: () => any;
-         insertIntoQueue: (a) => any;
+         insertIntoQueue: ( a ) => any;
          pause: () => Promise<any>;
-         play: (a, b) => any;
+         play: ( a, b ) => any;
          playAsNextInQueue: () => Promise<any>;
          referrer: string;
          refreshCurrentContext: () => Promise<any>;
          removeFromQueue: () => Promise<any>;
-         reorderQueue: (a) => any;
+         reorderQueue: ( a ) => any;
          resume: () => Promise<any>;
          seekBackward: () => Promise<any>;
          seekBy: () => Promise<any>;
@@ -2239,46 +2239,46 @@ export type PlatformAutoGen = {
          skipTo: () => Promise<any>;
          skipToNext: () => Promise<any>;
          skipToPrevious: () => Promise<any>;
-         updateContext: (a, b) => any;
+         updateContext: ( a, b ) => any;
       };
       _pubSubApi: {
          _connectionId: Promise<any>;
          _events: {
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
          _isDeveloperMode: boolean;
-         _messages: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
-         _subscribeToConnectionId: (a) => any;
-         _subscribeToMessages: (a, b) => any;
+         _messages: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
+         _subscribeToConnectionId: ( a ) => any;
+         _subscribeToMessages: ( a, b ) => any;
          _subscriptions: Map<any, any>;
          cancelSubscription: () => Promise<any>;
-         createSubscription: (a, b) => any;
+         createSubscription: ( a, b ) => any;
          getConnectionId: () => any;
          getEvents: () => any;
          getMessages: () => any;
          getSubscriptions: () => any;
          onConnectionId: () => any;
-         refreshSubscription: (a) => any;
+         refreshSubscription: ( a ) => any;
          subscribe: () => any;
       };
       _showApi: {
@@ -2287,67 +2287,67 @@ export type PlatformAutoGen = {
                _additions: Map<any, any>;
                _batch: Map<any, any>;
                _deletions: Map<any, any>;
-               _onAdd: (a) => any;
-               _onBatch: (a) => any;
-               _onRemove: (a) => any;
-               _onUpdate: (a, b) => any;
+               _onAdd: ( a ) => any;
+               _onBatch: ( a ) => any;
+               _onRemove: ( a ) => any;
+               _onUpdate: ( a, b ) => any;
                _timeout: number;
                _timeoutId: null;
                getBatch: () => any;
                onUpdate: () => any;
                scheduleUpdate: () => any;
-               subscribe: (a) => any;
-               unsubscribe: (a) => any;
+               subscribe: ( a ) => any;
+               unsubscribe: ( a ) => any;
             };
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             _show_client: {
-               getDecorate: (a) => any;
-               getShow: (a) => any;
-               getShowEpisode: (a) => any;
-               getUnfinishedEpisodes: (a) => any;
-               markShowAsPlayed: (a) => any;
+               getDecorate: ( a ) => any;
+               getShow: ( a ) => any;
+               getShowEpisode: ( a ) => any;
+               getUnfinishedEpisodes: ( a ) => any;
+               markShowAsPlayed: ( a ) => any;
                options: {};
-               playShow: (a) => any;
-               subDecorate: (a) => any;
-               subShow: (a) => any;
-               subShowEpisode: (a) => any;
-               subUnfinishedEpisodes: (a) => any;
+               playShow: ( a ) => any;
+               subDecorate: ( a ) => any;
+               subShow: ( a ) => any;
+               subShowEpisode: ( a ) => any;
+               subUnfinishedEpisodes: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
             };
             _subscriptions: Map<any, any>;
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
          _podcast_paywalls_client: {
             options: {};
-            putShowSubscription: (a) => any;
+            putShowSubscription: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
          };
          _show_service_client: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_showApi"]["_events"]["_show_client"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_showApi" ][ "_events" ][ "_show_client" ];
          capabilities: {
             canFilter: boolean;
             canGetDefaultSort: boolean;
@@ -2356,8 +2356,8 @@ export type PlatformAutoGen = {
          };
          checkoutBook: () => Promise<any>;
          getAccessInfo: () => Promise<any>;
-         getBookContents: (a) => any;
-         getContents: (a) => any;
+         getBookContents: ( a ) => any;
+         getContents: ( a ) => any;
          getEpisodeOrChapter: () => Promise<any>;
          getEvents: () => any;
          getMetadata: () => Promise<any>;
@@ -2373,201 +2373,201 @@ export type PlatformAutoGen = {
          };
       };
       currentPlayerState: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_state"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_state" ];
       requestInFlight: boolean;
    };
    getAuthorizationAPI: () => {
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
       _plugin: ReturnType<
-         PlatformAutoGen["getAdManagers"]
-      >["hpto"]["hptoApi"]["eventSender"]["transport"]["_plugins"]["desktop-lifecycle-plugin"];
+         PlatformAutoGen[ "getAdManagers" ]
+      >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_plugins" ][ "desktop-lifecycle-plugin" ];
       _state: {
          isAuthorized: boolean;
-         retryAt: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"]["essLastSent"];
+         retryAt: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "essLastSent" ];
          retryAttempt: number;
          token: null;
       };
       _tokenProvider: () => Promise<any>;
       createTransportPlugin: () => any;
-      getCapabilities: () => { canGetSessionTransferURL: boolean };
+      getCapabilities: () => { canGetSessionTransferURL: boolean; };
       getEvents: () => any;
       getSessionTransferURL: () => Promise<any>;
       getState: () => any;
       getTokenProvider: () => any;
-      onAuthenticationFailed: (a) => any;
+      onAuthenticationFailed: ( a ) => any;
       onTokenChanged: () => any;
       tryAuthorize: () => any;
    };
    getBuddyFeedAPI: () => {
       buddyFetchApi: {
          _builder: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
-         _pubsub: ReturnType<PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]>["_pubSubApi"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
+         _pubsub: ReturnType<PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]>[ "_pubSubApi" ];
          getBuddyActivity: () => any;
          getBuddyFeed: () => any;
          getFacebookFriends: () => any;
-         subscribeToBuddyActivity: (a) => any;
+         subscribeToBuddyActivity: ( a ) => any;
       };
       connectToFacebook: () => any;
       cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       fetchFacebookFriends: () => Promise<any>;
       fetchFriendActivity: () => Promise<any>;
-      getCapabilities: () => { isSupported: boolean };
-      subscribeToBuddyActivity: (a) => any;
+      getCapabilities: () => { isSupported: boolean; };
+      subscribeToBuddyActivity: ( a ) => any;
       subscribeToFacebookConnectionState: () => any;
    };
    getClipboardAPI: () => {
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       copy: () => Promise<any>;
       paste: () => Promise<any>;
    };
    getCollectionPlatformAPI: () => {
       _service: {
-         add: (a) => any;
-         contains: (a) => any;
-         get: (a) => any;
+         add: ( a ) => any;
+         contains: ( a ) => any;
+         get: ( a ) => any;
          options: {};
-         remove: (a) => any;
-         streamContains: (a) => any;
-         streamGet: (a) => any;
+         remove: ( a ) => any;
+         streamContains: ( a ) => any;
+         streamGet: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
-      add: (a) => any;
-      contains: (a) => any;
+      add: ( a ) => any;
+      contains: ( a ) => any;
       events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
       getEvents: () => any;
-      remove: (a) => any;
-      subscribeContains: (a, b) => any;
+      remove: ( a ) => any;
+      subscribeContains: ( a, b ) => any;
    };
    getConnectAPI: () => {
-      checkDeviceId: (a) => any;
+      checkDeviceId: ( a ) => any;
       connectServiceClient: {
-         becomeInactive: (a) => any;
-         cancelTransfer: (a) => any;
-         forceDiscover: (a) => any;
-         getDebugLevel: (a) => any;
-         getDeviceSettings: (a) => any;
-         logout: (a) => any;
-         notifyAudioRouteChanged: (a) => any;
+         becomeInactive: ( a ) => any;
+         cancelTransfer: ( a ) => any;
+         forceDiscover: ( a ) => any;
+         getDebugLevel: ( a ) => any;
+         getDeviceSettings: ( a ) => any;
+         logout: ( a ) => any;
+         notifyAudioRouteChanged: ( a ) => any;
          options: {};
-         performDiscovery: (a) => any;
-         pickerOpened: (a) => any;
-         pull: (a) => any;
-         refreshCluster: (a) => any;
-         rename: (a) => any;
-         sendCommand: (a) => any;
-         setDebugLevel: (a) => any;
-         setDeviceStreamQuality: (a) => any;
-         setPreferredZeroconf: (a) => any;
-         startDiscovery: (a) => any;
-         state: (a) => any;
-         transfer: (a) => any;
+         performDiscovery: ( a ) => any;
+         pickerOpened: ( a ) => any;
+         pull: ( a ) => any;
+         refreshCluster: ( a ) => any;
+         rename: ( a ) => any;
+         sendCommand: ( a ) => any;
+         setDebugLevel: ( a ) => any;
+         setDeviceStreamQuality: ( a ) => any;
+         setPreferredZeroconf: ( a ) => any;
+         startDiscovery: ( a ) => any;
+         state: ( a ) => any;
+         transfer: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
-         wakeSleepingClusterDevices: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
+         wakeSleepingClusterDevices: ( a ) => any;
       };
       createLoggingParams: () => any;
       discoverDevices: () => Promise<any>;
       events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
-         connectServiceClient: ReturnType<PlatformAutoGen["getConnectAPI"]>["connectServiceClient"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
+         connectServiceClient: ReturnType<PlatformAutoGen[ "getConnectAPI" ]>[ "connectServiceClient" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
-      getCapabilities: () => { supportsLocalDiscovery: boolean };
+      getCapabilities: () => { supportsLocalDiscovery: boolean; };
       getEvents: () => any;
       getState: () => any;
       initiateLocalDiscovery: () => Promise<any>;
       logout: () => Promise<any>;
-      mapIncarnationToLoginType: (a) => any;
+      mapIncarnationToLoginType: ( a ) => any;
       pullToLocal: () => Promise<any>;
-      setPreferredIncarnation: (a) => any;
+      setPreferredIncarnation: ( a ) => any;
       state: {
          activeDevice: {
             brandDisplayName: string;
             connectStateId: string;
             currentState: string;
             disabledReason: undefined;
-            hifiSupport: { deviceSupported: boolean; fullySupported: boolean; userEligible: boolean };
+            hifiSupport: { deviceSupported: boolean; fullySupported: boolean; userEligible: boolean; };
             id: string;
             incarnation: {
                available: ReturnType<
-                  PlatformAutoGen["getAdManagers"]
-               >["adStateReporter"]["focusState"]["listeners"];
+                  PlatformAutoGen[ "getAdManagers" ]
+               >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
                preferred: undefined;
             };
             isActive: boolean;
@@ -2588,15 +2588,15 @@ export type PlatformAutoGen = {
          };
          connectingDevice: null;
          connectionStatus: string;
-         devices: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+         devices: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
       };
-      transferPlayback: (a) => any;
-      transferToRemote: (a) => any;
+      transferPlayback: ( a ) => any;
+      transferToRemote: ( a ) => any;
    };
    getControlMessageAPI: () => {
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       disableMenuItem: () => Promise<any>;
       enableMenuItem: () => Promise<any>;
       getEvents: () => any;
@@ -2608,97 +2608,97 @@ export type PlatformAutoGen = {
    getCurationAPI: () => {
       _libraryAPI: {
          _builder: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
          _cache: Map<any, any>;
          _collection: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ];
          _currentUsername: string;
          _events: {
             _aggregator: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_showApi"]["_events"]["_aggregator"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_showApi" ][ "_events" ][ "_aggregator" ];
             _cache: Map<any, any>;
             _cancellables: {
-               albums: { cancel: () => undefined };
-               artists: { cancel: () => undefined };
-               books: { cancel: () => undefined };
-               episodes: { cancel: () => undefined };
-               shows: { cancel: () => undefined };
-               tracks: { cancel: () => undefined };
+               albums: { cancel: () => undefined; };
+               artists: { cancel: () => undefined; };
+               books: { cancel: () => undefined; };
+               episodes: { cancel: () => undefined; };
+               shows: { cancel: () => undefined; };
+               tracks: { cancel: () => undefined; };
             };
             _collection: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"];
-            _containsCancellable: { cancel: () => undefined };
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ];
+            _containsCancellable: { cancel: () => undefined; };
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             _listen_later: {
-               add: (a) => any;
-               episodes: (a) => any;
+               add: ( a ) => any;
+               episodes: ( a ) => any;
                options: {};
-               play: (a) => any;
-               remove: (a) => any;
-               streamEpisodes: (a) => any;
+               play: ( a ) => any;
+               remove: ( a ) => any;
+               streamEpisodes: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
             };
             _numListeners: number;
             _your_library: {
-               all: (a) => any;
-               contains: (a) => any;
-               decorate: (a) => any;
-               getKeys: (a) => any;
-               isCurated: (a) => any;
-               movePin: (a) => any;
+               all: ( a ) => any;
+               contains: ( a ) => any;
+               decorate: ( a ) => any;
+               getKeys: ( a ) => any;
+               isCurated: ( a ) => any;
+               movePin: ( a ) => any;
                options: {};
-               pin: (a) => any;
-               streamAll: (a) => any;
-               streamContains: (a) => any;
-               streamDecorate: (a) => any;
-               streamIsCurated: (a) => any;
+               pin: ( a ) => any;
+               streamAll: ( a ) => any;
+               streamContains: ( a ) => any;
+               streamDecorate: ( a ) => any;
+               streamIsCurated: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
-               unPin: (a) => any;
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
+               unPin: ( a ) => any;
             };
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-            emitOperationComplete: (a, b, c) => any;
-            emitOperationSync: (a, b) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+            emitOperationComplete: ( a, b, c ) => any;
+            emitOperationSync: ( a, b ) => any;
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
-            emitUpdateItems: (a) => any;
-            emitUpdatePin: (a) => any;
-            emitUpdatePinErrorTooManyPins: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
+            emitUpdateItems: ( a ) => any;
+            emitUpdatePin: ( a ) => any;
+            emitUpdatePinErrorTooManyPins: ( a ) => any;
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onBatchChanged: () => Promise<any>;
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
             subscribeToUpdates: () => any;
             unsubscribeFromUpdates: () => any;
          };
          _isTagsInfoSynced: () => Promise<any>;
          _listen_later: ReturnType<
-            PlatformAutoGen["getCurationAPI"]
-         >["_libraryAPI"]["_events"]["_listen_later"];
+            PlatformAutoGen[ "getCurationAPI" ]
+         >[ "_libraryAPI" ][ "_events" ][ "_listen_later" ];
          _your_library: ReturnType<
-            PlatformAutoGen["getCurationAPI"]
-         >["_libraryAPI"]["_events"]["_your_library"];
+            PlatformAutoGen[ "getCurationAPI" ]
+         >[ "_libraryAPI" ][ "_events" ][ "_your_library" ];
          add: () => Promise<any>;
          contains: () => Promise<any>;
          containsSync: () => any;
@@ -2726,98 +2726,98 @@ export type PlatformAutoGen = {
          getShows: () => Promise<any>;
          getSortOrderLabel: () => undefined;
          getStaticallyKnownFilters: () => {
-            playlist: { filterId: string; sortOrderIds: { customSort: string } };
+            playlist: { filterId: string; sortOrderIds: { customSort: string; }; };
          };
          getTracks: () => Promise<any>;
          getTracksFilterTags: () => Promise<any>;
          markAsPlayed: () => Promise<any>;
          markAsUnPlayed: () => Promise<any>;
-         pin: (a) => any;
+         pin: ( a ) => any;
          remove: () => Promise<any>;
          unpin: () => Promise<any>;
       };
       _playlistAPI: {
          _builder: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
          _events: {
             _aggregator: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_showApi"]["_events"]["_aggregator"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_showApi" ][ "_events" ][ "_aggregator" ];
             _dataClient: {
-               find: (a) => any;
-               get: (a) => any;
+               find: ( a ) => any;
+               get: ( a ) => any;
                options: {};
-               subscribe: (a) => any;
+               subscribe: ( a ) => any;
                transport: ReturnType<
-                  PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-               >["_playerApi"]["_collection"]["transport"];
+                  PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+               >[ "_playerApi" ][ "_collection" ][ "transport" ];
             };
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             _subscriptions: Map<any, any>;
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-            emitAddComplete: (a, b, c) => any;
-            emitAddSync: (a, b) => any;
-            emitMoveComplete: (a, b) => any;
-            emitMoveSync: (a) => any;
-            emitRemoveComplete: (a, b, c) => any;
-            emitRemoveSync: (a, b) => any;
-            emitSendSignalComplete: (a, b, c) => any;
-            emitSendSignalSync: (a, b) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+            emitAddComplete: ( a, b, c ) => any;
+            emitAddSync: ( a, b ) => any;
+            emitMoveComplete: ( a, b ) => any;
+            emitMoveSync: ( a ) => any;
+            emitRemoveComplete: ( a, b, c ) => any;
+            emitRemoveSync: ( a, b ) => any;
+            emitSendSignalComplete: ( a, b, c ) => any;
+            emitSendSignalSync: ( a, b ) => any;
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
-            emitUpdateComplete: (a, b) => any;
-            emitUpdateSync: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
+            emitUpdateComplete: ( a, b ) => any;
+            emitUpdateSync: ( a ) => any;
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onBatchChanged: () => any;
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
          _isAudiobookCurationEnabled: boolean;
          _playlistDataClient: ReturnType<
-            PlatformAutoGen["getCurationAPI"]
-         >["_playlistAPI"]["_events"]["_dataClient"];
+            PlatformAutoGen[ "getCurationAPI" ]
+         >[ "_playlistAPI" ][ "_events" ][ "_dataClient" ];
          _playlistServiceClient: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_playlistResyncerAPI"]["_playlistServiceClient"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_playlistResyncerAPI" ][ "_playlistServiceClient" ];
          _resyncAPI: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_playlistResyncerAPI"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_playlistResyncerAPI" ];
          _smartShuffleEligibilityAPI: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_smartShuffleEligibility"];
-         add: (a, b, c) => any;
-         clearAttributes: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_smartShuffleEligibility" ];
+         add: ( a, b, c ) => any;
+         clearAttributes: ( a ) => any;
          getCapabilities: () => any;
-         getContents: (a) => any;
+         getContents: ( a ) => any;
          getEvents: () => any;
-         getMetadata: (a) => any;
-         getPlaylist: (a, b) => any;
+         getMetadata: ( a ) => any;
+         getPlaylist: ( a, b ) => any;
          getPlaylistQuery: () => {
             alwaysShowWindowed: boolean;
             attributeFilter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             boolPredicates: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             descriptorFilter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             group: boolean;
             includeAllPlaceholders: boolean;
             itemIdFilter: string;
@@ -2827,60 +2827,60 @@ export type PlatformAutoGen = {
             sortBy: number;
             sourceRestriction: number;
             supportedPlaceholderTypes: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             textFilter: string;
             updateThrottlingMs: number;
          };
-         getRecommendedBookUris: (a, b) => any;
-         getRecommendedTracks: (a, b) => any;
-         move: (a, b) => any;
-         remove: (a) => any;
+         getRecommendedBookUris: ( a, b ) => any;
+         getRecommendedTracks: ( a, b ) => any;
+         move: ( a, b ) => any;
+         remove: ( a ) => any;
          resolvePlaylistFormatURI: () => Promise<any>;
          resync: () => Promise<any>;
-         sendItemSignal: (a, b) => any;
-         setAttributes: (a) => any;
-         updateDetails: (a) => any;
+         sendItemSignal: ( a, b ) => any;
+         setAttributes: ( a ) => any;
+         updateDetails: ( a ) => any;
          uploadImage: () => Promise<any>;
       };
-      _your_library: ReturnType<PlatformAutoGen["getCurationAPI"]>["_libraryAPI"]["_events"]["_your_library"];
+      _your_library: ReturnType<PlatformAutoGen[ "getCurationAPI" ]>[ "_libraryAPI" ][ "_events" ][ "_your_library" ];
       cache: Map<any, any>;
       curateDefault: () => Promise<any>;
-      curateItems: (a, b) => any;
+      curateItems: ( a, b ) => any;
       events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          _your_library: ReturnType<
-            PlatformAutoGen["getCurationAPI"]
-         >["_libraryAPI"]["_events"]["_your_library"];
+            PlatformAutoGen[ "getCurationAPI" ]
+         >[ "_libraryAPI" ][ "_events" ][ "_your_library" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          aggregator: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_showApi"]["_events"]["_aggregator"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_showApi" ][ "_events" ][ "_aggregator" ];
          cache: Map<any, any>;
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-         emitOperationComplete: (a, b, c, d) => any;
-         emitOperationSync: (a, b, c) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+         emitOperationComplete: ( a, b, c, d ) => any;
+         emitOperationSync: ( a, b, c ) => any;
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
-         emitUpdateCuratedItems: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
+         emitUpdateCuratedItems: ( a ) => any;
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onCuratedBatchChanged: () => Promise<any>;
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
-         streamIsCuratedCancellable: { cancel: () => undefined };
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
+         streamIsCuratedCancellable: { cancel: () => undefined; };
       };
       getCurationContexts: () => Promise<any>;
       getDefaultCurationContextUri: () => string;
@@ -2889,33 +2889,33 @@ export type PlatformAutoGen = {
       isCuratedSync: () => any;
    };
    getEqualizerAPI: () => {
-      filters: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+      filters: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
       getFilters: () => Promise<any>;
       getPreset: () => any;
       isSupported: () => boolean;
       localStorageAPI: {
          _events: {
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
          auto_cleanup: boolean;
          clearItem: () => any;
@@ -2925,8 +2925,8 @@ export type PlatformAutoGen = {
          items: {
             "yblp9ylse3i4cdx2klsq1xnlx:connect-nudge-triggered-at": string;
             "yblp9ylse3i4cdx2klsq1xnlx:home-shortcuts-override": ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             "yblp9ylse3i4cdx2klsq1xnlx:isPlaybackBarRemainingTimeToggled": boolean;
             "yblp9ylse3i4cdx2klsq1xnlx:items-view": number;
             "yblp9ylse3i4cdx2klsq1xnlx:library-row-mode": number;
@@ -2946,247 +2946,247 @@ export type PlatformAutoGen = {
             "yblp9ylse3i4cdx2klsq1xnlx:toggleNowPlayingView": boolean;
             "yblp9ylse3i4cdx2klsq1xnlx:ui.right_sidebar_content": string;
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-active-filter-ids": {
-               "": ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+               "": ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             };
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-active-sort-order-by-filter-id": {};
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-default-state-nav-bar-width": number;
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-expanded-folders": ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["adStateReporter"]["focusState"]["listeners"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-expanded-state-nav-bar-width": number;
             "yblp9ylse3i4cdx2klsq1xnlx:ylx-sidebar-state": number;
          };
          listenToStorageEvents: () => undefined;
          max_retries: number;
          namespace: string;
-         parseLocalStorageValue: (a) => any;
-         setItem: (a) => any;
-         setItemInternal: (a, b) => any;
+         parseLocalStorageValue: ( a ) => any;
+         setItem: ( a ) => any;
+         setItemInternal: ( a, b ) => any;
          toggleItemsTypeAndCleanup: () => any;
       };
       prefs: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_prefs"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_prefs" ];
       setEnabledState: () => any;
-      setFilterGain: (a) => any;
+      setFilterGain: ( a ) => any;
       setPreset: () => any;
       subscribeToEnabledState: () => any;
       subscribeToPresetChange: () => any;
    };
-   getEventSender: () => ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+   getEventSender: () => ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
    getFacebookAPI: () => {
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       _emitter: ReturnType<
-         PlatformAutoGen["getAdManagers"]
-      >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+         PlatformAutoGen[ "getAdManagers" ]
+      >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
       _numListeners: number;
       _subscription: null;
       addListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
       connect: () => any;
       disconnect: () => any;
       emit: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
       emitSync: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
       onAddListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
       onRemoveListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
       removeListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
    };
-   getFeatureFlags: () => { enableShows: boolean };
+   getFeatureFlags: () => { enableShows: boolean; };
    getFollowAPI: () => {
       _cache: {
          _cache: Map<any, any>;
          _ttl: null;
          cleanup: () => any;
          clear: () => any;
-         create: (a) => any;
+         create: ( a ) => any;
          delete: () => any;
          entries: () => any;
          get: () => any;
          getExpiry: () => any;
          has: () => any;
          isExpired: () => any;
-         set: (a) => any;
+         set: ( a ) => any;
       };
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-         emitOperationComplete: (a, b) => any;
-         emitOperationSync: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+         emitOperationComplete: ( a, b ) => any;
+         emitOperationSync: ( a ) => any;
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
-      _loader: (a, b) => any;
+      _loader: ( a, b ) => any;
       _validateURIs: () => any;
-      executeOperation: (a, b) => any;
+      executeOperation: ( a, b ) => any;
       followUsers: () => Promise<any>;
       getEvents: () => any;
       isFollowing: () => Promise<any>;
       unfollowUsers: () => Promise<any>;
    };
-   getGraphQLLoader: () => ReturnType<PlatformAutoGen["getFollowAPI"]>["_loader"];
-   getHistory: () => ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["history"];
+   getGraphQLLoader: () => ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_loader" ];
+   getHistory: () => ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "history" ];
    getIndexedDbAPI: () => ReturnType<
-      PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-   >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"];
-   getLibraryAPI: () => ReturnType<PlatformAutoGen["getCurationAPI"]>["_libraryAPI"];
+      PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+   >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ];
+   getLibraryAPI: () => ReturnType<PlatformAutoGen[ "getCurationAPI" ]>[ "_libraryAPI" ];
    getLocalFilesAPI: () => {
       _client: {
-         addFolder: (a) => any;
-         getScannerStatus: (a) => any;
-         getSources: (a) => any;
-         getTracks: (a) => any;
-         mutateDefaultSource: (a) => any;
-         mutateDefaultSources: (a) => any;
-         notifyDefaultSources: (a) => any;
+         addFolder: ( a ) => any;
+         getScannerStatus: ( a ) => any;
+         getSources: ( a ) => any;
+         getTracks: ( a ) => any;
+         mutateDefaultSource: ( a ) => any;
+         mutateDefaultSources: ( a ) => any;
+         notifyDefaultSources: ( a ) => any;
          options: {};
-         removeFolder: (a) => any;
-         subscribeScannerStatus: (a) => any;
-         subscribeSources: (a) => any;
-         subscribeTracks: (a) => any;
+         removeFolder: ( a ) => any;
+         subscribeScannerStatus: ( a ) => any;
+         subscribeSources: ( a ) => any;
+         subscribeTracks: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       _emitUpdate: () => any;
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
-      _localStorageAPI: ReturnType<PlatformAutoGen["getEqualizerAPI"]>["localStorageAPI"];
+      _localStorageAPI: ReturnType<PlatformAutoGen[ "getEqualizerAPI" ]>[ "localStorageAPI" ];
       _subscribeToTracksUpdates: () => any;
       _totalLength: number;
       addFolder: () => Promise<any>;
       browseForFolder: () => Promise<any>;
-      getCapabilities: () => { canFetchAllTracks: boolean; canFilter: boolean; canSort: boolean };
+      getCapabilities: () => { canFetchAllTracks: boolean; canFilter: boolean; canSort: boolean; };
       getEvents: () => any;
       getIsEnabled: () => any;
       getSources: () => Promise<any>;
-      getTracks: (a) => any;
+      getTracks: ( a ) => any;
       mutateDefaultSource: () => Promise<any>;
       removeFolder: () => Promise<any>;
       setIsEnabled: () => any;
       subscribeIsEnabled: () => any;
    };
-   getLocalStorageAPI: () => ReturnType<PlatformAutoGen["getEqualizerAPI"]>["localStorageAPI"];
+   getLocalStorageAPI: () => ReturnType<PlatformAutoGen[ "getEqualizerAPI" ]>[ "localStorageAPI" ];
    getOfflineAPI: () => {
       _cache: Map<any, any>;
-      _canDownload: (a) => any;
+      _canDownload: ( a ) => any;
       _events: {
          _cache: Map<any, any>;
          _cosmos: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_cosmos"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_cosmos" ];
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          _offline: {
-            addDownload: (a) => any;
-            getContextForDevices: (a) => any;
-            getContexts: (a) => any;
-            getContextsProgress: (a) => any;
-            getDevices: (a) => any;
-            getItems: (a) => any;
-            getLocalDevice: (a) => any;
-            getOfflineLicenseInfo: (a) => any;
-            getOfflinePlaybackStatus: (a) => any;
-            getTotalProgress: (a) => any;
+            addDownload: ( a ) => any;
+            getContextForDevices: ( a ) => any;
+            getContexts: ( a ) => any;
+            getContextsProgress: ( a ) => any;
+            getDevices: ( a ) => any;
+            getItems: ( a ) => any;
+            getLocalDevice: ( a ) => any;
+            getOfflineLicenseInfo: ( a ) => any;
+            getOfflinePlaybackStatus: ( a ) => any;
+            getTotalProgress: ( a ) => any;
             options: {};
-            removeAllDownloads: (a) => any;
-            removeDownload: (a) => any;
-            setOfflinePlaybackAllowed: (a) => any;
-            subscribeContextForDevices: (a) => any;
-            subscribeContexts: (a) => any;
-            subscribeContextsProgress: (a) => any;
-            subscribeError: (a) => any;
-            subscribeItems: (a) => any;
-            subscribeOfflinePlaybackStatus: (a) => any;
-            subscribeTotalProgress: (a) => any;
+            removeAllDownloads: ( a ) => any;
+            removeDownload: ( a ) => any;
+            setOfflinePlaybackAllowed: ( a ) => any;
+            subscribeContextForDevices: ( a ) => any;
+            subscribeContexts: ( a ) => any;
+            subscribeContextsProgress: ( a ) => any;
+            subscribeError: ( a ) => any;
+            subscribeItems: ( a ) => any;
+            subscribeOfflinePlaybackStatus: ( a ) => any;
+            subscribeTotalProgress: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
          };
          _productState: {
-            delOverridesValues: (a) => any;
-            getValues: (a) => any;
+            delOverridesValues: ( a ) => any;
+            getValues: ( a ) => any;
             options: {};
-            putOverridesValues: (a) => any;
-            putValues: (a) => any;
-            subValues: (a) => any;
+            putOverridesValues: ( a ) => any;
+            putValues: ( a ) => any;
+            subValues: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
          };
          _username: string;
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          setupCapabilitiesEvents: () => any;
          setupConnectivityEvents: () => any;
          setupContextAndItemAvailabilityEvents: () => any;
@@ -3194,32 +3194,32 @@ export type PlatformAutoGen = {
          setupErrorEvents: () => any;
          setupTotalProgressEvents: () => any;
       };
-      _offline: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_events"]["_offline"];
-      _productState: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_events"]["_productState"];
+      _offline: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_events" ][ "_offline" ];
+      _productState: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_events" ][ "_productState" ];
       _storage: {
-         deleteExpiredItems: (a) => any;
-         deleteUnlockedItems: (a) => any;
-         getCacheSizeLimit: (a) => any;
-         getFileRanges: (a) => any;
-         getStats: (a) => any;
+         deleteExpiredItems: ( a ) => any;
+         deleteUnlockedItems: ( a ) => any;
+         getCacheSizeLimit: ( a ) => any;
+         getFileRanges: ( a ) => any;
+         getStats: ( a ) => any;
          options: {};
-         setCacheSizeLimit: (a) => any;
+         setCacheSizeLimit: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
       _username: string;
-      _yourLibrary: ReturnType<PlatformAutoGen["getCurationAPI"]>["_libraryAPI"]["_events"]["_your_library"];
-      addDownload: (a) => any;
+      _yourLibrary: ReturnType<PlatformAutoGen[ "getCurationAPI" ]>[ "_libraryAPI" ][ "_events" ][ "_your_library" ];
+      addDownload: ( a ) => any;
       getAvailabilitySync: () => any;
-      getCapabilities: () => { canDownload: (a) => any; canRemoteDownload: boolean };
+      getCapabilities: () => { canDownload: ( a ) => any; canRemoteDownload: boolean; };
       getContextForDevices: () => Promise<any>;
       getDownloads: () => Promise<any>;
       getEvents: () => any;
       getStatistics: () => Promise<any>;
       removeAllDownloads: () => Promise<any>;
       removeCache: () => Promise<any>;
-      removeDownload: (a) => any;
+      removeDownload: ( a ) => any;
    };
    getPlatformData: () => {
       app_platform: string;
@@ -3248,7 +3248,7 @@ export type PlatformAutoGen = {
       };
       is_developer_mode: boolean;
       os_name: string;
-      os_settings: { double_click_interval_ms: number; scroller_style: string };
+      os_settings: { double_click_interval_ms: number; scroller_style: string; };
       os_version: string;
       remote_config_client_id: string;
    };
@@ -3256,85 +3256,85 @@ export type PlatformAutoGen = {
       _cache: {
          _cache: Map<any, any>;
          _ttl: number;
-         cleanup: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["cleanup"];
-         clear: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["clear"];
-         create: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["create"];
-         delete: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["delete"];
-         entries: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["entries"];
-         get: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["get"];
-         getExpiry: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["getExpiry"];
-         has: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["has"];
-         isExpired: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["isExpired"];
-         set: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"]["set"];
+         cleanup: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "cleanup" ];
+         clear: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "clear" ];
+         create: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "create" ];
+         delete: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "delete" ];
+         entries: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "entries" ];
+         get: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "get" ];
+         getExpiry: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "getExpiry" ];
+         has: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "has" ];
+         isExpired: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "isExpired" ];
+         set: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ][ "set" ];
       };
       _events: {
-         _cache: ReturnType<PlatformAutoGen["getPlayHistoryAPI"]>["_cache"];
+         _cache: ReturnType<PlatformAutoGen[ "getPlayHistoryAPI" ]>[ "_cache" ];
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
-         _loader: (a, b, c) => any;
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
+         _loader: ( a, b, c ) => any;
          _numListeners: number;
          _player: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextPlayer"];
-         _subscriptions: { update: null };
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextPlayer" ];
+         _subscriptions: { update: null; };
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onListenerAdded: () => any;
          onListenerRemoved: () => any;
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          startListening: () => any;
          stopListening: () => any;
       };
-      _loader: ReturnType<PlatformAutoGen["getPlayHistoryAPI"]>["_events"]["_loader"];
+      _loader: ReturnType<PlatformAutoGen[ "getPlayHistoryAPI" ]>[ "_events" ][ "_loader" ];
       _player: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextPlayer"];
-      getCapabilities: () => { isSupported: boolean };
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextPlayer" ];
+      getCapabilities: () => { isSupported: boolean; };
       getContents: () => Promise<any>;
       getEvents: () => any;
    };
    getPlaybackAPI: () => {
-      _builder: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
-      _connectServiceClient: ReturnType<PlatformAutoGen["getConnectAPI"]>["connectServiceClient"];
-      _eventSender: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+      _builder: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
+      _connectServiceClient: ReturnType<PlatformAutoGen[ "getConnectAPI" ]>[ "connectServiceClient" ];
+      _eventSender: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
       _filters: {
          getCurrentAudioDevice: () => null;
@@ -3342,8 +3342,8 @@ export type PlatformAutoGen = {
          getFilterState: () => Promise<any>;
          getFiltersEvents: () => null;
          getSavedDevices: () => ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["adStateReporter"]["focusState"]["listeners"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "adStateReporter" ][ "focusState" ][ "listeners" ];
          removeCurrentDevice: () => undefined;
          restorePreviouslyActiveDevice: () => Promise<any>;
          setCurrentDevice: () => Promise<any>;
@@ -3372,33 +3372,33 @@ export type PlatformAutoGen = {
       };
       _isAvailable: boolean;
       _isLocal: boolean;
-      _localStorageAPI: ReturnType<PlatformAutoGen["getEqualizerAPI"]>["localStorageAPI"];
+      _localStorageAPI: ReturnType<PlatformAutoGen[ "getEqualizerAPI" ]>[ "localStorageAPI" ];
       _playbackService: {
-         duck: (a) => any;
-         getFiles: (a) => any;
-         getFormats: (a) => any;
-         getPlaybackInfo: (a) => any;
-         getRawVolume: (a) => any;
-         getVolume: (a) => any;
-         lowerVolume: (a) => any;
+         duck: ( a ) => any;
+         getFiles: ( a ) => any;
+         getFormats: ( a ) => any;
+         getPlaybackInfo: ( a ) => any;
+         getRawVolume: ( a ) => any;
+         getVolume: ( a ) => any;
+         lowerVolume: ( a ) => any;
          options: {};
-         raiseVolume: (a) => any;
-         setRawVolume: (a) => any;
-         setVolume: (a) => any;
-         subBufferUnderrun: (a) => any;
-         subPlaybackInfo: (a) => any;
-         subPosition: (a) => any;
-         subRawVolume: (a) => any;
-         subVolume: (a) => any;
+         raiseVolume: ( a ) => any;
+         setRawVolume: ( a ) => any;
+         setVolume: ( a ) => any;
+         subBufferUnderrun: ( a ) => any;
+         subPlaybackInfo: ( a ) => any;
+         subPosition: ( a ) => any;
+         subRawVolume: ( a ) => any;
+         subVolume: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
-      _playerAPI: ReturnType<PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]>["_playerApi"];
-      _storageService: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_storage"];
+      _playerAPI: ReturnType<PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]>[ "_playerApi" ];
+      _storageService: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_storage" ];
       _transport: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_collection"]["transport"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_collection" ][ "transport" ];
       _volume: number;
       emitVolume: () => any;
       getCapabilities: () => {
@@ -3424,215 +3424,215 @@ export type PlatformAutoGen = {
       setVolume: () => Promise<any>;
    };
    getPlayerAPI: () => ReturnType<
-      PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-   >["_playerApi"];
-   getPlaylistAPI: () => ReturnType<PlatformAutoGen["getCurationAPI"]>["_playlistAPI"];
+      PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+   >[ "_playerApi" ];
+   getPlaylistAPI: () => ReturnType<PlatformAutoGen[ "getCurationAPI" ]>[ "_playlistAPI" ];
    getPlaylistPermissionsAPI: () => {
-      _builder: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
+      _builder: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
       _client: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_playlistResyncerAPI"]["_playlistServiceClient"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_playlistResyncerAPI" ][ "_playlistServiceClient" ];
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-         emitOperationComplete: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+         emitOperationComplete: ( a ) => any;
          emitOperationSync: () => any;
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
-      claimPermissions: (a) => any;
+      claimPermissions: ( a ) => any;
       getCapabilities: () => {};
       getEvents: () => any;
       getMembers: () => Promise<any>;
-      getPermissionGrant: (a) => any;
-      removeMember: (a) => any;
-      setBasePermission: (a) => any;
-      setMemberPermission: (a, b) => any;
-      subscribeToMembers: (a) => any;
+      getPermissionGrant: ( a ) => any;
+      removeMember: ( a ) => any;
+      setBasePermission: ( a ) => any;
+      setMemberPermission: ( a, b ) => any;
+      subscribeToMembers: ( a ) => any;
    };
    getPrivateSessionAPI: () => {
       _scrobble: {
-         getIncognitoMode: (a) => any;
+         getIncognitoMode: ( a ) => any;
          options: {};
-         putIncognitoMode: (a) => any;
-         subIncognitoMode: (a) => any;
+         putIncognitoMode: ( a ) => any;
+         subIncognitoMode: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
-      getCapabilities: () => { isSupported: boolean };
+      getCapabilities: () => { isSupported: boolean; };
       setPrivateSession: () => Promise<any>;
       subscribeToPrivateSession: () => any;
    };
    getPubSubAPI: () => ReturnType<
-      PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-   >["_pubSubApi"];
+      PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+   >[ "_pubSubApi" ];
    getRecentlyPlayedAPI: () => {
-      _cancellable: { cancel: () => undefined };
+      _cancellable: { cancel: () => undefined; };
       _client: {
-         get: (a) => any;
-         hide: (a) => any;
-         hideTracks: (a) => any;
+         get: ( a ) => any;
+         hide: ( a ) => any;
+         hideTracks: ( a ) => any;
          options: {};
-         stream: (a) => any;
-         streamTracks: (a) => any;
-         tracks: (a) => any;
+         stream: ( a ) => any;
+         streamTracks: ( a ) => any;
+         tracks: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
-      _contexts: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+      _contexts: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
       _emitter: ReturnType<
-         PlatformAutoGen["getAdManagers"]
-      >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+         PlatformAutoGen[ "getAdManagers" ]
+      >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
       addListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
       emit: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
       emitSync: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
       getContexts: () => any;
       onAddListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
       onRemoveListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
       removeListener: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
    };
    getRemoteConfiguration: () => ReturnType<
-      PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-   >["_showApi"]["remote_configuration"];
+      PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+   >[ "_showApi" ][ "remote_configuration" ];
    getReportAPI: () => {
-      _playlistAPI: ReturnType<PlatformAutoGen["getCurationAPI"]>["_playlistAPI"];
-      _productState: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_events"]["_productState"];
-      canReportPlaylist: (a) => any;
-      getReportURL: (a) => any;
+      _playlistAPI: ReturnType<PlatformAutoGen[ "getCurationAPI" ]>[ "_playlistAPI" ];
+      _productState: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_events" ][ "_productState" ];
+      canReportPlaylist: ( a ) => any;
+      getReportURL: ( a ) => any;
       isURIReportable: () => boolean;
    };
    getRequestBuilder: () => ReturnType<
-      PlatformAutoGen["getAdManagers"]
-   >["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
+      PlatformAutoGen[ "getAdManagers" ]
+   >[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
    getRootlistAPI: () => {
-      _builder: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["webApi"]["spotifyTransport"];
+      _builder: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "webApi" ][ "spotifyTransport" ];
       _cache: Set<any>;
-      _decorationCache: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"];
+      _decorationCache: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ];
       _events: {
          _aggregator: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_showApi"]["_events"]["_aggregator"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_showApi" ][ "_events" ][ "_aggregator" ];
          _contains: () => Promise<any>;
          _dataClient: {
-            contains: (a) => any;
-            get: (a) => any;
-            getOfflinePlaylistsContainingItem: (a) => any;
+            contains: ( a ) => any;
+            get: ( a ) => any;
+            getOfflinePlaylistsContainingItem: ( a ) => any;
             options: {};
-            subscribe: (a) => any;
+            subscribe: ( a ) => any;
             transport: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_collection"]["transport"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_collection" ][ "transport" ];
          };
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          _numListeners: number;
          _subscription: null;
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
-         emitAddComplete: (a, b, c) => any;
-         emitAddSync: (a, b) => any;
-         emitCreatePlaylistComplete: (a, b, c, d) => any;
-         emitCreatePlaylistSync: (a, b) => any;
-         emitMoveComplete: (a, b, c) => any;
-         emitMoveSync: (a, b) => any;
-         emitRemoveComplete: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
+         emitAddComplete: ( a, b, c ) => any;
+         emitAddSync: ( a, b ) => any;
+         emitCreatePlaylistComplete: ( a, b, c, d ) => any;
+         emitCreatePlaylistSync: ( a, b ) => any;
+         emitMoveComplete: ( a, b, c ) => any;
+         emitMoveSync: ( a, b ) => any;
+         emitRemoveComplete: ( a ) => any;
          emitRemoveSync: () => any;
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
-         emitUpdateItems: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
+         emitUpdateItems: ( a ) => any;
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onContainsItems: () => Promise<any>;
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          onUpdate: () => Promise<any>;
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          subscribeToUpdates: () => any;
          unsubscribeFromUpdates: () => any;
       };
       _playlistDataClient: ReturnType<
-         PlatformAutoGen["getCurationAPI"]
-      >["_playlistAPI"]["_events"]["_dataClient"];
-      _rootlistDataClient: ReturnType<PlatformAutoGen["getRootlistAPI"]>["_events"]["_dataClient"];
+         PlatformAutoGen[ "getCurationAPI" ]
+      >[ "_playlistAPI" ][ "_events" ][ "_dataClient" ];
+      _rootlistDataClient: ReturnType<PlatformAutoGen[ "getRootlistAPI" ]>[ "_events" ][ "_dataClient" ];
       _rootlistModificationClient: {
-         modify: (a) => any;
+         modify: ( a ) => any;
          options: {};
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
-      add: (a) => any;
+      add: ( a ) => any;
       applyModification: () => Promise<any>;
       contains: () => Promise<any>;
       containsSync: () => any;
-      createFolder: (a) => any;
-      createPlaylist: (a, b) => any;
-      getCapabilities: () => { canFilter: boolean; canModifyOffline: boolean; canSort: boolean };
+      createFolder: ( a ) => any;
+      createPlaylist: ( a, b ) => any;
+      getCapabilities: () => { canFilter: boolean; canModifyOffline: boolean; canSort: boolean; };
       getContents: () => Promise<any>;
       getEvents: () => any;
       getMetadata: () => Promise<any>;
       getPublishedState: () => Promise<any>;
-      move: (a, b) => any;
-      moveFolder: (a) => any;
-      onUpdateItems: (a) => any;
+      move: ( a, b ) => any;
+      moveFolder: ( a ) => any;
+      onUpdateItems: ( a ) => any;
       remove: () => Promise<any>;
       removeFolder: () => Promise<any>;
-      renameFolder: (a) => any;
-      setPublishedState: (a) => any;
+      renameFolder: ( a ) => any;
+      setPublishedState: ( a ) => any;
    };
    getSEOExperiments: () => {};
    getSegmentsAPI: () => {
       _client: {
-         getDisplaySegments: (a) => any;
+         getDisplaySegments: ( a ) => any;
          options: {};
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
       getArtists: () => Promise<any>;
-      getCapabilities: () => { isSupported: boolean };
-      getSegments: (a, b) => any;
+      getCapabilities: () => { isSupported: boolean; };
+      getSegments: ( a, b ) => any;
    };
    getServiceWorkerMessenger: () => Promise<any>;
    getSession: () => {
@@ -3645,14 +3645,14 @@ export type PlatformAutoGen = {
    };
    getSettingsAPI: () => {
       language: {
-         deserializeValue: (a) => any;
+         deserializeValue: ( a ) => any;
          getValue: () => Promise<any>;
          identifier: string;
          key: string;
          prefsApi: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_prefs"];
-         serializeValue: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_prefs" ];
+         serializeValue: ( a ) => any;
          setValue: () => Promise<any>;
          subValue: () => () => undefined;
          subs: Set<any>;
@@ -3661,14 +3661,14 @@ export type PlatformAutoGen = {
       };
       quality: {
          autoAdjustQuality: {
-            deserializeValue: (a) => any;
+            deserializeValue: ( a ) => any;
             getValue: () => Promise<any>;
             identifier: string;
             key: string;
             prefsApi: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_prefs"];
-            serializeValue: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_prefs" ];
+            serializeValue: ( a ) => any;
             setValue: () => Promise<any>;
             subValue: () => () => undefined;
             subs: Set<any>;
@@ -3676,7 +3676,7 @@ export type PlatformAutoGen = {
             value: undefined;
          };
          downloadAudioQuality: {
-            deserializeValue: (a) => any;
+            deserializeValue: ( a ) => any;
             getValue: () => Promise<any>;
             identifier: string;
             key: string;
@@ -3684,7 +3684,7 @@ export type PlatformAutoGen = {
                clampAudioQuality: () => Promise<any>;
                getValue: () => Promise<any>;
                key: string;
-               productStateApi: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_events"]["_productState"];
+               productStateApi: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_events" ][ "_productState" ];
                setValue: () => Promise<any>;
                subValue: () => () => undefined;
                subs: Set<any>;
@@ -3692,9 +3692,9 @@ export type PlatformAutoGen = {
                value: undefined;
             };
             prefsApi: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_prefs"];
-            serializeValue: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_prefs" ];
+            serializeValue: ( a ) => any;
             setValue: () => Promise<any>;
             subValue: () => () => undefined;
             subs: Set<any>;
@@ -3703,36 +3703,36 @@ export type PlatformAutoGen = {
          };
          getFormats: () => Promise<any>;
          maxSupportedQuality: ReturnType<
-            PlatformAutoGen["getSettingsAPI"]
-         >["quality"]["downloadAudioQuality"]["maxSupportedQuality"];
+            PlatformAutoGen[ "getSettingsAPI" ]
+         >[ "quality" ][ "downloadAudioQuality" ][ "maxSupportedQuality" ];
          normalizeVolume: {
-            deserializeValue: (a) => any;
+            deserializeValue: ( a ) => any;
             getValue: () => Promise<any>;
             identifier: string;
             key: string;
             prefsApi: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_prefs"];
-            serializeValue: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_prefs" ];
+            serializeValue: ( a ) => any;
             setValue: () => Promise<any>;
             subValue: () => () => undefined;
             subs: Set<any>;
             subscription: null;
             value: undefined;
          };
-         playbackService: ReturnType<PlatformAutoGen["getPlaybackAPI"]>["_playbackService"];
+         playbackService: ReturnType<PlatformAutoGen[ "getPlaybackAPI" ]>[ "_playbackService" ];
          streamingQuality: {
-            deserializeValue: (a) => any;
+            deserializeValue: ( a ) => any;
             getValue: () => Promise<any>;
             identifier: string;
             key: string;
             maxSupportedQuality: ReturnType<
-               PlatformAutoGen["getSettingsAPI"]
-            >["quality"]["downloadAudioQuality"]["maxSupportedQuality"];
+               PlatformAutoGen[ "getSettingsAPI" ]
+            >[ "quality" ][ "downloadAudioQuality" ][ "maxSupportedQuality" ];
             prefsApi: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_prefs"];
-            serializeValue: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_prefs" ];
+            serializeValue: ( a ) => any;
             setValue: () => Promise<any>;
             subValue: () => () => undefined;
             subs: Set<any>;
@@ -3740,14 +3740,14 @@ export type PlatformAutoGen = {
             value: number;
          };
          volumeLevel: {
-            deserializeValue: (a) => any;
+            deserializeValue: ( a ) => any;
             getValue: () => Promise<any>;
             identifier: string;
             key: string;
             prefsApi: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_prefs"];
-            serializeValue: (a) => any;
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_prefs" ];
+            serializeValue: ( a ) => any;
             setValue: () => Promise<any>;
             subValue: () => () => undefined;
             subs: Set<any>;
@@ -3756,79 +3756,79 @@ export type PlatformAutoGen = {
          };
       };
    };
-   getShowAPI: () => ReturnType<PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]>["_showApi"];
+   getShowAPI: () => ReturnType<PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]>[ "_showApi" ];
    getShuffleAPI: () => {
       _contextualShuffle: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_contextualShuffle"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_contextualShuffle" ];
       _events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
-         emitUpdateShuffleModeCompleteSync: (a) => any;
-         emitUpdateShuffleModeErrorSync: (a) => any;
-         emitUpdateShuffleModeSync: (a) => any;
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
+         emitUpdateShuffleModeCompleteSync: ( a ) => any;
+         emitUpdateShuffleModeErrorSync: ( a ) => any;
+         emitUpdateShuffleModeSync: ( a ) => any;
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
-      _history: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["history"];
+      _history: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "history" ];
       _isDsaEnabled: boolean;
-      _player: ReturnType<PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]>["_playerApi"];
+      _player: ReturnType<PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]>[ "_playerApi" ];
       _playlistDataServiceClient: ReturnType<
-         PlatformAutoGen["getCurationAPI"]
-      >["_playlistAPI"]["_events"]["_dataClient"];
+         PlatformAutoGen[ "getCurationAPI" ]
+      >[ "_playlistAPI" ][ "_events" ][ "_dataClient" ];
       _playlistServiceClient: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_playlistResyncerAPI"]["_playlistServiceClient"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_playlistResyncerAPI" ][ "_playlistServiceClient" ];
       _smartShuffleEligibility: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_smartShuffleEligibility"];
-      _syncShuffle: (a) => any;
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_smartShuffleEligibility" ];
+      _syncShuffle: ( a ) => any;
       _userApi: {
          _cosmos: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_cosmos"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_cosmos" ];
          _events: {
             _emitter: ReturnType<
-               PlatformAutoGen["getAdManagers"]
-            >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+               PlatformAutoGen[ "getAdManagers" ]
+            >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
             addListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
             emit: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
             emitProductStateUpdate: () => any;
             emitSync: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
             onAddListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
             onRemoveListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
             removeListener: ReturnType<
-               PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-            >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+               PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+            >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          };
-         _product_state_service: ReturnType<PlatformAutoGen["getOfflineAPI"]>["_events"]["_productState"];
+         _product_state_service: ReturnType<PlatformAutoGen[ "getOfflineAPI" ]>[ "_events" ][ "_productState" ];
          getEvents: () => any;
          getProductState: () => Promise<any>;
          getUser: () => Promise<any>;
@@ -3837,20 +3837,20 @@ export type PlatformAutoGen = {
       getEvents: () => any;
       getShuffle: () => Promise<any>;
       isSmartShuffleEnabled: boolean;
-      setShuffle: (a) => any;
+      setShuffle: ( a ) => any;
    };
    getSingAlongAPI: () => {
-      getCapabilities: () => { isSupported: boolean };
+      getCapabilities: () => { isSupported: boolean; };
       getStatus: () => Promise<any>;
       karaokeServiceClient: {
-         getStatus: (a) => any;
+         getStatus: ( a ) => any;
          options: {};
-         postStatus: (a) => any;
-         postVocalVolume: (a) => any;
-         subscribeToEvents: (a) => any;
+         postStatus: ( a ) => any;
+         postVocalVolume: ( a ) => any;
+         subscribeToEvents: ( a ) => any;
          transport: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_collection"]["transport"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_collection" ][ "transport" ];
       };
       setStatus: () => Promise<any>;
       setVocalVolume: () => Promise<any>;
@@ -3861,26 +3861,26 @@ export type PlatformAutoGen = {
       deleteSession: () => Promise<any>;
       events: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
       };
       fetchCurrentSession: () => Promise<any>;
       getCurrentSession: () => any;
@@ -3891,45 +3891,45 @@ export type PlatformAutoGen = {
       handleSessionResponse: () => any;
       handleSessionUpdate: () => any;
       isSessionNewer: () => any;
-      joinSession: (a, b) => any;
+      joinSession: ( a, b ) => any;
       leaveSession: () => Promise<any>;
       removeSessionMember: () => Promise<any>;
       serviceEvents: {
          _emitter: ReturnType<
-            PlatformAutoGen["getAdManagers"]
-         >["hpto"]["hptoApi"]["eventSender"]["transport"]["_pluginMediator"];
+            PlatformAutoGen[ "getAdManagers" ]
+         >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ][ "_pluginMediator" ];
          addListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["addListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "addListener" ];
          emit: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emit"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emit" ];
          emitSync: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["emitSync"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "emitSync" ];
          numListeners: number;
          onAddListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onAddListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onAddListener" ];
          onRemoveListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["onRemoveListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "onRemoveListener" ];
          removeListener: ReturnType<
-            PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-         >["_playerApi"]["_contextualShuffle"]["_indexedDbAPI"]["_events"]["removeListener"];
+            PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+         >[ "_playerApi" ][ "_contextualShuffle" ][ "_indexedDbAPI" ][ "_events" ][ "removeListener" ];
          subscribeToUpdates: () => undefined;
          unsubscribeToUpdates: () => undefined;
       };
-      setCurrentSession: (a) => any;
+      setCurrentSession: ( a ) => any;
       setParticipantVolumeControl: () => Promise<any>;
       setQueueOnlyMode: () => Promise<any>;
-      shortLinkCache: ReturnType<PlatformAutoGen["getFollowAPI"]>["_cache"];
+      shortLinkCache: ReturnType<PlatformAutoGen[ "getFollowAPI" ]>[ "_cache" ];
       socialConnectServiceClient: {
          createSession: () => Promise<any>;
          deleteSession: () => Promise<any>;
          fetchCurrentSession: () => Promise<any>;
          getSessionInfo: () => Promise<any>;
-         joinSession: (a, b) => any;
+         joinSession: ( a, b ) => any;
          leaveSession: () => Promise<any>;
          onConnected: () => undefined;
          removeSessionMember: () => Promise<any>;
@@ -3937,7 +3937,7 @@ export type PlatformAutoGen = {
          setQueueOnlyMode: () => Promise<any>;
       };
       socialConnectStatus: string;
-      urlDispenserServiceClient: { getShortUrl: () => Promise<any> };
+      urlDispenserServiceClient: { getShortUrl: () => Promise<any>; };
    };
    getTranslations: () => {
       "a11y.externalLink": string;
@@ -4013,7 +4013,7 @@ export type PlatformAutoGen = {
       "age.restriction.nineeteen-badge": string;
       album: string;
       "album-page.more-by-artist": string;
-      "album-page.more-releases": { one: string; other: string };
+      "album-page.more-releases": { one: string; other: string; };
       "album.page-title": string;
       already_have_account: string;
       artist: string;
@@ -4029,13 +4029,13 @@ export type PlatformAutoGen = {
       "artist-page.fansalsolike.seo.title": string;
       "artist-page.featuring": string;
       "artist-page.featuring.seo.title": string;
-      "artist-page.how-many-listeners": { one: string; other: string };
+      "artist-page.how-many-listeners": { one: string; other: string; };
       "artist-page.liked-songs-by-artist-title": string;
       "artist-page.merch": string;
       "artist-page.popular": string;
       "artist-page.saved-by-artist": string;
       "artist-page.saved-header": string;
-      "artist-page.saved-tracks-amount": { one: string; other: string };
+      "artist-page.saved-tracks-amount": { one: string; other: string; };
       "artist-page.show-discography": string;
       "artist-page.tracks.seemore": string;
       "artist-page.tracks.showless": string;
@@ -4048,7 +4048,7 @@ export type PlatformAutoGen = {
       "artist.concerts.artist_tour_dates": string;
       "artist.concerts.error.not_found": string;
       "artist.latest-release": string;
-      "artist.monthly-listeners-count": { one: string; other: string };
+      "artist.monthly-listeners-count": { one: string; other: string; };
       "artist.popular-tracks": string;
       "artist.singles": string;
       "artist.verified": string;
@@ -4085,7 +4085,7 @@ export type PlatformAutoGen = {
       "buddy-feed.find-in-playlists": string;
       "buddy-feed.friend-activity": string;
       "buddy-feed.let-followers-see-your-listening": string;
-      "buddy-feed.number-of-friends": { one: string; other: string };
+      "buddy-feed.number-of-friends": { one: string; other: string; };
       "buddy-feed.see-what-your-friends-are-playing": string;
       "capping.upsell-title": string;
       "card.a11y.explicit": string;
@@ -4102,7 +4102,7 @@ export type PlatformAutoGen = {
       "carousel.left": string;
       "carousel.right": string;
       "character-counter": string;
-      "chart.new-entries": { one: string; other: string };
+      "chart.new-entries": { one: string; other: string; };
       choose_photo: string;
       close: string;
       close_button_action: string;
@@ -4144,7 +4144,7 @@ export type PlatformAutoGen = {
       concert_past_message: string;
       concerts: string;
       "concerts.browse_all_events": string;
-      "concerts.count": { one: string; other: string };
+      "concerts.count": { one: string; other: string; };
       "concerts.count_near_location": string;
       "concerts.default_location": string;
       "concerts.error.no_concerts_found_message": string;
@@ -4174,7 +4174,7 @@ export type PlatformAutoGen = {
       concerts_interested_in_live_events: string;
       concerts_interested_tooltip: string;
       concerts_more_events: string;
-      "concerts_near_you.date": { one: string; other: string };
+      "concerts_near_you.date": { one: string; other: string; };
       "concerts_near_you.multiple_locations": string;
       "concerts_near_you.playlist_disclaimer": string;
       concerts_no_events_description: string;
@@ -4582,7 +4582,7 @@ export type PlatformAutoGen = {
       "leave-playlist.dialog.public-listener-description": string;
       "leave-playlist.dialog.title": string;
       "licenses.title": string;
-      likes: { one: string; other: string };
+      likes: { one: string; other: string; };
       "live_events.all_events_tab": string;
       "live_events.city_info_find_tickets": string;
       "live_events.city_info_view_details": string;
@@ -4748,7 +4748,7 @@ export type PlatformAutoGen = {
       "permissions.private-playlist": string;
       "permissions.public-playlist": string;
       "permissions.shared-with": string;
-      "permissions.songs-added": { one: string; other: string };
+      "permissions.songs-added": { one: string; other: string; };
       "pick-and-shuffle.upsell.dismiss": string;
       "pick-and-shuffle.upsell.explore-premium": string;
       "pick-and-shuffle.upsell.message": string;
@@ -4848,7 +4848,7 @@ export type PlatformAutoGen = {
       "podcasts.next-episode.up-next": string;
       "podcasts.subscriber-indicator.otp": string;
       "podcasts.subscriber-indicator.subscription": string;
-      "premium.dialog.description": { one: string; other: string };
+      "premium.dialog.description": { one: string; other: string; };
       "premium.dialog.disclaimer": string;
       "premium.dialog.disclaimer.noprice": string;
       "premium.dialog.subscribe": string;
@@ -4865,7 +4865,7 @@ export type PlatformAutoGen = {
       "queue.clear-queue": string;
       "queue.confirm-button": string;
       "queue.confirm-message": string;
-      "queue.confirm-title": { one: string; other: string };
+      "queue.confirm-title": { one: string; other: string; };
       "queue.empty-description": string;
       "queue.empty-title": string;
       "queue.fine-something": string;
@@ -5010,15 +5010,15 @@ export type PlatformAutoGen = {
       "subtitles-picker.option_tr": string;
       "subtitles-picker.option_vi": string;
       "subtitles-picker.option_zh": string;
-      "time.days.short": { one: string; other: string };
+      "time.days.short": { one: string; other: string; };
       "time.estimated": string;
-      "time.hours.short": { one: string; other: string };
+      "time.hours.short": { one: string; other: string; };
       "time.left": string;
-      "time.minutes.short": { one: string; other: string };
+      "time.minutes.short": { one: string; other: string; };
       "time.now": string;
       "time.over": string;
-      "time.seconds.short": { one: string; other: string };
-      "time.weeks.short": { one: string; other: string };
+      "time.seconds.short": { one: string; other: string; };
+      "time.weeks.short": { one: string; other: string; };
       "topBar.dsa-cta": string;
       "topBar.dsa-indicator": string;
       "topBar.label": string;
@@ -5168,14 +5168,14 @@ export type PlatformAutoGen = {
       "track-page.from-the-single": string;
       "track-page.sign-in-to-view-lyrics": string;
       "track-trailer": string;
-      "tracklist-header.audiobooks-counter": { one: string; other: string };
-      "tracklist-header.episodes-counter": { one: string; other: string };
-      "tracklist-header.items-counter": { one: string; other: string };
-      "tracklist-header.songs-counter": { one: string; other: string };
+      "tracklist-header.audiobooks-counter": { one: string; other: string; };
+      "tracklist-header.episodes-counter": { one: string; other: string; };
+      "tracklist-header.items-counter": { one: string; other: string; };
+      "tracklist-header.songs-counter": { one: string; other: string; };
       "tracklist.a11y.pause": string;
       "tracklist.a11y.play": string;
       "tracklist.disc-sperator.title": string;
-      "tracklist.drag.multiple.label": { one: string; other: string };
+      "tracklist.drag.multiple.label": { one: string; other: string; };
       "tracklist.header.actions": string;
       "tracklist.header.added-by": string;
       "tracklist.header.album": string;
@@ -5219,12 +5219,12 @@ export type PlatformAutoGen = {
       "user.edit-details.name-placeholder": string;
       "user.edit-details.remove-photo": string;
       "user.edit-details.title": string;
-      "user.followers": { one: string; other: string };
-      "user.following": { one: string; other: string };
+      "user.followers": { one: string; other: string; };
+      "user.following": { one: string; other: string; };
       "user.log-out": string;
-      "user.private-playlists": { one: string; other: string };
+      "user.private-playlists": { one: string; other: string; };
       "user.private-session": string;
-      "user.public-playlists": { one: string; other: string };
+      "user.public-playlists": { one: string; other: string; };
       "user.settings": string;
       "user.setup-duo": string;
       "user.setup-family": string;
@@ -5240,17 +5240,17 @@ export type PlatformAutoGen = {
       "view.web-player-home": string;
       "web-player.album-prerelease.anonymous_presave": string;
       "web-player.album-prerelease.countdown_label": string;
-      "web-player.album-prerelease.days": { one: string; other: string };
+      "web-player.album-prerelease.days": { one: string; other: string; };
       "web-player.album-prerelease.feedback_presaved": string;
-      "web-player.album-prerelease.hours": { one: string; other: string };
+      "web-player.album-prerelease.hours": { one: string; other: string; };
       "web-player.album-prerelease.listen_now": string;
-      "web-player.album-prerelease.minutes": { one: string; other: string };
+      "web-player.album-prerelease.minutes": { one: string; other: string; };
       "web-player.album-prerelease.presave": string;
       "web-player.album-prerelease.presaved": string;
       "web-player.album-prerelease.releases_on": string;
-      "web-player.album-prerelease.seconds": { one: string; other: string };
+      "web-player.album-prerelease.seconds": { one: string; other: string; };
       "web-player.album-prerelease.tracklist_preview": string;
-      "web-player.album.anniversary": { one: string; other: string };
+      "web-player.album.anniversary": { one: string; other: string; };
       "web-player.album.open_coverart_modal": string;
       "web-player.album.release": string;
       "web-player.aligned-curation.add-to-playlist-menu": string;
@@ -5515,7 +5515,7 @@ export type PlatformAutoGen = {
       "web-player.social-connect.end-session.end-session-button": string;
       "web-player.social-connect.end-session.sub-title": string;
       "web-player.social-connect.end-session.title": string;
-      "web-player.social-connect.facepile.and-others": { one: string; other: string };
+      "web-player.social-connect.facepile.and-others": { one: string; other: string; };
       "web-player.social-connect.generic-error.confirmation-button": string;
       "web-player.social-connect.generic-error.sub-title": string;
       "web-player.social-connect.generic-error.title": string;
@@ -5662,10 +5662,10 @@ export type PlatformAutoGen = {
       "web-player.your-library-x.pinned": string;
       "web-player.your-library-x.reduce-your-library": string;
       "web-player.your-library-x.rename-folder": string;
-      "web-player.your-library-x.rows.folder.number-of-folders": { one: string; other: string };
-      "web-player.your-library-x.rows.folder.number-of-playlists": { one: string; other: string };
-      "web-player.your-library-x.rows.liked-songs.subtitle": { one: string; other: string };
-      "web-player.your-library-x.rows.local-files.subtitle": { one: string; other: string };
+      "web-player.your-library-x.rows.folder.number-of-folders": { one: string; other: string; };
+      "web-player.your-library-x.rows.folder.number-of-playlists": { one: string; other: string; };
+      "web-player.your-library-x.rows.liked-songs.subtitle": { one: string; other: string; };
+      "web-player.your-library-x.rows.local-files.subtitle": { one: string; other: string; };
       "web-player.your-library-x.show-less": string;
       "web-player.your-library-x.show-more": string;
       "web-player.your-library-x.sort-and-view-picker.button-aria-label": string;
@@ -5708,29 +5708,29 @@ export type PlatformAutoGen = {
       "ylx.clicktoplay": string;
    };
    getTransport: () => ReturnType<
-      PlatformAutoGen["getAdManagers"]
-   >["hpto"]["hptoApi"]["eventSender"]["transport"];
+      PlatformAutoGen[ "getAdManagers" ]
+   >[ "hpto" ][ "hptoApi" ][ "eventSender" ][ "transport" ];
    getUBILogger: () => {
-      formatUiNavigateEvent: (a) => any;
+      formatUiNavigateEvent: ( a ) => any;
       getInteractionId: () => any;
       interaction: undefined;
       logImpression: () => any;
       logInteraction: () => any;
       logNavigation: () => any;
       ubiLogger: {
-         authenticationProvider: { isAuthenticated: () => boolean };
+         authenticationProvider: { isAuthenticated: () => boolean; };
          contextualProviders: {
-            playContextUriProvider: { getPlayContextUri: () => string };
-            playbackIdProvider: { getPlaybackId: () => string };
+            playContextUriProvider: { getPlayContextUri: () => string; };
+            playbackIdProvider: { getPlaybackId: () => string; };
          };
          disableAutoBackgroundMonitoring: boolean;
-         eventSender: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+         eventSender: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
          getPageInstanceId: () => any;
          logClientGainedFocus: () => any;
          logClientLostFocus: () => any;
          logImpression: () => any;
          logInteraction: () => any;
-         logNavigation: (a) => any;
+         logNavigation: ( a ) => any;
          logNavigationEnd: () => any;
          logNavigationStart: () => any;
          pageInstanceIdProvider: {
@@ -5741,13 +5741,13 @@ export type PlatformAutoGen = {
                getItem: () => any;
                getStorageType: () => any;
                removeItem: () => any;
-               setItem: (a) => any;
+               setItem: ( a ) => any;
                storageAdapter: {
                   clear: () => any;
                   getItem: () => any;
                   items: Map<any, any>;
                   removeItem: () => any;
-                  setItem: (a) => any;
+                  setItem: ( a ) => any;
                };
             };
          };
@@ -5755,17 +5755,17 @@ export type PlatformAutoGen = {
             getPageUri: () => any;
             setPageUri: () => any;
             storageManager: ReturnType<
-               PlatformAutoGen["getUBILogger"]
-            >["ubiLogger"]["pageInstanceIdProvider"]["storageManager"];
+               PlatformAutoGen[ "getUBILogger" ]
+            >[ "ubiLogger" ][ "pageInstanceIdProvider" ][ "storageManager" ];
          };
          pageViewLogger: {
             addEventListeners: () => any;
             authenticationProvider: ReturnType<
-               PlatformAutoGen["getUBILogger"]
-            >["ubiLogger"]["authenticationProvider"];
+               PlatformAutoGen[ "getUBILogger" ]
+            >[ "ubiLogger" ][ "authenticationProvider" ];
             completeNavigation: () => any;
             disableAutoBackgroundMonitoring: boolean;
-            eventSender: ReturnType<PlatformAutoGen["getAdManagers"]>["hpto"]["hptoApi"]["eventSender"];
+            eventSender: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "hpto" ][ "hptoApi" ][ "eventSender" ];
             flowIdProvider: undefined;
             generatePageInstanceId: () => string;
             getCurrentEntityUri: () => any;
@@ -5780,13 +5780,13 @@ export type PlatformAutoGen = {
             logClientGainedFocus: () => any;
             logClientLostFocus: () => any;
             pageInstanceIdProvider: ReturnType<
-               PlatformAutoGen["getUBILogger"]
-            >["ubiLogger"]["pageInstanceIdProvider"];
-            pageUriProvider: ReturnType<PlatformAutoGen["getUBILogger"]>["ubiLogger"]["pageUriProvider"];
+               PlatformAutoGen[ "getUBILogger" ]
+            >[ "ubiLogger" ][ "pageInstanceIdProvider" ];
+            pageUriProvider: ReturnType<PlatformAutoGen[ "getUBILogger" ]>[ "ubiLogger" ][ "pageUriProvider" ];
             populateNavigationReason: () => any;
             removeEventListeners: () => any;
             resetNavStartInfo: () => any;
-            setCurrent: (a, b, c) => any;
+            setCurrent: ( a, b, c ) => any;
             setCurrentEntityUri: () => any;
             setCurrentNavigationalRoot: () => any;
             setCurrentPageId: () => any;
@@ -5797,26 +5797,26 @@ export type PlatformAutoGen = {
             setPendingNavigationalRoot: () => any;
             startNavigation: () => any;
             storageManager: ReturnType<
-               PlatformAutoGen["getUBILogger"]
-            >["ubiLogger"]["pageInstanceIdProvider"]["storageManager"];
+               PlatformAutoGen[ "getUBILogger" ]
+            >[ "ubiLogger" ][ "pageInstanceIdProvider" ][ "storageManager" ];
          };
          registerEventListeners: () => any;
          storageManager: ReturnType<
-            PlatformAutoGen["getUBILogger"]
-         >["ubiLogger"]["pageInstanceIdProvider"]["storageManager"];
+            PlatformAutoGen[ "getUBILogger" ]
+         >[ "ubiLogger" ][ "pageInstanceIdProvider" ][ "storageManager" ];
          unregisterEventListeners: () => any;
       };
    };
    getUpdateAPI: () => {
       _cosmos: ReturnType<
-         PlatformAutoGen["getAudiobooksPremiumConsumptionCapObserverAPI"]
-      >["_playerApi"]["_cosmos"];
+         PlatformAutoGen[ "getAudiobooksPremiumConsumptionCapObserverAPI" ]
+      >[ "_playerApi" ][ "_cosmos" ];
       applyUpdate: () => Promise<any>;
       getVersionInfo: () => Promise<any>;
       prepareUpdate: () => Promise<any>;
       subscribe: () => any;
    };
-   getUserAPI: () => ReturnType<PlatformAutoGen["getShuffleAPI"]>["_userApi"];
+   getUserAPI: () => ReturnType<PlatformAutoGen[ "getShuffleAPI" ]>[ "_userApi" ];
    getVideoAPI: () => any;
    initialProductState: {
       "ab-ad-player-targeting": string;
@@ -5976,7 +5976,7 @@ export type PlatformAutoGen = {
    initialUser: {
       avatarBackgroundColor: number;
       displayName: string;
-      images: ReturnType<PlatformAutoGen["getAdManagers"]>["adStateReporter"]["focusState"]["listeners"];
+      images: ReturnType<PlatformAutoGen[ "getAdManagers" ]>[ "adStateReporter" ][ "focusState" ][ "listeners" ];
       type: string;
       uri: string;
       username: string;

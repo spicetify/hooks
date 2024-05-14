@@ -21,26 +21,24 @@ import { createTransformer } from "./transform.js";
 import { deepMerge, fetchJSON } from "./util.js";
 
 type ModuleIdentifier = string;
-type StoreIdentifier = string;
-
-interface Store {
-   local: boolean;
-   remote: string | null;
-}
-
-type Author = string;
-type Name = string;
 type Version = string;
+type StoreIdentifier = string;
+type Truthy<A> = A;
 
-type ByAuthors = Record<Author, ByNames>;
-type ByNames = Record<Name, ByVersions>;
-interface ByVersions {
+
+interface _Module {
    enabled: Version;
-   v: Record<Version, Store>;
+   remotes: Array<string>;
+   v: Record<Version, _Store>;
 }
 
-interface Vault {
-   modules: ByAuthors;
+interface _Store {
+   installed: string;
+   metadatas: Array<string>;
+}
+
+interface _Vault {
+   modules: Record<ModuleIdentifier, _Module>;
 }
 
 export interface Metadata {
@@ -57,105 +55,129 @@ export interface Metadata {
       mixin?: string;
    };
    dependencies: string[];
-   spotifyVersions?: string;
 }
 
-const dummy_metadata = Object.freeze({
+const dummy_metadata = Object.freeze( {
    name: "Placeholder",
    tags: [],
    preview: "https://www.getdummyimage.com/400/400",
-   version: "v0",
-   authors: ["John Doe", "Jane Doe"],
+   version: "0",
+   authors: [ "John Doe", "Jane Doe" ],
    description: "This is a dummy Module",
    readme: "https://example.com",
    entries: {},
    dependencies: [],
    isDummy: true,
-});
+} );
 
 export class Module {
+
    static registry = new Map<ModuleIdentifier, Module>();
 
    static getModules() {
-      return Array.from(Module.registry.values());
+      return Array.from( Module.registry.values() );
    }
 
    static async enableAllLoadableMixins() {
-      console.time("onSpotifyPreInit");
+      console.time( "onSpotifyPreInit" );
       const modules = Module.getModules();
-      await Promise.all(modules.map(module => module.getEnabledLoadableModule()?.enableMixins()));
-      console.timeEnd("onSpotifyPreInit");
+      await Promise.all( modules.map( module => module.getEnabledInstance()?.enableMixins() ) );
+      console.timeEnd( "onSpotifyPreInit" );
    }
 
    static async enableAllLoadable() {
-      console.time("onSpotifyPostInit");
+      console.time( "onSpotifyPostInit" );
       const modules = Module.getModules();
-      await Promise.all(modules.map(module => module.getEnabledLoadableModule()?.enable()));
-      console.timeEnd("onSpotifyPostInit");
+      await Promise.all( modules.map( module => module.getEnabledInstance()?.enable() ) );
+      console.timeEnd( "onSpotifyPostInit" );
    }
 
+   public instances = new Map<Version, ModuleInstance>();
+
    constructor(
-      private author: string,
-      private name: string,
-      public enabled: string | null,
-      public loadableModuleByVersion: Record<Version, LoadableModule>,
+      private identifier: ModuleIdentifier,
+      private enabled: Version,
    ) {
-      const identifier = this.getModuleIdentifier();
-      if (Module.registry.has(identifier)) {
-         throw new Error(`A module with the same identifier "${identifier}" is already registered`);
+      if ( Module.registry.has( identifier ) ) {
+         throw new Error( `A module with the same identifier "${ identifier }" is already registered` );
       }
-      Module.registry.set(identifier, this);
+      Module.registry.set( identifier, this );
    }
 
    static async fromVault(
-      author: string,
-      name: string,
-      enabled: string | null,
-      metadataURLsByVersion: Record<Version, Store>,
+      [ identifier, { enabled, remotes, v: versions } ]: [ ModuleIdentifier, _Module ]
    ) {
-      if (!enabled?.length) {
-         enabled = null;
+      if ( !enabled ) {
+         enabled = "";
       }
 
-      const loadableModuleByVersion = Object.fromEntries(
-         await Promise.all(
-            Object.entries(metadataURLsByVersion).map(async ([version, store]) => {
-               if (!store.remote?.length) {
-                  store.remote = null;
-               }
-               return [
-                  version,
-                  await LoadableModule.fromModule(author, name, version, store, version === enabled),
-               ];
-            }),
-         ),
+      const m = new Module( identifier, enabled );
+
+      await Promise.all(
+         Object.entries( versions ).map(
+            async ( [ version, store ] ) => {
+               const mi = await m.createInstance( version, store.installed );
+               mi._addRemotes( store.metadatas );
+               return mi;
+            }
+         )
       );
 
-      return new Module(author, name, enabled, loadableModuleByVersion);
+      requestIdleCallback( () =>
+         Promise.all(
+            remotes.map( fetchJSON<Record<string, Array<string>>> )
+         ).then( repos =>
+            repos.reduce( ( a, b ) => deepMerge( b, a ) )
+         ).then( async versions => {
+            for ( const [ version, metadatas ] of Object.entries( versions ) ) {
+               const mi = await m.getInstanceOrCreate( version );
+               mi._addRemotes( metadatas );
+            }
+         } )
+      );
+
+      return m;
    }
 
-   public getModuleIdentifier() {
-      return `${this.author}/${this.name}`;
+   public getIdentifier(): ModuleIdentifier {
+      return this.identifier;
    }
 
-   public getEnabledLoadableModule(): LoadableModule {
-      // @ts-ignore
-      return this.loadableModuleByVersion[this.enabled];
+   public getEnabledVersion(): Version {
+      return this.enabled;
+   }
+
+   public getEnabledInstance(): ModuleInstance | null {
+      return this.getEnabledVersion() ? this.instances.get( this.getEnabledVersion()! )! : null;
+   }
+
+   public async createInstance(
+      version: Truthy<Version>,
+      installed = "",
+      shouldEnableAtStartup = false,
+   ) {
+      const metadata =
+         shouldEnableAtStartup && installed
+            ? await fetchJSON<Metadata>( `/modules/${ this.getIdentifier() }/metadata.json` )
+            : dummy_metadata;
+
+      return new ModuleInstance( this, version, metadata, installed );
+   }
+
+   public async getInstanceOrCreate(
+      version: Truthy<Version>,
+   ) {
+      return this.instances.get( version ) ?? this.createInstance( version );
    }
 
    // ?
-   public async updateEnabled(enabled: string | null, syncWithFS: boolean) {
-      this.enabled = enabled?.length ? enabled : null;
-      if (syncWithFS) {
-         await ModuleManager.enable(
-            new LoadableModule(this.author, this.name, this.enabled ?? "", null as any, null as any, null),
-         );
-      }
+   public async updateEnabled( enabled: Version ) {
+      this.enabled = enabled;
    }
 }
 
-export class MixinModule {
-   private _transformer = createTransformer(this);
+export class MixinLoader {
+   private _transformer = createTransformer( this );
 
    get transformer() {
       return this._transformer;
@@ -163,168 +185,154 @@ export class MixinModule {
 
    public awaitedMixins = new Array<Promise<void>>();
 
-   static INTERNAL = new MixinModule({
+   static INTERNAL = new MixinLoader( {
       name: "internal",
-      tags: ["internal"],
+      tags: [ "internal" ],
       preview: "",
       version: "dev",
-      authors: ["internal"],
+      authors: [ "internal" ],
       readme: "",
       entries: {},
       description: "internal",
       dependencies: [],
-   });
+   } );
 
-   constructor(public metadata: Metadata) {}
+   constructor( public metadata: Metadata ) { }
 }
 
-export class LoadableModule extends MixinModule {
-   public unloadJS: (() => Promise<void>) | null = null;
-   public unloadCSS: (() => void) | null = null;
-   private mixinsEnabled = false;
-   private loading: Promise<void> | undefined;
-   private dependants = new Set<LoadableModule>();
-   private enabled = false;
+export class ModuleInstance extends MixinLoader {
+   _unloadJS: ( () => Promise<void> ) | null = null;
+   _unloadCSS: ( () => void ) | null = null;
+   private preloaded = false;
+   private loaded = false;
+   private transition: Promise<void> | undefined;
+   private dependants = new Set<ModuleInstance>();
 
-   public getDisplayName() {
-      return this.name;
+   public remotes = new Array<string>();
+
+   _addRemotes( remotes: string[] ) {
+      this.remotes.push( ...remotes );
    }
 
    public getName() {
-      return this.name;
+      return this.metadata.name;
    }
 
    public getAuthor() {
-      return this.author;
+      return this.metadata.authors[ 0 ];
    }
 
    public getVersion() {
       return this.version;
    }
 
-   constructor(
-      private author: string,
-      private name: string,
-      private version: string,
-      metadata: Metadata,
-      public installed: boolean,
-      public remoteMetadataURL: string | null,
-   ) {
-      super(metadata);
+   public getModuleIdentifier() {
+      return this.module.getIdentifier();
    }
 
-   static async fromModule(
-      author: string,
-      name: string,
-      version: string,
-      store: Store,
-      shouldEnableAtStartup = false,
-   ) {
-      const { local, remote } = store;
-      const metadata =
-         shouldEnableAtStartup && local
-            ? await fetchJSON<Metadata>(`/modules/${author}/${name}/metadata.json`)
-            : dummy_metadata;
+   public getIdentifier(): StoreIdentifier {
+      return `${ this.getModuleIdentifier() }/${ this.getVersion() }`;
+   }
 
-      return new LoadableModule(author, name, version, metadata, local, remote?.length ? remote : null);
+   constructor(
+      private module: Module,
+      private version: Truthy<Version>,
+      metadata: Metadata,
+      private installed: string,
+   ) {
+      super( metadata );
+      module.instances.set( version, this );
    }
 
    public isEnabled() {
-      return this.enabled;
+      return this.loaded;
    }
 
    // ?
-   public updateMetadata(metadata: Metadata) {
+   public updateMetadata( metadata: Metadata ) {
       this.metadata = metadata;
    }
 
-   public getModuleIdentifier(): ModuleIdentifier {
-      return `${this.getAuthor()}/${this.getName()}`;
-   }
-
-   public getStoreIdentifier(): StoreIdentifier {
-      return `${this.getModuleIdentifier()}/${this.getVersion()}`;
-   }
-
-   private getRelPath(rel: string) {
-      return `/modules/${this.getModuleIdentifier()}/${rel}`;
+   private getRelPath( rel: string ) {
+      return `/modules/${ this.getModuleIdentifier() }/${ rel }`;
    }
 
    private async loadMixins() {
       const entry = this.metadata.entries.mixin;
-      if (!entry) {
+      if ( !entry ) {
          return;
       }
 
-      console.time(`${this.getModuleIdentifier()}#loadMixin`);
-      const mixin = await import(this.getRelPath(entry));
-      await mixin.default(this.transformer);
-      console.timeEnd(`${this.getModuleIdentifier()}#loadMixin`);
+      console.time( `${ this.getModuleIdentifier() }#loadMixin` );
+      const mixin = await import( this.getRelPath( entry ) );
+      await mixin.default( this.transformer );
+      console.timeEnd( `${ this.getModuleIdentifier() }#loadMixin` );
 
-      console.groupCollapsed(`${this.getModuleIdentifier()}#awaitMixins`);
-      console.info(...this.awaitedMixins);
+      console.groupCollapsed( `${ this.getModuleIdentifier() }#awaitMixins` );
+      console.info( ...this.awaitedMixins );
       console.groupEnd();
 
-      console.time(`${this.getModuleIdentifier()}#awaitMixins`);
-      Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
+      console.time( `${ this.getModuleIdentifier() }#awaitMixins` );
+      Promise.all( this.awaitedMixins ).then( () => console.timeEnd( `${ this.getModuleIdentifier() }#awaitMixins` ) );
    }
 
    private async loadJS() {
       const entry = this.metadata.entries.js;
-      if (!entry) {
+      if ( !entry ) {
          return;
       }
 
-      this.unloadJS = async () => {
-         this.unloadJS = null;
+      this._unloadJS = async () => {
+         this._unloadJS = null;
       };
 
-      console.time(`${this.getModuleIdentifier()}#loadJS`);
+      console.time( `${ this.getModuleIdentifier() }#loadJS` );
 
       try {
-         const fullPath = this.getRelPath(entry);
-         const module = await import(fullPath);
-         const dispose = await module.default?.(this);
-         const unloadJS = this.unloadJS;
-         this.unloadJS = async () => {
+         const fullPath = this.getRelPath( entry );
+         const module = await import( fullPath );
+         const dispose = await module.default?.( this );
+         const unloadJS = this._unloadJS;
+         this._unloadJS = async () => {
             await dispose?.();
             await unloadJS();
          };
-      } catch (e) {
-         this.unloadJS();
-         console.error(`Error loading ${this.getModuleIdentifier()}:`, e);
+      } catch ( e ) {
+         this._unloadJS();
+         console.error( `Error loading ${ this.getModuleIdentifier() }:`, e );
       }
 
-      console.timeEnd(`${this.getModuleIdentifier()}#loadJS`);
+      console.timeEnd( `${ this.getModuleIdentifier() }#loadJS` );
    }
 
    private loadCSS() {
       const entry = this.metadata.entries.css;
-      if (entry) {
-         const id = `${this.getModuleIdentifier()}-styles`;
-         const fullPath = this.getRelPath(entry);
-         const link = document.createElement("link");
+      if ( entry ) {
+         const id = `${ this.getModuleIdentifier() }-styles`;
+         const fullPath = this.getRelPath( entry );
+         const link = document.createElement( "link" );
          link.id = id;
          link.rel = "stylesheet";
          link.type = "text/css";
          link.href = fullPath;
-         document.head.append(link);
-         this.unloadCSS = () => {
-            this.unloadCSS = null;
-            document.getElementById(id)?.remove();
+         document.head.append( link );
+         this._unloadCSS = () => {
+            this._unloadCSS = null;
+            document.getElementById( id )?.remove();
          };
       }
    }
 
-   // TODO: add check for spotifyVersions
-   private canEnableRecur(mixinPhase = false) {
-      if (!mixinPhase && !this.mixinsEnabled && this.metadata.entries.mixin) {
+   // TODO: add versioned dependencies check
+   // TODO: add check that modules are enabled by cli
+   private canLoadRecur( isPreload = false ) {
+      if ( !isPreload && !this.preloaded && this.metadata.entries.mixin ) {
          return false;
       }
-      if (!this.enabled) {
-         for (const dependency of this.metadata.dependencies) {
-            const module = Module.registry.get(dependency)?.getEnabledLoadableModule();
-            if (!module?.canEnableRecur(mixinPhase)) {
+      if ( !this.loaded ) {
+         for ( const dependency of this.metadata.dependencies ) {
+            const module = Module.registry.get( dependency )?.getEnabledInstance();
+            if ( !module?.canLoadRecur( isPreload ) ) {
                return false;
             }
          }
@@ -332,61 +340,60 @@ export class LoadableModule extends MixinModule {
       return true;
    }
 
-   private async enableMixinsRecur() {
-      if (this.mixinsEnabled) {
-         return this.loading;
+   private async preloadRecur() {
+      if ( this.preloaded ) {
+         return this.transition;
       }
-      this.mixinsEnabled = true;
+      this.preloaded = true;
       let finishLoading!: () => void;
-      this.loading = new Promise(res => {
+      this.transition = new Promise( res => {
          finishLoading = res;
-      });
+      } );
 
       await Promise.all(
-         this.metadata.dependencies.map(dependency => {
-            const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
-            return module.enableMixinsRecur();
-         }),
+         this.metadata.dependencies.map( dependency => {
+            const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+            return module.preloadRecur();
+         } ),
       );
 
       await this.loadMixins();
 
       finishLoading();
-      this.loading = undefined;
+      this.transition = undefined;
    }
 
-   private async enableRecur(syncWithFS = false) {
-      if (this.enabled) {
-         return this.loading;
+   private async loadRecur() {
+      if ( this.loaded ) {
+         return this.transition;
       }
-      this.enabled = true;
-      let finishLoading!: () => void;
-      this.loading = new Promise(res => {
-         finishLoading = res;
-      });
+      this.loaded = true;
+      let finishTransition!: () => void;
+      this.transition = new Promise( res => {
+         finishTransition = res;
+      } );
 
       await Promise.all(
-         this.metadata.dependencies.map(dependency => {
-            const module = Module.registry.get(dependency)!.getEnabledLoadableModule()!;
-            module.dependants.add(this);
-            return module.enableRecur(syncWithFS);
-         }),
+         this.metadata.dependencies.map( dependency => {
+            const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+            module.dependants.add( this );
+            return module.loadRecur();
+         } ),
       );
 
-      await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(this.getVersion(), syncWithFS);
       await this.loadCSS();
-      await Promise.all(this.awaitedMixins);
+      await Promise.all( this.awaitedMixins );
       await this.loadJS();
 
-      finishLoading();
-      this.loading = undefined;
+      finishTransition();
+      this.transition = undefined;
    }
 
    // ? As is, this always returns true. Recur Impl for easier future modification
-   private canDisableRecur() {
-      if (this.enabled) {
-         for (const dependant of this.dependants) {
-            if (!dependant.canDisableRecur()) {
+   private canUnloadRecur() {
+      if ( this.loaded ) {
+         for ( const dependant of this.dependants ) {
+            if ( !dependant.canUnloadRecur() ) {
                return false;
             }
          }
@@ -394,77 +401,72 @@ export class LoadableModule extends MixinModule {
       return true;
    }
 
-   private async disableRecur(syncWithFS = false) {
-      if (!this.enabled) {
-         return this.loading;
+   private async unloadRecur() {
+      if ( !this.loaded ) {
+         return this.transition;
       }
-      this.enabled = false;
-      let finishLoading!: () => void;
-      this.loading = new Promise(res => {
-         finishLoading = res;
-      });
+      this.loaded = false;
+      let finishTransition!: () => void;
+      this.transition = new Promise( res => {
+         finishTransition = res;
+      } );
 
-      for (const dependencyIdentifier of this.metadata.dependencies) {
-         const dependency = Module.registry.get(dependencyIdentifier)!.getEnabledLoadableModule()!;
-         dependency.dependants.delete(this);
+      for ( const dependencyIdentifier of this.metadata.dependencies ) {
+         const dependency = Module.registry.get( dependencyIdentifier )!.getEnabledInstance()!;
+         dependency.dependants.delete( this );
       }
-      await Promise.all(Array.from(this.dependants).map(dependant => dependant.disableRecur()));
+      await Promise.all( Array.from( this.dependants ).map( dependant => dependant.unloadRecur() ) );
 
-      await Module.registry.get(this.getModuleIdentifier())!.updateEnabled(null, syncWithFS);
-      await this.unloadCSS?.();
-      await this.unloadJS?.();
+      await this._unloadCSS?.();
+      await this._unloadJS?.();
 
-      finishLoading();
-      this.loading = undefined;
+      finishTransition();
+      this.transition = undefined;
    }
 
    async enableMixins() {
-      if (this.mixinsEnabled) {
-         await this.loading;
+      if ( this.preloaded ) {
+         await this.transition;
          return false;
       }
-      if (this.canEnableRecur(true)) {
-         await this.enableMixinsRecur();
+      if ( this.canLoadRecur( true ) ) {
+         await this.preloadRecur();
          return true;
       }
 
-      console.warn("Can't enable mixins for", this.getModuleIdentifier(), " reason: Dependencies not met");
+      console.warn( "Can't enable mixins for", this.getModuleIdentifier(), " reason: Dependencies not met" );
       return false;
    }
 
-   public async enable(syncWithFS = false) {
-      if (this.enabled) {
-         await this.loading;
+   public async add() {
+      const remote = this.remotes[ 0 ];
+      if ( !remote ) {
          return false;
       }
-      if (this.canEnableRecur(false)) {
-         const previouslyEnabledLoadedModule = Module.registry
-            .get(this.getModuleIdentifier())!
-            .getEnabledLoadableModule();
-         if (previouslyEnabledLoadedModule) {
-            if (!syncWithFS) {
-               return false;
-            }
-            await previouslyEnabledLoadedModule.disable(true);
-            if (previouslyEnabledLoadedModule.enabled) {
-               return false;
-            }
-         }
-         await this.enableRecur(syncWithFS);
+      return await ModuleManager.add( this.remotes[ 0 ] );
+   }
+
+   public async enable() {
+      if ( this.loaded ) {
+         await this.transition;
+         return false;
+      }
+      if ( this.canLoadRecur( false ) ) {
+         await this.loadRecur();
          return true;
       }
 
-      console.warn("Can't enable", this.getModuleIdentifier(), " reason: Dependencies not met");
+      console.warn( "Can't enable", this.getModuleIdentifier(), " reason: Dependencies not met" );
       return false;
    }
 
-   public async disable(syncWithFS = false) {
-      if (!this.enabled) {
-         await this.loading;
+   public async disable() {
+      if ( !this.loaded ) {
+         await this.transition;
          return false;
       }
-      if (this.canDisableRecur()) {
-         await this.disableRecur(syncWithFS);
+      if ( this.canUnloadRecur() ) {
+         await this.unloadRecur();
          return true;
       }
 
@@ -476,128 +478,109 @@ export class LoadableModule extends MixinModule {
       return false;
    }
 
-   public async add(syncWithFS = false) {
-      let module = Module.registry.get(this.getModuleIdentifier());
-      if (module?.loadableModuleByVersion[this.getVersion()]) {
+   public async dispose() {
+      await this.disable();
+      if ( this.loaded ) {
          return false;
       }
-      if (syncWithFS) {
-         await ModuleManager.add(this.remoteMetadataURL!);
+      this.module.instances.delete( this.getVersion() );
+      if ( Object.keys( this.module.instances ).length === 0 ) {
+         Module.registry.delete( this.getModuleIdentifier() );
       }
-      if (!module) {
-         const author = this.getAuthor();
-         const name = this.getName();
-         module = new Module(author, name, null, { [this.getVersion()]: this });
-      }
-      module.loadableModuleByVersion[this.getVersion()] = this;
-      return true;
    }
 
-   public async remove(syncWithFS = false) {
-      await this.disable();
-      if (this.enabled) {
+   public async remove() {
+      if ( !await this.dispose() ) {
          return false;
       }
-      const moduleIdentifier = this.getModuleIdentifier();
-      const module = Module.registry.get(moduleIdentifier)!;
-      delete module.loadableModuleByVersion[this.getVersion()];
-      if (Object.keys(module.loadableModuleByVersion).length === 0) {
-         Module.registry.delete(moduleIdentifier);
-      }
-      if (syncWithFS) {
-         await ModuleManager.remove(this);
-      }
-      return true;
+      return await ModuleManager.remove( this );
    }
 }
 
 const bespokeProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
 const websocketProtocol = "ws://localhost:7967/rpc";
-const bespokeScheme = () => `bespoke:${crypto.randomUUID()}`;
+const bespokeScheme = () => `bespoke:${ crypto.randomUUID() }`;
 
 function createPromise<T>() {
-   let cb: { res: (value: T | PromiseLike<T>) => void; rej: (reason?: any) => void };
-   const p = new Promise<T>((res, rej) => {
+   let cb: { res: ( value: T | PromiseLike<T> ) => void; rej: ( reason?: any ) => void; };
+   const p = new Promise<T>( ( res, rej ) => {
       cb = { res, rej };
-   });
+   } );
    // @ts-ignore
-   return Object.assign(p, cb);
+   return Object.assign( p, cb );
 }
 
 let daemonConn: WebSocket | undefined;
 let lastDeamonConnAttempt = 0;
 async function tryConnectToDaemon() {
    const timestamp = Date.now();
-   if (timestamp - lastDeamonConnAttempt < 5 * 60 * 1000) {
+   if ( timestamp - lastDeamonConnAttempt < 5 * 60 * 1000 ) {
       return;
    }
    lastDeamonConnAttempt = timestamp;
-   const ws = new WebSocket(websocketProtocol);
+   const ws = new WebSocket( websocketProtocol );
    const p = createPromise<Event>();
-   ws.onopen = e => p.res(e);
-   ws.onclose = e => p.rej(e);
+   ws.onopen = e => p.res( e );
+   ws.onclose = e => p.rej( e );
    return p
-      .then(() => {
+      .then( () => {
          daemonConn = ws;
-      })
-      .catch(() => {
+      } )
+      .catch( () => {
          daemonConn = undefined;
-      });
+      } );
 }
 tryConnectToDaemon();
 
-export const nsUrlHandlers = new Map<string, (m: string) => void>();
-const sendProtocolMessage = async (...messages: string[]) => {
+export const nsUrlHandlers = new Map<string, ( m: string ) => void>();
+const sendProtocolMessage = async ( ...messages: string[] ) => {
    const p = createPromise<boolean>();
    const ns = bespokeScheme();
-   const buffer = [ns, ...messages].join(":");
+   const buffer = [ ns, ...messages ].join( ":" );
 
    let cancelSubscription: () => void;
 
-   const handleIncomingMessage = (m: string) => {
-      if (m.startsWith(ns)) {
-         p.res(m.slice(ns.length + 1) === "1");
+   const handleIncomingMessage = ( m: string ) => {
+      if ( m.startsWith( ns ) ) {
+         p.res( m.slice( ns.length + 1 ) === "1" );
          cancelSubscription();
       }
    };
 
-   daemonConn ?? (await tryConnectToDaemon());
-   if (daemonConn) {
-      daemonConn.send(buffer);
-      const listener = (e: any) => handleIncomingMessage(e.data);
-      cancelSubscription = () => daemonConn?.removeEventListener("message", listener);
-      daemonConn.addEventListener("message", listener);
+   daemonConn ?? ( await tryConnectToDaemon() );
+   if ( daemonConn ) {
+      daemonConn.send( buffer );
+      const listener = ( e: any ) => handleIncomingMessage( e.data );
+      cancelSubscription = () => daemonConn?.removeEventListener( "message", listener );
+      daemonConn.addEventListener( "message", listener );
    } else {
-      open(bespokeProtocol + buffer);
-      cancelSubscription = () => nsUrlHandlers.delete(ns);
-      nsUrlHandlers.set(ns, handleIncomingMessage);
+      open( bespokeProtocol + buffer );
+      cancelSubscription = () => nsUrlHandlers.delete( ns );
+      nsUrlHandlers.set( ns, handleIncomingMessage );
    }
 
-   setTimeout(() => {
-      p.rej(new Error("RPC timed out"));
+   setTimeout( () => {
+      p.rej( new Error( "RPC timed out" ) );
       cancelSubscription();
-   }, 5000);
+   }, 5000 );
 
    return p;
 };
 
 export const ModuleManager = {
-   add(murl: string) {
-      return sendProtocolMessage("add", murl);
+   add( murl: string ) {
+      return sendProtocolMessage( "add", murl );
    },
-   remove(loadableModule: LoadableModule) {
-      return sendProtocolMessage("remove", loadableModule.getStoreIdentifier());
+   remove( moduleInstance: ModuleInstance ) {
+      return sendProtocolMessage( "remove", moduleInstance.getIdentifier() );
    },
-   enable(loadableModule: LoadableModule) {
-      return sendProtocolMessage("enable", loadableModule.getStoreIdentifier());
+   enable( moduleInstance: ModuleInstance ) {
+      return sendProtocolMessage( "enable", moduleInstance.getIdentifier() );
+   },
+   disable( module: Module ) {
+      return sendProtocolMessage( "enable", module.getIdentifier() + "/" );
    },
 };
 
-const lock: Vault = deepMerge(await fetchJSON("/modules/vault.json"), await fetchJSON("/hooks/repo.json"));
-await Promise.all(
-   Object.entries(lock.modules).flatMap(([author, byNames]) =>
-      Object.entries(byNames).flatMap(([name, { enabled, v: metadatas }]) =>
-         Module.fromVault(author, name, enabled, metadatas),
-      ),
-   ),
-);
+const lock: _Vault = await fetchJSON( "/modules/vault.json" );
+await Promise.all( Object.entries( lock.modules ).flatMap( Module.fromVault ) );
