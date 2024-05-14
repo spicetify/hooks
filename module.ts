@@ -17,6 +17,8 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { satisfies } from "./semver/satisfies.js";
+import { SPOTIFY_VERSION } from "./static";
 import { createTransformer } from "./transform.js";
 import { deepMerge, fetchJSON } from "./util.js";
 
@@ -54,7 +56,7 @@ export interface Metadata {
       css?: string;
       mixin?: string;
    };
-   dependencies: string[];
+   dependencies: Record<string, string>;
 }
 
 const dummy_metadata = Object.freeze( {
@@ -66,7 +68,7 @@ const dummy_metadata = Object.freeze( {
    description: "This is a dummy Module",
    readme: "https://example.com",
    entries: {},
-   dependencies: [],
+   dependencies: {},
    isDummy: true,
 } );
 
@@ -116,7 +118,7 @@ export class Module {
       await Promise.all(
          Object.entries( versions ).map(
             async ( [ version, store ] ) => {
-               const mi = await m.createInstance( version, store.installed );
+               const mi = await m.createInstance( version, store.installed, );
                mi._addRemotes( store.metadatas );
                return mi;
             }
@@ -127,7 +129,7 @@ export class Module {
          Promise.all(
             remotes.map( fetchJSON<Record<string, Array<string>>> )
          ).then( repos =>
-            repos.reduce( ( a, b ) => deepMerge( b, a ) )
+            repos.reduce( ( a, b ) => deepMerge( b, a ), {} )
          ).then( async versions => {
             for ( const [ version, metadatas ] of Object.entries( versions ) ) {
                const mi = await m.getInstanceOrCreate( version );
@@ -153,15 +155,15 @@ export class Module {
 
    public async createInstance(
       version: Truthy<Version>,
-      installed = "",
-      shouldEnableAtStartup = false,
+      installedRemote = "",
    ) {
+      const shouldEnableAtStartup = version === this.enabled;
       const metadata =
-         shouldEnableAtStartup && installed
+         shouldEnableAtStartup && installedRemote
             ? await fetchJSON<Metadata>( `/modules/${ this.getIdentifier() }/metadata.json` )
             : dummy_metadata;
 
-      return new ModuleInstance( this, version, metadata, installed );
+      return new ModuleInstance( this, version, metadata, installedRemote );
    }
 
    public async getInstanceOrCreate(
@@ -185,19 +187,7 @@ export class MixinLoader {
 
    public awaitedMixins = new Array<Promise<void>>();
 
-   static INTERNAL = new MixinLoader( {
-      name: "internal",
-      tags: [ "internal" ],
-      preview: "",
-      version: "dev",
-      authors: [ "internal" ],
-      readme: "",
-      entries: {},
-      description: "internal",
-      dependencies: [],
-   } );
-
-   constructor( public metadata: Metadata ) { }
+   static INTERNAL = new MixinLoader();
 }
 
 export class ModuleInstance extends MixinLoader {
@@ -226,6 +216,14 @@ export class ModuleInstance extends MixinLoader {
       return this.version;
    }
 
+   public getRemote() {
+      return this.installedRemote;
+   }
+
+   public isInstalled() {
+      return Boolean( this.installedRemote );
+   }
+
    public getModuleIdentifier() {
       return this.module.getIdentifier();
    }
@@ -237,10 +235,10 @@ export class ModuleInstance extends MixinLoader {
    constructor(
       private module: Module,
       private version: Truthy<Version>,
-      metadata: Metadata,
-      private installed: string,
+      public metadata: Metadata,
+      private installedRemote: string,
    ) {
-      super( metadata );
+      super();
       module.instances.set( version, this );
    }
 
@@ -323,16 +321,20 @@ export class ModuleInstance extends MixinLoader {
       }
    }
 
-   // TODO: add versioned dependencies check
-   // TODO: add check that modules are enabled by cli
-   private canLoadRecur( isPreload = false ) {
+   private canLoadRecur( range = "*", isPreload = false ) {
       if ( !isPreload && !this.preloaded && this.metadata.entries.mixin ) {
          return false;
       }
       if ( !this.loaded ) {
-         for ( const dependency of this.metadata.dependencies ) {
+         if ( this.module.getEnabledVersion() !== this.getVersion() || !satisfies( this.version, range ) ) {
+            return false;
+         }
+         for ( const [ dependency, range ] of Object.entries( this.metadata.dependencies ) ) {
+            if ( dependency === "spotify" ) {
+               return satisfies( SPOTIFY_VERSION, range );
+            }
             const module = Module.registry.get( dependency )?.getEnabledInstance();
-            if ( !module?.canLoadRecur( isPreload ) ) {
+            if ( !module?.canLoadRecur( range, isPreload ) ) {
                return false;
             }
          }
@@ -351,7 +353,7 @@ export class ModuleInstance extends MixinLoader {
       } );
 
       await Promise.all(
-         this.metadata.dependencies.map( dependency => {
+         Object.keys( this.metadata.dependencies ).map( dependency => {
             const module = Module.registry.get( dependency )!.getEnabledInstance()!;
             return module.preloadRecur();
          } ),
@@ -374,7 +376,7 @@ export class ModuleInstance extends MixinLoader {
       } );
 
       await Promise.all(
-         this.metadata.dependencies.map( dependency => {
+         Object.keys( this.metadata.dependencies ).map( dependency => {
             const module = Module.registry.get( dependency )!.getEnabledInstance()!;
             module.dependants.add( this );
             return module.loadRecur();
@@ -411,9 +413,9 @@ export class ModuleInstance extends MixinLoader {
          finishTransition = res;
       } );
 
-      for ( const dependencyIdentifier of this.metadata.dependencies ) {
-         const dependency = Module.registry.get( dependencyIdentifier )!.getEnabledInstance()!;
-         dependency.dependants.delete( this );
+      for ( const dependency of Object.keys( this.metadata.dependencies ) ) {
+         const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+         module.dependants.delete( this );
       }
       await Promise.all( Array.from( this.dependants ).map( dependant => dependant.unloadRecur() ) );
 
@@ -429,7 +431,7 @@ export class ModuleInstance extends MixinLoader {
          await this.transition;
          return false;
       }
-      if ( this.canLoadRecur( true ) ) {
+      if ( this.canLoadRecur( "*", true ) ) {
          await this.preloadRecur();
          return true;
       }
@@ -451,7 +453,7 @@ export class ModuleInstance extends MixinLoader {
          await this.transition;
          return false;
       }
-      if ( this.canLoadRecur( false ) ) {
+      if ( this.canLoadRecur( "*", false ) ) {
          await this.loadRecur();
          return true;
       }
