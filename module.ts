@@ -18,7 +18,7 @@
  */
 
 import { satisfies } from "./semver/satisfies.js";
-import { SPOTIFY_VERSION } from "./static";
+import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
 import { deepMerge, fetchJSON } from "./util.js";
 
@@ -35,7 +35,7 @@ interface _Module {
 }
 
 interface _Store {
-   installed: string;
+   installed: boolean;
    metadatas: Array<string>;
 }
 
@@ -73,24 +73,31 @@ const dummy_metadata = Object.freeze( {
 } );
 
 export class Module {
+   private static registry = new Map<ModuleIdentifier, Module>();
 
-   static registry = new Map<ModuleIdentifier, Module>();
+   public static get( identifier: ModuleIdentifier ) {
+      return this.registry.get( identifier );
+   }
 
-   static getModules() {
+   public static getOrCreate( identifier: ModuleIdentifier ) {
+      return this.registry.get( identifier ) ?? new Module( identifier, "" );
+   }
+
+   public static getAll() {
       return Array.from( Module.registry.values() );
    }
 
    static async enableAllLoadableMixins() {
       console.time( "onSpotifyPreInit" );
-      const modules = Module.getModules();
-      await Promise.all( modules.map( module => module.getEnabledInstance()?.enableMixins() ) );
+      const modules = Module.getAll();
+      await Promise.all( modules.map( module => module.getEnabledInstance()?.loadMixins() ) );
       console.timeEnd( "onSpotifyPreInit" );
    }
 
    static async enableAllLoadable() {
       console.time( "onSpotifyPostInit" );
-      const modules = Module.getModules();
-      await Promise.all( modules.map( module => module.getEnabledInstance()?.enable() ) );
+      const modules = Module.getAll();
+      await Promise.all( modules.map( module => module.getEnabledInstance()?.load() ) );
       console.timeEnd( "onSpotifyPostInit" );
    }
 
@@ -155,15 +162,15 @@ export class Module {
 
    public async createInstance(
       version: Truthy<Version>,
-      installedRemote = "",
+      installed = false,
    ) {
       const shouldEnableAtStartup = version === this.enabled;
       const metadata =
-         shouldEnableAtStartup && installedRemote
+         shouldEnableAtStartup && installed
             ? await fetchJSON<Metadata>( `/modules/${ this.getIdentifier() }/metadata.json` )
             : dummy_metadata;
 
-      return new ModuleInstance( this, version, metadata, installedRemote );
+      return new ModuleInstance( this, version, metadata, installed );
    }
 
    public async getInstanceOrCreate(
@@ -217,11 +224,11 @@ export class ModuleInstance extends MixinLoader {
    }
 
    public getRemote() {
-      return this.installedRemote;
+      return this.remotes[ 0 ];
    }
 
    public isInstalled() {
-      return Boolean( this.installedRemote );
+      return this.installed;
    }
 
    public getModuleIdentifier() {
@@ -232,17 +239,21 @@ export class ModuleInstance extends MixinLoader {
       return `${ this.getModuleIdentifier() }/${ this.getVersion() }`;
    }
 
+   public getModule(): Module {
+      return this.module;
+   }
+
    constructor(
       private module: Module,
       private version: Truthy<Version>,
       public metadata: Metadata,
-      private installedRemote: string,
+      private installed: boolean,
    ) {
       super();
       module.instances.set( version, this );
    }
 
-   public isEnabled() {
+   public isLoaded() {
       return this.loaded;
    }
 
@@ -251,11 +262,11 @@ export class ModuleInstance extends MixinLoader {
       this.metadata = metadata;
    }
 
-   private getRelPath( rel: string ) {
+   public getRelPath( rel: string ) {
       return `/modules/${ this.getModuleIdentifier() }/${ rel }`;
    }
 
-   private async loadMixins() {
+   private async _loadMixins() {
       const entry = this.metadata.entries.mixin;
       if ( !entry ) {
          return;
@@ -274,7 +285,7 @@ export class ModuleInstance extends MixinLoader {
       Promise.all( this.awaitedMixins ).then( () => console.timeEnd( `${ this.getModuleIdentifier() }#awaitMixins` ) );
    }
 
-   private async loadJS() {
+   private async _loadJS() {
       const entry = this.metadata.entries.js;
       if ( !entry ) {
          return;
@@ -303,7 +314,7 @@ export class ModuleInstance extends MixinLoader {
       console.timeEnd( `${ this.getModuleIdentifier() }#loadJS` );
    }
 
-   private loadCSS() {
+   private _loadCSS() {
       const entry = this.metadata.entries.css;
       if ( entry ) {
          const id = `${ this.getModuleIdentifier() }-styles`;
@@ -321,7 +332,7 @@ export class ModuleInstance extends MixinLoader {
       }
    }
 
-   private canLoadRecur( range = "*", isPreload = false ) {
+   private canLoadRecur( isPreload = false, range = ">=0.0.0" ) {
       if ( !isPreload && !this.preloaded && this.metadata.entries.mixin ) {
          return false;
       }
@@ -333,8 +344,8 @@ export class ModuleInstance extends MixinLoader {
             if ( dependency === "spotify" ) {
                return satisfies( SPOTIFY_VERSION, range );
             }
-            const module = Module.registry.get( dependency )?.getEnabledInstance();
-            if ( !module?.canLoadRecur( range, isPreload ) ) {
+            const module = Module.get( dependency )?.getEnabledInstance();
+            if ( !module?.canLoadRecur( isPreload, range ) ) {
                return false;
             }
          }
@@ -354,12 +365,12 @@ export class ModuleInstance extends MixinLoader {
 
       await Promise.all(
          Object.keys( this.metadata.dependencies ).map( dependency => {
-            const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+            const module = Module.get( dependency )!.getEnabledInstance()!;
             return module.preloadRecur();
          } ),
       );
 
-      await this.loadMixins();
+      await this._loadMixins();
 
       finishLoading();
       this.transition = undefined;
@@ -377,15 +388,15 @@ export class ModuleInstance extends MixinLoader {
 
       await Promise.all(
          Object.keys( this.metadata.dependencies ).map( dependency => {
-            const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+            const module = Module.get( dependency )!.getEnabledInstance()!;
             module.dependants.add( this );
             return module.loadRecur();
          } ),
       );
 
-      await this.loadCSS();
+      await this._loadCSS();
       await Promise.all( this.awaitedMixins );
-      await this.loadJS();
+      await this._loadJS();
 
       finishTransition();
       this.transition = undefined;
@@ -414,7 +425,7 @@ export class ModuleInstance extends MixinLoader {
       } );
 
       for ( const dependency of Object.keys( this.metadata.dependencies ) ) {
-         const module = Module.registry.get( dependency )!.getEnabledInstance()!;
+         const module = Module.get( dependency )!.getEnabledInstance()!;
          module.dependants.delete( this );
       }
       await Promise.all( Array.from( this.dependants ).map( dependant => dependant.unloadRecur() ) );
@@ -426,12 +437,12 @@ export class ModuleInstance extends MixinLoader {
       this.transition = undefined;
    }
 
-   async enableMixins() {
+   async loadMixins() {
       if ( this.preloaded ) {
          await this.transition;
          return false;
       }
-      if ( this.canLoadRecur( "*", true ) ) {
+      if ( this.canLoadRecur( true ) ) {
          await this.preloadRecur();
          return true;
       }
@@ -448,12 +459,12 @@ export class ModuleInstance extends MixinLoader {
       return await ModuleManager.add( this.remotes[ 0 ] );
    }
 
-   public async enable() {
+   public async load() {
       if ( this.loaded ) {
          await this.transition;
          return false;
       }
-      if ( this.canLoadRecur( "*", false ) ) {
+      if ( this.canLoadRecur( false ) ) {
          await this.loadRecur();
          return true;
       }
@@ -462,7 +473,7 @@ export class ModuleInstance extends MixinLoader {
       return false;
    }
 
-   public async disable() {
+   public async unload() {
       if ( !this.loaded ) {
          await this.transition;
          return false;
@@ -481,14 +492,14 @@ export class ModuleInstance extends MixinLoader {
    }
 
    public async dispose() {
-      await this.disable();
+      await this.unload();
       if ( this.loaded ) {
          return false;
       }
       this.module.instances.delete( this.getVersion() );
-      if ( Object.keys( this.module.instances ).length === 0 ) {
-         Module.registry.delete( this.getModuleIdentifier() );
-      }
+      // if ( Object.keys( this.module.instances ).length === 0 ) {
+      //    Module.delete( this.getModuleIdentifier() );
+      // }
    }
 
    public async remove() {
