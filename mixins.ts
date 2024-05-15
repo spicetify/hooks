@@ -17,7 +17,7 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { nsUrlHandlers } from "./module.js";
+import { nsUrlHandlers } from "./protocol.js";
 import { Paths } from "./static.js";
 import { sources, type Transformer } from "./transform.js";
 import { matchLast } from "./util.js";
@@ -54,7 +54,7 @@ function interceptNavigationControlMessage( e: Event ): boolean {
 
 globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessage;
 
-export default function ( transformer: Transformer ) {
+export default async function ( transformer: Transformer ) {
    transformer(
       emit => str => {
          str = str.replace(

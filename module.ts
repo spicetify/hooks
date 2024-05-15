@@ -17,6 +17,7 @@
  * along with bespoke/hooks. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ModuleManager } from "./protocol.js";
 import { satisfies } from "./semver/satisfies.js";
 import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
@@ -509,91 +510,6 @@ export class ModuleInstance extends MixinLoader {
       return await ModuleManager.remove( this );
    }
 }
-
-const bespokeProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
-const websocketProtocol = "ws://localhost:7967/rpc";
-const bespokeScheme = () => `bespoke:${ crypto.randomUUID() }`;
-
-function createPromise<T>() {
-   let cb: { res: ( value: T | PromiseLike<T> ) => void; rej: ( reason?: any ) => void; };
-   const p = new Promise<T>( ( res, rej ) => {
-      cb = { res, rej };
-   } );
-   // @ts-ignore
-   return Object.assign( p, cb );
-}
-
-let daemonConn: WebSocket | undefined;
-let lastDeamonConnAttempt = 0;
-async function tryConnectToDaemon() {
-   const timestamp = Date.now();
-   if ( timestamp - lastDeamonConnAttempt < 5 * 60 * 1000 ) {
-      return;
-   }
-   lastDeamonConnAttempt = timestamp;
-   const ws = new WebSocket( websocketProtocol );
-   const p = createPromise<Event>();
-   ws.onopen = e => p.res( e );
-   ws.onclose = e => p.rej( e );
-   return p
-      .then( () => {
-         daemonConn = ws;
-      } )
-      .catch( () => {
-         daemonConn = undefined;
-      } );
-}
-tryConnectToDaemon();
-
-export const nsUrlHandlers = new Map<string, ( m: string ) => void>();
-const sendProtocolMessage = async ( ...messages: string[] ) => {
-   const p = createPromise<boolean>();
-   const ns = bespokeScheme();
-   const buffer = [ ns, ...messages ].join( ":" );
-
-   let cancelSubscription: () => void;
-
-   const handleIncomingMessage = ( m: string ) => {
-      if ( m.startsWith( ns ) ) {
-         p.res( m.slice( ns.length + 1 ) === "1" );
-         cancelSubscription();
-      }
-   };
-
-   daemonConn ?? ( await tryConnectToDaemon() );
-   if ( daemonConn ) {
-      daemonConn.send( buffer );
-      const listener = ( e: any ) => handleIncomingMessage( e.data );
-      cancelSubscription = () => daemonConn?.removeEventListener( "message", listener );
-      daemonConn.addEventListener( "message", listener );
-   } else {
-      open( bespokeProtocol + buffer );
-      cancelSubscription = () => nsUrlHandlers.delete( ns );
-      nsUrlHandlers.set( ns, handleIncomingMessage );
-   }
-
-   setTimeout( () => {
-      p.rej( new Error( "RPC timed out" ) );
-      cancelSubscription();
-   }, 5000 );
-
-   return p;
-};
-
-export const ModuleManager = {
-   add( murl: string ) {
-      return sendProtocolMessage( "add", murl );
-   },
-   remove( moduleInstance: ModuleInstance ) {
-      return sendProtocolMessage( "remove", moduleInstance.getIdentifier() );
-   },
-   enable( moduleInstance: ModuleInstance ) {
-      return sendProtocolMessage( "enable", moduleInstance.getIdentifier() );
-   },
-   disable( module: Module ) {
-      return sendProtocolMessage( "enable", module.getIdentifier() + "/" );
-   },
-};
 
 const lock: _Vault = await fetchJSON( "/modules/vault.json" );
 await Promise.all( Object.entries( lock.modules ).flatMap( Module.fromVault ) );
