@@ -19,9 +19,9 @@
 
 import type { Module, ModuleInstance } from "./module.js";
 
-const bespokeProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
+const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
 const websocketProtocol = "ws://localhost:7967/rpc";
-const bespokeScheme = () => `bespoke:${ crypto.randomUUID() }`;
+const protocol = "spicetify:";
 
 function createPromise<T>() {
    let cb: { res: ( value: T | PromiseLike<T> ) => void; rej: ( reason?: any ) => void; };
@@ -55,30 +55,34 @@ async function tryConnectToDaemon() {
 tryConnectToDaemon();
 
 export const nsUrlHandlers = new Map<string, ( m: string ) => void>();
-const sendProtocolMessage = async ( ...messages: string[] ) => {
+const sendProtocolMessage = async ( action: string, options: Record<string, string> ) => {
    const p = createPromise<boolean>();
-   const ns = bespokeScheme();
-   const buffer = [ ns, ...messages ].join( ":" );
+
+   const uri = new URL( protocol + action );
+   // @ts-ignore
+   uri.search = new URLSearchParams( options );
+   uri.hash = crypto.randomUUID();
 
    let cancelSubscription: () => void;
 
    const handleIncomingMessage = ( m: string ) => {
-      if ( m.startsWith( ns ) ) {
-         p.res( m.slice( ns.length + 1 ) === "1" );
+      const u = new URL( m );
+      if ( u.protocol === uri.protocol && u.hash === uri.hash ) {
+         p.res( u.pathname === "1" );
          cancelSubscription();
       }
    };
 
    daemonConn ?? ( await tryConnectToDaemon() );
    if ( daemonConn ) {
-      daemonConn.send( buffer );
+      daemonConn.send( uri.href );
       const listener = ( e: any ) => handleIncomingMessage( e.data );
       cancelSubscription = () => daemonConn?.removeEventListener( "message", listener );
       daemonConn.addEventListener( "message", listener );
    } else {
-      open( bespokeProtocol + buffer );
-      cancelSubscription = () => nsUrlHandlers.delete( ns );
-      nsUrlHandlers.set( ns, handleIncomingMessage );
+      open( workerProtocol + uri.href );
+      cancelSubscription = () => nsUrlHandlers.delete( uri.hash );
+      nsUrlHandlers.set( uri.hash, handleIncomingMessage );
    }
 
    setTimeout( () => {
@@ -90,16 +94,16 @@ const sendProtocolMessage = async ( ...messages: string[] ) => {
 };
 
 export const ModuleManager = {
-   add( murl: string ) {
-      return sendProtocolMessage( "add", murl );
+   add( url: string ) {
+      return sendProtocolMessage( "add", { url } );
    },
    remove( moduleInstance: ModuleInstance ) {
-      return sendProtocolMessage( "remove", moduleInstance.getIdentifier() );
+      return sendProtocolMessage( "remove", { id: moduleInstance.getIdentifier() } );
    },
    enable( moduleInstance: ModuleInstance ) {
-      return sendProtocolMessage( "enable", moduleInstance.getIdentifier() );
+      return sendProtocolMessage( "enable", { id: moduleInstance.getIdentifier() } );
    },
    disable( module: Module ) {
-      return sendProtocolMessage( "enable", module.getIdentifier() + "/" );
+      return sendProtocolMessage( "enable", { id: module.getIdentifier() + "/" } );
    },
 };

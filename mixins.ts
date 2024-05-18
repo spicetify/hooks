@@ -37,18 +37,20 @@ export const applyTransforms = ( path: string ) => {
 
 globalThis.__applyTransforms = applyTransforms;
 
-const bespokeProtocol = "spotify:app:rpc";
+const rpc = "spotify:app:rpc:";
 function interceptNavigationControlMessage( e: Event ): boolean {
    const uri: string = ( e as any ).data.data;
-   if ( !uri.startsWith( bespokeProtocol ) ) {
+   if ( !uri.startsWith( rpc ) ) {
       return true;
    }
-   const trimmedUri = uri.slice( bespokeProtocol.length + 1 );
+   const trimmedUri = uri.slice( rpc.length );
    if ( trimmedUri === "reload" ) {
       document.location.reload();
    }
-   const ns = trimmedUri.match( /bespoke:[^:]+/ )?.[ 0 ];
-   nsUrlHandlers.get( ns! )?.( trimmedUri );
+   {
+      const uri = new URL( trimmedUri );
+      nsUrlHandlers.get( uri.hash )?.( trimmedUri );
+   }
    return false;
 }
 
