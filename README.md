@@ -1,6 +1,6 @@
 ```pwsh
-cd $env.LOCALAPPDATA/bespoke/
-rm -r $env.LOCALAPPDATA/bespoke/hooks/
+cd $env.LOCALAPPDATA/spicetify/
+rm -r $env.LOCALAPPDATA/spicetify/hooks/
 git clone github.com/spicetify/hooks hooks/
 cd hooks
 tsc
