@@ -37,7 +37,7 @@ interface _Module {
 
 interface _Store {
    installed: boolean;
-   metadatas: Array<string>;
+   artifacts: Array<string>;
 }
 
 interface _Vault {
@@ -127,7 +127,7 @@ export class Module {
          Object.entries( versions ).map(
             async ( [ version, store ] ) => {
                const mi = await m.createInstance( version, store.installed, );
-               mi._addRemotes( store.metadatas );
+               mi._addArtifacts( store.artifacts );
                return mi;
             }
          )
@@ -141,7 +141,7 @@ export class Module {
          ).then( async versions => {
             for ( const [ version, metadatas ] of Object.entries( versions ) ) {
                const mi = await m.getInstanceOrCreate( version );
-               mi._addRemotes( metadatas );
+               mi._addArtifacts( metadatas );
             }
          } )
       );
@@ -206,10 +206,10 @@ export class ModuleInstance extends MixinLoader {
    private transition: Promise<void> | undefined;
    private dependants = new Set<ModuleInstance>();
 
-   public remotes = new Array<string>();
+   public artifacts = new Array<string>();
 
-   _addRemotes( remotes: string[] ) {
-      this.remotes.push( ...remotes );
+   _addArtifacts( artifacts: string[] ) {
+      this.artifacts.push( ...artifacts );
    }
 
    public getName() {
@@ -225,7 +225,7 @@ export class ModuleInstance extends MixinLoader {
    }
 
    public getRemote() {
-      return this.remotes[ 0 ];
+      return this.artifacts[ 0 ];
    }
 
    public isInstalled() {
@@ -453,11 +453,11 @@ export class ModuleInstance extends MixinLoader {
    }
 
    public async add() {
-      const remote = this.remotes[ 0 ];
+      const remote = this.artifacts[ 0 ];
       if ( !remote ) {
          return false;
       }
-      return await ModuleManager.add( this.remotes[ 0 ] );
+      return await ModuleManager.add( this.artifacts[ 0 ] );
    }
 
    public async load() {
