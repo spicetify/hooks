@@ -23,9 +23,9 @@ import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
 import { deepMerge, fetchJSON } from "./util.js";
 
-type ModuleIdentifier = string;
-type Version = string;
-type StoreIdentifier = string;
+export type ModuleIdentifier = string;
+export type Version = string;
+export type StoreIdentifier = string;
 type Truthy<A> = A;
 
 
@@ -224,8 +224,12 @@ export class ModuleInstance extends MixinLoader {
       return this.version;
    }
 
-   public getRemote() {
+   public getRemoteArtifact() {
       return this.artifacts[ 0 ];
+   }
+
+   public getRemoteMetadata() {
+      return this.getRemoteArtifact().replace( /\.zip$/, ".metadata.json" );
    }
 
    public isInstalled() {
