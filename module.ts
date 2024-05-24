@@ -224,12 +224,12 @@ export class ModuleInstance extends MixinLoader {
       return this.version;
    }
 
-   public getRemoteArtifact() {
+   public getRemoteArtifact(): string | undefined {
       return this.artifacts[ 0 ];
    }
 
    public getRemoteMetadata() {
-      return this.getRemoteArtifact().replace( /\.zip$/, ".metadata.json" );
+      return this.getRemoteArtifact()?.replace( /\.zip$/, ".metadata.json" );
    }
 
    public isInstalled() {
