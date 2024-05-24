@@ -337,12 +337,16 @@ export class ModuleInstance extends MixinLoader {
       }
    }
 
+   public isEnabled() {
+      return this.getVersion() === this.module.getEnabledVersion();
+   }
+
    private canLoadRecur( isPreload = false, range = ">=0.0.0" ) {
       if ( !isPreload && !this.preloaded && this.metadata.entries.mixin ) {
          return false;
       }
       if ( !this.loaded ) {
-         if ( this.module.getEnabledVersion() !== this.getVersion() || !satisfies( this.version, range ) ) {
+         if ( !this.isEnabled() || !satisfies( this.version, range ) ) {
             return false;
          }
          for ( const [ dependency, range ] of Object.entries( this.metadata.dependencies ) ) {
