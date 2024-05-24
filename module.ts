@@ -184,6 +184,14 @@ export class Module {
    public async updateEnabled( enabled: Version ) {
       this.enabled = enabled;
    }
+
+   public async disable() {
+      const ok = await ModuleManager.disable( this );
+      if ( ok ) {
+         this.updateEnabled( "" );
+      }
+      return ok;
+   }
 }
 
 export class MixinLoader {
@@ -516,6 +524,14 @@ export class ModuleInstance extends MixinLoader {
          return false;
       }
       return await ModuleManager.remove( this );
+   }
+
+   public async enable() {
+      const ok = await ModuleManager.enable( this );
+      if ( ok ) {
+         this.getModule().updateEnabled( this.getVersion() );
+      }
+      return ok;
    }
 }
 

@@ -48,8 +48,8 @@ function interceptNavigationControlMessage( e: Event ): boolean {
       document.location.reload();
    }
    {
-      const uri = new URL( trimmedUri );
-      nsUrlHandlers.get( uri.hash )?.( trimmedUri );
+      const hash = trimmedUri.slice( 0, 47 );
+      nsUrlHandlers.get( hash )?.( trimmedUri );
    }
    return false;
 }

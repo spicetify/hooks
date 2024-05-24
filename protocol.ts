@@ -58,17 +58,18 @@ export const nsUrlHandlers = new Map<string, ( m: string ) => void>();
 const sendProtocolMessage = async ( action: string, options: Record<string, string> ) => {
    const p = createPromise<boolean>();
 
-   const uri = new URL( protocol + action );
+   const hash = crypto.randomUUID();
+   const base = protocol + hash + ":";
+   const uri = new URL( base + action );
    // @ts-ignore
    uri.search = new URLSearchParams( options );
-   uri.hash = crypto.randomUUID();
 
    let cancelSubscription: () => void;
 
    const handleIncomingMessage = ( m: string ) => {
-      const u = new URL( m );
-      if ( u.protocol === uri.protocol && u.hash === uri.hash ) {
-         p.res( u.pathname === "1" );
+      if ( m.startsWith( base ) ) {
+         const payload = m.slice( base.length );
+         p.res( payload === "1" );
          cancelSubscription();
       }
    };
@@ -81,8 +82,8 @@ const sendProtocolMessage = async ( action: string, options: Record<string, stri
       daemonConn.addEventListener( "message", listener );
    } else {
       open( workerProtocol + uri.href );
-      cancelSubscription = () => nsUrlHandlers.delete( uri.hash );
-      nsUrlHandlers.set( uri.hash, handleIncomingMessage );
+      cancelSubscription = () => nsUrlHandlers.delete( base );
+      nsUrlHandlers.set( base, handleIncomingMessage );
    }
 
    setTimeout( () => {
