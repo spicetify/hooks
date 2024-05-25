@@ -26,5 +26,5 @@ export const Paths =
 import { fetchText } from "./util.js";
 
 export const SPOTIFY_VERSION = await fetchText( "/xpui.js" ).then( xpui =>
-   xpui.match( /\.searchParams\.append\("version","(?<version>[^\"]+)/ )!.groups!.version
+   xpui.match( /clientVersion:"(?<version>\d+\.\d+\.\d+)/ )!.groups!.version
 );
