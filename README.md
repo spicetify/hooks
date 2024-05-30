@@ -1,7 +1,7 @@
 ```pwsh
 cd $env.LOCALAPPDATA/spicetify/
 rm -r $env.LOCALAPPDATA/spicetify/hooks/
-git clone github.com/spicetify/hooks hooks/
+git clone github.com/spicetify/hooks
 cd hooks
 tsc
 ```
