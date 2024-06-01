@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { MixinLoader } from "./module.js";
+import type { MixinLoader } from "./module.js";
 import { Paths } from "./static.js";
 import { fetchText } from "./util.js";
 
