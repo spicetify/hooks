@@ -4,7 +4,7 @@
  */
 
 // @ts-ignore
-const check = ({ props, name }: { props: Array<string>; name: string }) => {
+const check = ({ props, name }: { props: Array<string>; name: string; }) => {
 	const object = name.split(".").reduce((pobj, k) => pobj[k], globalThis as any);
 	const nonExistantProps = props.filter(prop => !object[prop]);
 	const nonReportedProps = Object.keys(object).filter(key => props.indexOf(key) === -1);
@@ -28,4 +28,4 @@ const check = ({ props, name }: { props: Array<string>; name: string }) => {
 	console.groupEnd();
 };
 
-export const test = () => {};
+export const test = () => { };

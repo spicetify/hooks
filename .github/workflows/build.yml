@@ -1,36 +1,41 @@
 name: "Build"
 
 on:
-    push:
-        tags:
-            - "v*.*.*"
+   push:
+      tags:
+       - "v*.*.*"
 
 permissions:
-    contents: write
+   contents: write
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Install Node v20
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 20
-            - name: Install TypeScript
-              run: npm install typescript --save-dev
-            - name: Run tsc
-              run: npx tsc --outDir out/
-            - name: Package hooks into tar
-              run: pushd out; cp ../repo.json .; 7z a -bb0 hooks.tar *; mv hooks.tar ../; popd
-            - name: Compress hooks.tar
-              run: 7z a -bb0 -sdel hooks.tar.gz hooks.tar
-            - name: Package hooks types
-              run: 7z a hooks.types.zip types/*
-            - name: Release
-              uses: softprops/action-gh-release@v2
-              with:
-                  files: |
-                      COPYING
-                      hooks.tar.gz
+   build:
+      runs-on: ubuntu-latest
+      steps:
+         -  name: Checkout
+            uses: actions/checkout@v4
+         -  name: Install Node v20
+            uses: actions/setup-node@v1
+            with:
+               node-version: 20
+         -  name: Install TypeScript
+            run: npm install typescript --save-dev
+         -  name: Run tsc
+            run: npx tsc --outDir out/
+         -  name: Package hooks into tar
+            run: |
+               pushd out
+               cp ../repo.json .
+               7z a -bb0 hooks.tar *
+               mv hooks.tar ../
+               popd
+         -  name: Compress hooks.tar
+            run: 7z a -bb0 -sdel hooks.tar.gz hooks.tar
+         -  name: Package hooks types
+            run: 7z a hooks.types.zip types/*
+         -  name: Release
+            uses: softprops/action-gh-release@v2
+            with:
+               files: |
+                  COPYING
+                  hooks.tar.gz

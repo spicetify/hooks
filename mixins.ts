@@ -17,7 +17,7 @@ export const applyTransforms = (path: string) => {
 	const i = Paths.indexOf(path as any);
 	const source = sources[i];
 	console.info("loadResource", { path, source });
-	if (!source) return path;
+	if (!source) return Promise.resolve(path);
 	return source.getObjectURL();
 };
 

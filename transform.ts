@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { MixinLoader } from "./module.js";
+import { MixinLoader } from "./module.js";
 import { Paths } from "./static.js";
 import { fetchText } from "./util.js";
 
 export class SourceFile {
 	objectURL?: string;
 	transforms = new Array<(input: string) => string>();
-	constructor(public path: string) {}
+	constructor(public path: string) { }
 
 	mixin(transform: (input: string) => string) {
 		this.transforms.push(transform);
@@ -44,19 +44,19 @@ export type Transformer = ReturnType<typeof createTransformer>;
 
 export const createTransformer =
 	(module: MixinLoader) =>
-	<A = void>(
-		tr: (emit: Thunk<A>) => (input: string) => string,
-		{ then = () => {}, glob = /(?:)/, noAwait = false }: MixinProps<A>,
-	) => {
-		const p = new Promise<A>(resolve => {
-			const _sources = Paths.map((path, i) => glob.test(path) && sources[i]).filter(
-				Boolean,
-			) as SourceFile[];
-			for (const source of _sources) {
-				source.mixin(tr(resolve));
-			}
-		}).then(then);
-		// @ts-ignore
-		p.transform = tr;
-		noAwait || module.awaitedMixins.push(p);
-	};
+		<A = void>(
+			tr: (emit: Thunk<A>) => (input: string) => string,
+			{ then = () => { }, glob = /(?:)/, noAwait = false }: MixinProps<A>,
+		) => {
+			const p = new Promise<A>(resolve => {
+				const _sources = Paths.map((path, i) => glob.test(path) && sources[i]).filter(
+					Boolean,
+				) as SourceFile[];
+				for (const source of _sources) {
+					source.mixin(tr(resolve));
+				}
+			}).then(then);
+			// @ts-ignore
+			p.transform = tr;
+			noAwait || module.awaitedMixins.push(p);
+		};

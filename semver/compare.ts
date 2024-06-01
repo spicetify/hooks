@@ -18,37 +18,37 @@ import type { CompareOperator } from './utils.js';
  * compare('10.1.1', '10.2.2', '>='); // return false
  * ```
  */
-export const compare = ( v1: string, v2: string, operator: CompareOperator ) => {
-  // validate input operator
-  assertValidOperator( operator );
+export const compare = (v1: string, v2: string, operator: CompareOperator) => {
+	// validate input operator
+	assertValidOperator(operator);
 
-  // since result of compareVersions can only be -1 or 0 or 1
-  // a simple map can be used to replace switch
-  const res = compareVersions( v1, v2 );
+	// since result of compareVersions can only be -1 or 0 or 1
+	// a simple map can be used to replace switch
+	const res = compareVersions(v1, v2);
 
-  return operatorResMap[ operator ].includes( res );
+	return operatorResMap[operator].includes(res);
 };
 
 const operatorResMap = {
-  '>': [ 1 ],
-  '>=': [ 0, 1 ],
-  '=': [ 0 ],
-  '<=': [ -1, 0 ],
-  '<': [ -1 ],
-  '!=': [ -1, 1 ],
+	'>': [1],
+	'>=': [0, 1],
+	'=': [0],
+	'<=': [-1, 0],
+	'<': [-1],
+	'!=': [-1, 1],
 };
 
-const allowedOperators = Object.keys( operatorResMap );
+const allowedOperators = Object.keys(operatorResMap);
 
-const assertValidOperator = ( op: string ) => {
-  if ( typeof op !== 'string' ) {
-    throw new TypeError(
-      `Invalid operator type, expected string but got ${ typeof op }`
-    );
-  }
-  if ( allowedOperators.indexOf( op ) === -1 ) {
-    throw new Error(
-      `Invalid operator, expected one of ${ allowedOperators.join( '|' ) }`
-    );
-  }
+const assertValidOperator = (op: string) => {
+	if (typeof op !== 'string') {
+		throw new TypeError(
+			`Invalid operator type, expected string but got ${typeof op}`
+		);
+	}
+	if (allowedOperators.indexOf(op) === -1) {
+		throw new Error(
+			`Invalid operator, expected one of ${allowedOperators.join('|')}`
+		);
+	}
 };

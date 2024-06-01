@@ -22,7 +22,7 @@ export function findBy(...tests: Array<string | RegExp | Predicate<any>>) {
 export const fetchText = (path: string) => fetch(path).then(res => res.text());
 export const fetchJSON = <R>(path: string) => fetch(path).then(res => res.json()) as Promise<R>;
 
-// str[start] === pair[0]
+// assumption: str[start] === pair[0]
 export const findMatchingPos = (
 	str: string,
 	start: number,
@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) {}
+				} catch (_) { }
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");

@@ -10,20 +10,19 @@ const websocketProtocol = "ws://localhost:7967/rpc";
 const protocol = "spicetify:";
 
 function createPromise<T>() {
-	let cb: { res: (value: T | PromiseLike<T>) => void; rej: (reason?: any) => void };
+	let cb!: { res: (value: T | PromiseLike<T>) => void; rej: (reason?: any) => void; };
 	const p = new Promise<T>((res, rej) => {
 		cb = { res, rej };
 	});
-	// @ts-ignore
 	return Object.assign(p, cb);
 }
 
 let daemonConn: WebSocket | undefined;
 let lastDeamonConnAttempt = 0;
-async function tryConnectToDaemon() {
+function tryConnectToDaemon() {
 	const timestamp = Date.now();
 	if (timestamp - lastDeamonConnAttempt < 5 * 60 * 1000) {
-		return;
+		return Promise.resolve();
 	}
 	lastDeamonConnAttempt = timestamp;
 	const ws = new WebSocket(websocketProtocol);
