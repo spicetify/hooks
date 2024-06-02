@@ -4,8 +4,7 @@
  */
 
 import { nsUrlHandlers } from "./protocol.js";
-import { Paths } from "./static.js";
-import { sources, type Transformer } from "./transform.js";
+import { SourceFile, type Transformer } from "./transform.js";
 import { matchLast } from "./util.js";
 
 declare global {
@@ -14,10 +13,8 @@ declare global {
 }
 
 export const applyTransforms = (path: string) => {
-	const i = Paths.indexOf(path as any);
-	const source = sources[i];
-	console.info("loadResource", { path, source });
-	if (!source) return Promise.resolve(path);
+	const source = SourceFile.from(path);
+	console.info("loadResource", source);
 	return source.getObjectURL();
 };
 
