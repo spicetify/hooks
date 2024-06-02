@@ -352,10 +352,8 @@ export class ModuleInstance extends MixinLoader {
 			return this.transition;
 		}
 		this.preloaded = true;
-		let finishLoading!: () => void;
-		this.transition = new Promise(res => {
-			finishLoading = res;
-		});
+		const { promise, resolve } = Promise.withResolvers<void>();
+		this.transition = promise;
 
 		await Promise.all(
 			Object.keys(this.metadata.dependencies).map(dependency => {
@@ -366,7 +364,7 @@ export class ModuleInstance extends MixinLoader {
 
 		await this._loadMixins();
 
-		finishLoading();
+		resolve();
 		this.transition = undefined;
 	}
 
@@ -375,10 +373,8 @@ export class ModuleInstance extends MixinLoader {
 			return this.transition;
 		}
 		this.loaded = true;
-		let finishTransition!: () => void;
-		this.transition = new Promise(res => {
-			finishTransition = res;
-		});
+		const { promise, resolve } = Promise.withResolvers<void>();
+		this.transition = promise;
 
 		await Promise.all(
 			Object.keys(this.metadata.dependencies).map(dependency => {
@@ -392,7 +388,7 @@ export class ModuleInstance extends MixinLoader {
 		await Promise.all(this.awaitedMixins);
 		await this._loadJS();
 
-		finishTransition();
+		resolve();
 		this.transition = undefined;
 	}
 
@@ -413,10 +409,8 @@ export class ModuleInstance extends MixinLoader {
 			return this.transition;
 		}
 		this.loaded = false;
-		let finishTransition!: () => void;
-		this.transition = new Promise(res => {
-			finishTransition = res;
-		});
+		const { promise, resolve } = Promise.withResolvers<void>();
+		this.transition = promise;
 
 		for (const dependency of Object.keys(this.metadata.dependencies)) {
 			const module = Module.get(dependency)!.getEnabledInstance()!;
@@ -427,7 +421,7 @@ export class ModuleInstance extends MixinLoader {
 		await this._unloadCSS?.();
 		await this._unloadJS?.();
 
-		finishTransition();
+		resolve();
 		this.transition = undefined;
 	}
 

@@ -9,14 +9,6 @@ const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
 const websocketProtocol = "ws://localhost:7967/rpc";
 const protocol = "spicetify:";
 
-function createPromise<T>() {
-	let cb!: { res: (value: T | PromiseLike<T>) => void; rej: (reason?: any) => void; };
-	const p = new Promise<T>((res, rej) => {
-		cb = { res, rej };
-	});
-	return Object.assign(p, cb);
-}
-
 let daemonConn: WebSocket | undefined;
 let lastDeamonConnAttempt = 0;
 function tryConnectToDaemon() {
@@ -26,10 +18,10 @@ function tryConnectToDaemon() {
 	}
 	lastDeamonConnAttempt = timestamp;
 	const ws = new WebSocket(websocketProtocol);
-	const p = createPromise<Event>();
-	ws.onopen = e => p.res(e);
-	ws.onclose = e => p.rej(e);
-	return p
+	const { promise, resolve, reject } = Promise.withResolvers<Event>();
+	ws.onopen = e => resolve(e);
+	ws.onclose = e => reject(e);
+	return promise
 		.then(() => {
 			daemonConn = ws;
 		})
@@ -41,7 +33,7 @@ tryConnectToDaemon();
 
 export const nsUrlHandlers = new Map<string, (m: string) => void>();
 const sendProtocolMessage = async (action: string, options: Record<string, string>) => {
-	const p = createPromise<boolean>();
+	const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
 	const hash = crypto.randomUUID();
 	const base = `${protocol + hash}:`;
@@ -54,7 +46,7 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 	const handleIncomingMessage = (m: string) => {
 		if (m.startsWith(base)) {
 			const payload = m.slice(base.length);
-			p.res(payload === "1");
+			resolve(payload === "1");
 			cancelSubscription();
 		}
 	};
@@ -72,11 +64,11 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 	}
 
 	setTimeout(() => {
-		p.rej(new Error("RPC timed out"));
+		reject(new Error("RPC timed out"));
 		cancelSubscription();
 	}, 5000);
 
-	return p;
+	return promise;
 };
 
 export const ModuleManager = {
