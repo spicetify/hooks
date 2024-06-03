@@ -224,7 +224,7 @@ export class ModuleInstance extends MixinLoader {
 	}
 
 	public getIdentifier(): StoreIdentifier {
-		return `${this.getModuleIdentifier()}/${this.getVersion()}`;
+		return `${this.getModuleIdentifier()}@${this.getVersion()}`;
 	}
 
 	public getModule(): Module {
