@@ -45,19 +45,6 @@ export interface Metadata {
 	dependencies: Record<string, string>;
 }
 
-const dummy_metadata = Object.freeze({
-	name: "Placeholder",
-	tags: [],
-	preview: "https://www.getdummyimage.com/400/400",
-	version: "0",
-	authors: ["John Doe", "Jane Doe"],
-	description: "This is a dummy Module",
-	readme: "https://example.com",
-	entries: {},
-	dependencies: {},
-	isDummy: true,
-});
-
 export class Module {
 	private static registry = new Map<ModuleIdentifier, Module>();
 
@@ -76,14 +63,14 @@ export class Module {
 	static async enableAllLoadableMixins() {
 		console.time("onSpotifyPreInit");
 		const modules = Module.getAll();
-		await Promise.all(modules.map(module => module.getEnabledInstance()?.loadMixins()));
+		await Promise.all(modules.map((module) => module.getEnabledInstance()?.loadMixins()));
 		console.timeEnd("onSpotifyPreInit");
 	}
 
 	static async enableAllLoadable() {
 		console.time("onSpotifyPostInit");
 		const modules = Module.getAll();
-		await Promise.all(modules.map(module => module.getEnabledInstance()?.load()));
+		await Promise.all(modules.map((module) => module.getEnabledInstance()?.load()));
 		console.timeEnd("onSpotifyPostInit");
 	}
 
@@ -117,13 +104,13 @@ export class Module {
 
 		requestIdleCallback(() =>
 			Promise.all(remotes.map(fetchJSON<Record<string, Array<string>>>))
-				.then(repos => repos.reduce((a, b) => deepMerge(b, a), {}))
-				.then(async versions => {
+				.then((repos) => repos.reduce((a, b) => deepMerge(b, a), {}))
+				.then(async (versions) => {
 					for (const [version, metadatas] of Object.entries(versions)) {
 						const mi = await m.getInstanceOrCreate(version);
 						mi._addArtifacts(metadatas);
 					}
-				}),
+				})
 		);
 
 		return m;
@@ -143,10 +130,9 @@ export class Module {
 
 	public async createInstance(version: Truthy<Version>, installed = false) {
 		const shouldEnableAtStartup = version === this.enabled;
-		const metadata =
-			shouldEnableAtStartup && installed
-				? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
-				: dummy_metadata;
+		const metadata = shouldEnableAtStartup && installed
+			? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
+			: null;
 
 		return new ModuleInstance(this, version, metadata, installed);
 	}
@@ -196,11 +182,11 @@ export class ModuleInstance extends MixinLoader {
 	}
 
 	public getName() {
-		return this.metadata.name;
+		return this.metadata?.name ?? null;
 	}
 
 	public getAuthor() {
-		return this.metadata.authors[0];
+		return this.metadata?.authors[0] ?? null;
 	}
 
 	public getVersion() {
@@ -234,7 +220,7 @@ export class ModuleInstance extends MixinLoader {
 	constructor(
 		private module: Module,
 		private version: Truthy<Version>,
-		public metadata: Metadata,
+		public metadata: Metadata | null,
 		private installed: boolean,
 	) {
 		super();
@@ -255,7 +241,7 @@ export class ModuleInstance extends MixinLoader {
 	}
 
 	private async _loadMixins() {
-		const entry = this.metadata.entries.mixin;
+		const entry = this.metadata?.entries.mixin;
 		if (!entry) {
 			return;
 		}
@@ -270,13 +256,11 @@ export class ModuleInstance extends MixinLoader {
 		console.groupEnd();
 
 		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
-		Promise.all(this.awaitedMixins).then(() =>
-			console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`),
-		);
+		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
 	}
 
 	private async _loadJS() {
-		const entry = this.metadata.entries.js;
+		const entry = this.metadata?.entries.js;
 		if (!entry) {
 			return;
 		}
@@ -305,21 +289,23 @@ export class ModuleInstance extends MixinLoader {
 	}
 
 	private _loadCSS() {
-		const entry = this.metadata.entries.css;
-		if (entry) {
-			const id = `${this.getModuleIdentifier()}-styles`;
-			const fullPath = this.getRelPath(entry);
-			const link = document.createElement("link");
-			link.id = id;
-			link.rel = "stylesheet";
-			link.type = "text/css";
-			link.href = fullPath;
-			document.head.append(link);
-			this._unloadCSS = () => {
-				this._unloadCSS = null;
-				document.getElementById(id)?.remove();
-			};
+		const entry = this.metadata?.entries.css;
+		if (!entry) {
+			return;
 		}
+
+		const id = `${this.getModuleIdentifier()}-styles`;
+		const fullPath = this.getRelPath(entry);
+		const link = document.createElement("link");
+		link.id = id;
+		link.rel = "stylesheet";
+		link.type = "text/css";
+		link.href = fullPath;
+		document.head.append(link);
+		this._unloadCSS = () => {
+			this._unloadCSS = null;
+			document.getElementById(id)?.remove();
+		};
 	}
 
 	public isEnabled() {
@@ -327,6 +313,9 @@ export class ModuleInstance extends MixinLoader {
 	}
 
 	private canLoadRecur(isPreload = false, range = ">=0.0.0") {
+		if (!this.metadata) {
+			return false;
+		}
 		if (!isPreload && !this.preloaded && this.metadata.entries.mixin) {
 			return false;
 		}
@@ -356,7 +345,7 @@ export class ModuleInstance extends MixinLoader {
 		this.transition = promise;
 
 		await Promise.all(
-			Object.keys(this.metadata.dependencies).map(dependency => {
+			Object.keys(this.metadata!.dependencies).map((dependency) => {
 				const module = Module.get(dependency)!.getEnabledInstance()!;
 				return module.preloadRecur();
 			}),
@@ -377,7 +366,7 @@ export class ModuleInstance extends MixinLoader {
 		this.transition = promise;
 
 		await Promise.all(
-			Object.keys(this.metadata.dependencies).map(dependency => {
+			Object.keys(this.metadata!.dependencies).map((dependency) => {
 				const module = Module.get(dependency)!.getEnabledInstance()!;
 				module.dependants.add(this);
 				return module.loadRecur();
@@ -412,11 +401,11 @@ export class ModuleInstance extends MixinLoader {
 		const { promise, resolve } = Promise.withResolvers<void>();
 		this.transition = promise;
 
-		for (const dependency of Object.keys(this.metadata.dependencies)) {
+		for (const dependency of Object.keys(this.metadata!.dependencies)) {
 			const module = Module.get(dependency)!.getEnabledInstance()!;
 			module.dependants.delete(this);
 		}
-		await Promise.all(Array.from(this.dependants).map(dependant => dependant.unloadRecur()));
+		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
 
 		await this._unloadCSS?.();
 		await this._unloadJS?.();
