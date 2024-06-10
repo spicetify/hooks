@@ -114,7 +114,7 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str, path) => {
-			str += `;\n__onScriptLoaded("${path}")`;
+			str += `;\n__onScriptLoaded("${path}");`;
 			emit();
 			return str;
 		},
