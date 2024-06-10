@@ -86,34 +86,41 @@ export class Module {
 		Module.registry.set(identifier, this);
 	}
 
-	static async fromVault([identifier, { enabled, remotes, v: versions }]: [
+	static async fromVault([identifier, module]: [
 		ModuleIdentifier,
 		_Module,
 	]) {
-		if (!enabled) enabled = "";
+		module.enabled ??= "";
 
-		const m = new Module(identifier, enabled);
+		async function initModule(identifier: ModuleIdentifier, { enabled, remotes, v: versions }: _Module, original = false) {
+			const m = (original ? new Module(identifier, enabled) : Module.registry.get(identifier) ?? new Module(identifier, ""));
 
-		await Promise.all(
-			Object.entries(versions).map(async ([version, store]) => {
-				const mi = await m.createInstance(version, store.installed);
-				mi._addArtifacts(store.artifacts);
-				return mi;
-			}),
-		);
-
-		requestIdleCallback(() =>
-			Promise.all(remotes.map(fetchJSON<Record<string, Array<string>>>))
-				.then((repos) => repos.reduce((a, b) => deepMerge(b, a), {}))
-				.then(async (versions) => {
-					for (const [version, metadatas] of Object.entries(versions)) {
-						const mi = await m.getInstanceOrCreate(version);
-						mi._addArtifacts(metadatas);
-					}
+			await Promise.all(
+				Object.entries(versions).map(async ([version, store]) => {
+					const mi = original ? await m.createInstance(version, store.installed) : await m.getInstanceOrCreate(version);
+					mi._addArtifacts(store.artifacts);
+					return mi;
 				})
-		);
+			);
 
-		return m;
+			initModuleRemotes(identifier, remotes);
+
+			return m;
+		}
+
+		function initModuleRemotes(identifier: ModuleIdentifier, remotes: string[]) {
+			requestIdleCallback(() => Promise.all(remotes.map(fetchJSON<_Vault["modules"]>))
+				.then((remote) => remote.reduce((a, b) => deepMerge(b, a), {}))
+				.then(async (remote) => {
+					// TODO: revisit this check
+					Object.keys(remote).filter(i => i.startsWith(identifier)).forEach(async identifier => {
+						initModule(identifier, remote[identifier]);
+					});
+
+				}));
+		}
+
+		return initModule(identifier, module, true);
 	}
 
 	public getIdentifier(): ModuleIdentifier {
