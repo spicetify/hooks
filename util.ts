@@ -8,19 +8,19 @@ export function findBy(...tests: Array<string | RegExp | Predicate<any>>) {
 	const testFns = tests.map((test): Predicate<any> => {
 		switch (typeof test) {
 			case "string":
-				return x => x.toString().includes(test);
+				return (x) => x.toString().includes(test);
 			case "function":
-				return x => test(x);
+				return (x) => test(x);
 			default: // assume regex
-				return x => test.test(x.toString());
+				return (x) => test.test(x.toString());
 		}
 	});
-	const testFn = (x: any) => testFns.map(t => t(x)).every(Boolean);
+	const testFn = (x: any) => testFns.map((t) => t(x)).every(Boolean);
 	return <A>(xs: A[]) => xs.find(testFn)!;
 }
 
-export const fetchText = (path: string) => fetch(path).then(res => res.text());
-export const fetchJSON = <R>(path: string) => fetch(path).then(res => res.json()) as Promise<R>;
+export const fetchText = (path: string) => fetch(path).then((res) => res.text());
+export const fetchJSON = <R>(path: string) => fetch(path).then((res) => res.json()) as Promise<R>;
 
 // assumption: str[start] === pair[0]
 export const findMatchingPos = (
@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) { }
+				} catch (_) {}
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");
@@ -109,7 +109,7 @@ export const type = (obj: any, access: string): string => {
 			if (Array.isArray(obj)) {
 				const types = obj.map((e, i) => type(e, `${access}[${i}]`));
 				// @ts-ignore: Property 'groupBy' does not exist on type 'ObjectConstructor'.
-				const uniqueTypes = Object.values(Object.groupBy(types, t => t)).map(v => v![0]);
+				const uniqueTypes = Object.values(Object.groupBy(types, (t) => t)).map((v) => v![0]);
 				return `Array<${uniqueTypes.sort().join("|")}>`;
 			}
 
@@ -121,11 +121,13 @@ export const type = (obj: any, access: string): string => {
 			}
 			const uniqueKeys = Array.from(new Set(keys));
 			const blacklist = ["constructor"];
-			return `{${uniqueKeys
-				.filter(k => !blacklist.includes(k))
-				.sort()
-				.map(k => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-				.join(";")}}`;
+			return `{${
+				uniqueKeys
+					.filter((k) => !blacklist.includes(k))
+					.sort()
+					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+					.join(";")
+			}}`;
 		}
 		default:
 			return typeof obj;

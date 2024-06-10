@@ -10,7 +10,7 @@ await mixin(MixinLoader.INTERNAL.transformer);
 await Module.enableAllLoadableMixins();
 
 await Promise.all(
-	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async p => import(await p)),
+	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) => import(await p)),
 );
 
 await Promise.all(MixinLoader.INTERNAL.awaitedMixins);

@@ -19,8 +19,8 @@ function tryConnectToDaemon() {
 	lastDeamonConnAttempt = timestamp;
 	const ws = new WebSocket(websocketProtocol);
 	const { promise, resolve, reject } = Promise.withResolvers<Event>();
-	ws.onopen = e => resolve(e);
-	ws.onclose = e => reject(e);
+	ws.onopen = (e) => resolve(e);
+	ws.onclose = (e) => reject(e);
 	return promise
 		.then(() => {
 			daemonConn = ws;

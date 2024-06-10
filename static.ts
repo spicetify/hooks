@@ -6,5 +6,5 @@
 import { fetchText } from "./util.js";
 
 export const SPOTIFY_VERSION = await fetchText("/xpui.js").then(
-	xpui => xpui.match(/clientVersion:"(?<version>\d+\.\d+\.\d+)/)!.groups!.version,
+	(xpui) => xpui.match(/clientVersion:"(?<version>\d+\.\d+\.\d+)/)!.groups!.version,
 );

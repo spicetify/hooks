@@ -10,6 +10,8 @@ import { matchLast } from "./util.js";
 declare global {
 	var __applyTransforms: typeof applyTransforms;
 	var __interceptNavigationControlMessage: typeof interceptNavigationControlMessage;
+	var __onScriptLoaded: (path: string) => void;
+	var CHUNKS: Record<string, PromiseWithResolvers<void>>;
 }
 
 export const applyTransforms = (path: string) => {
@@ -17,7 +19,6 @@ export const applyTransforms = (path: string) => {
 	console.info("loadResource", source);
 	return source.getObjectURL();
 };
-
 globalThis.__applyTransforms = applyTransforms;
 
 const rpc = "spotify:app:spicetify:";
@@ -36,8 +37,13 @@ function interceptNavigationControlMessage(e: Event): boolean {
 	}
 	return false;
 }
-
 globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessage;
+
+globalThis.CHUNKS = {};
+globalThis.__onScriptLoaded = (path: string) => {
+	CHUNKS[path] ??= Promise.withResolvers();
+	setTimeout(CHUNKS[path].resolve);
+};
 
 export default async function (transformer: Transformer) {
 	transformer(
@@ -103,6 +109,18 @@ export default async function (transformer: Transformer) {
 		},
 		{
 			glob: /^\/xpui\.js/,
+		},
+	);
+
+	transformer(
+		(emit) => (str, path) => {
+			str += `;\n__onScriptLoaded("${path}")`;
+			emit();
+			return str;
+		},
+		{
+			glob: /\.js$/,
+			noAwait: true,
 		},
 	);
 }
