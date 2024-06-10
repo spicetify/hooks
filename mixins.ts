@@ -20,7 +20,7 @@ export const applyTransforms = (path: string) => {
 
 globalThis.__applyTransforms = applyTransforms;
 
-const rpc = "spotify:app:rpc:";
+const rpc = "spotify:app:spicetify:";
 function interceptNavigationControlMessage(e: Event): boolean {
 	const uri: string = (e as any).data.data;
 	if (!uri.startsWith(rpc)) {
@@ -41,7 +41,7 @@ globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessa
 
 export default async function (transformer: Transformer) {
 	transformer(
-		emit => str => {
+		(emit) => (str) => {
 			str = str.replace(
 				/(([a-zA-Z_\$][\w\$]*)=([a-zA-Z_\$][\w\$]*)\.p\+\3\.u\([a-zA-Z_\$][\w\$]*\))/,
 				"$1,$2=await __applyTransforms($2)",
@@ -67,7 +67,7 @@ export default async function (transformer: Transformer) {
 	);
 
 	transformer(
-		emit => str => {
+		(emit) => (str) => {
 			str = str.replace(/(\("[^"]+sentry.io)/, ",$1");
 			emit();
 			return str;
@@ -78,7 +78,7 @@ export default async function (transformer: Transformer) {
 	);
 
 	transformer(
-		emit => str => {
+		(emit) => (str) => {
 			str = str.replace(/("incognito-enabled":[a-zA-Z_\$][\w\$]*)/, '$1,employee:"1"');
 			str = str.replace(
 				/([a-zA-Z_\$][\w\$]*)\("app\.enable-developer-mode",([a-zA-Z_\$][\w\$]*)\)/,
@@ -93,7 +93,7 @@ export default async function (transformer: Transformer) {
 	);
 
 	transformer(
-		emit => str => {
+		(emit) => (str) => {
 			str = str.replace(
 				/(([a-zA-Z_\$][\w\$]*)\.data\.type===(?:[a-zA-Z_\$][\w\$]*\.){2}NAVIGATION&&)/,
 				"$1__interceptNavigationControlMessage($2)&&",
