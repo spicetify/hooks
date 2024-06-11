@@ -17,7 +17,7 @@ export class SourceFile {
 
 	static SOURCES = new Map<string, SourceFile>();
 
-	private constructor(private path: string) {}
+	private constructor(private path: string) { }
 
 	static from(path: string) {
 		return SourceFile.SOURCES.get(path) ?? new SourceFile(path);
@@ -54,18 +54,18 @@ export type MixinProps<A> = {
 export type Transformer = ReturnType<typeof createTransformer>;
 
 export const createTransformer = (module: MixinLoader) =>
-<A = void>(
-	transform: (emit: Thunk<A>) => (input: string, path: string) => string,
-	{ then = () => {}, glob = /(?:)/, noAwait = false }: MixinProps<A>,
-) => {
-	const { promise, resolve } = Promise.withResolvers<A>();
+	<A = void>(
+		transform: (emit: Thunk<A>) => (input: string, path: string) => string,
+		{ then = () => { }, glob = /(?:)/, noAwait = false }: MixinProps<A>,
+	) => {
+		const { promise, resolve } = Promise.withResolvers<A>();
 
-	transforms.push([glob, transform(resolve)]);
+		transforms.push([glob, transform(resolve)]);
 
-	promise.then(then);
-	// @ts-ignore
-	promise.transform = transform;
-	noAwait || module.awaitedMixins.push(promise as Promise<void>);
-};
+		promise.then(then);
+		// @ts-ignore
+		promise.transform = transform;
+		noAwait || module.awaitedMixins.push(promise as Promise<void>);
+	};
 
 export const transforms = new Array<[RegExp, (input: string, path: string) => string]>();

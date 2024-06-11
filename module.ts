@@ -16,13 +16,13 @@ type Truthy<A> = A;
 
 interface _Module {
 	enabled: Version;
-	remotes: Array<string>;
 	v: Record<Version, _Store>;
 }
 
 interface _Store {
 	installed: boolean;
 	artifacts: Array<string>;
+	providers: Array<string>;
 }
 
 interface _Vault {
@@ -45,111 +45,73 @@ export interface Metadata {
 	dependencies: Record<string, string>;
 }
 
-export class Module {
-	private static registry = new Map<ModuleIdentifier, Module>();
+const getEnabledChildrenInstances = () =>
+	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
+		Boolean,
+	) as LocalModuleInstance[];
 
-	public static get(identifier: ModuleIdentifier) {
-		return this.registry.get(identifier);
-	}
+export const enableAllLoadableMixins = () =>
+	Promise.all(getEnabledChildrenInstances().map((instance) => instance.loadMixins()));
 
-	public static getOrCreate(identifier: ModuleIdentifier) {
-		return this.registry.get(identifier) ?? new Module(identifier, "");
-	}
+export const enableAllLoadable = () =>
+	Promise.all(getEnabledChildrenInstances().map((instance) => instance.load()));
 
-	public static getAll() {
-		return Array.from(Module.registry.values());
-	}
-
-	static async enableAllLoadableMixins() {
-		console.time("onSpotifyPreInit");
-		const modules = Module.getAll();
-		await Promise.all(modules.map((module) => module.getEnabledInstance()?.loadMixins()));
-		console.timeEnd("onSpotifyPreInit");
-	}
-
-	static async enableAllLoadable() {
-		console.time("onSpotifyPostInit");
-		const modules = Module.getAll();
-		await Promise.all(modules.map((module) => module.getEnabledInstance()?.load()));
-		console.timeEnd("onSpotifyPostInit");
-	}
-
-	public instances = new Map<Version, ModuleInstance>();
+export abstract class Module<C extends Module<any>, I extends ModuleInstance<Module<C, I>> = ModuleInstance<Module<C, any>>> {
+	public instances = new Map<Version, I>();
 
 	constructor(
+		public parent: Module<Module<C, I>>,
+		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
-	) {
-		if (Module.registry.has(identifier)) {
-			throw new Error(`A module with the same identifier "${identifier}" is already registered`);
-		}
-		Module.registry.set(identifier, this);
-	}
-
-	static async fromVault([identifier, module]: [
-		ModuleIdentifier,
-		_Module,
-	]) {
-		module.enabled ??= "";
-
-		async function initModule(identifier: ModuleIdentifier, { enabled, remotes, v: versions }: _Module, original = false) {
-			const m = (original ? new Module(identifier, enabled) : Module.registry.get(identifier) ?? new Module(identifier, ""));
-
-			await Promise.all(
-				Object.entries(versions).map(async ([version, store]) => {
-					const mi = original ? await m.createInstance(version, store.installed) : await m.getInstanceOrCreate(version);
-					mi._addArtifacts(store.artifacts);
-					return mi;
-				})
-			);
-
-			initModuleRemotes(identifier, remotes);
-
-			return m;
-		}
-
-		function initModuleRemotes(identifier: ModuleIdentifier, remotes: string[]) {
-			requestIdleCallback(() => Promise.all(remotes.map(fetchJSON<_Vault["modules"]>))
-				.then((remote) => remote.reduce((a, b) => deepMerge(b, a), {}))
-				.then(async (remote) => {
-					// TODO: revisit this check
-					Object.keys(remote).filter(i => i.startsWith(identifier)).forEach(async identifier => {
-						initModule(identifier, remote[identifier]);
-					});
-
-				}));
-		}
-
-		return initModule(identifier, module, true);
-	}
-
+	) { }
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
 	}
+
+	abstract newChild(identifier: ModuleIdentifier, module: _Module): Promise<C>;
+
+	public getChild(identifier: ModuleIdentifier): C | undefined {
+		return this.children[identifier];
+	}
+
+	public async getChildOrNew(identifier: ModuleIdentifier, module: _Module): Promise<C> {
+		return this.getChild(identifier) ?? await this.newChild(identifier, module);
+	}
+
+	public setChild(identifier: ModuleIdentifier, child: C) {
+		this.children[identifier] = child;
+	}
+
+	public removeChild(identifier: ModuleIdentifier) {
+		delete this.children[identifier];
+	}
+
+	public getChildren() {
+		return Object.values(this.children);
+	}
+
+	public getDescendants(identifier: ModuleIdentifier): Array<Module<any, ModuleInstance<any>>> {
+		if (identifier === this.identifier) {
+			return [this];
+		}
+		return this.getChildren().filter((child) => child.identifier.startsWith(identifier)).flatMap((child) =>
+			child.getDescendants(identifier)
+		);
+	}
+
+	abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
 
 	public getEnabledVersion(): Version {
 		return this.enabled;
 	}
 
-	public getEnabledInstance(): ModuleInstance | null {
-		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : null;
+	public getEnabledInstance(): I | undefined {
+		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
 
-	public async createInstance(version: Truthy<Version>, installed = false) {
-		const shouldEnableAtStartup = version === this.enabled;
-		const metadata = shouldEnableAtStartup && installed
-			? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
-			: null;
-
-		return new ModuleInstance(this, version, metadata, installed);
-	}
-
-	public async getInstanceOrCreate(version: Truthy<Version>) {
-		return this.instances.get(version) ?? this.createInstance(version);
-	}
-
-	// ?
 	public async updateEnabled(enabled: Version) {
+		// TODO: load/unload providers
 		this.enabled = enabled;
 	}
 
@@ -160,34 +122,91 @@ export class Module {
 		}
 		return ok;
 	}
+
+	public async init(versions: _Module["v"]) {
+		await Promise.all(
+			Object.entries(versions)
+				.map(([version, store]) => this.newInstance(version, store)),
+		);
+
+		this.parent.setChild(this.identifier, this);
+
+		return this;
+	}
 }
 
-export class MixinLoader {
-	private _transformer = createTransformer(this);
+class RootModule extends Module<LocalModule, never> {
+	override newChild(identifier: ModuleIdentifier, module: _Module) {
+		module.enabled ??= "";
+		const m = new LocalModule(this, {}, identifier, module.enabled);
 
-	get transformer() {
-		return this._transformer;
+		return m.init(module.v);
 	}
 
-	public awaitedMixins = new Array<Promise<void>>();
+	override newInstance(version: Truthy<Version>, store: _Store): Promise<never> {
+		throw new Error("RootModule can't have instances");
+	}
+	public static INSTANCE = new RootModule({});
 
-	static INTERNAL = new MixinLoader();
+	constructor(children: Record<string, LocalModule>) {
+		super(null as any, children, "", "");
+		Object.freeze(this.instances);
+	}
 }
 
-export class ModuleInstance extends MixinLoader {
-	_unloadJS: (() => Promise<void>) | null = null;
-	_unloadCSS: (() => void) | null = null;
-	private preloaded = false;
-	private loaded = false;
-	private transition: Promise<void> | undefined;
-	private dependants = new Set<ModuleInstance>();
+export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
+	static fromModule(parent: Module<any>, identifier: ModuleIdentifier, module: _Module) {
+		module.enabled ??= "";
+		const m = new RemoteModule(parent, {}, identifier, module.enabled);
 
-	public artifacts = new Array<string>();
-
-	_addArtifacts(artifacts: string[]) {
-		this.artifacts.push(...artifacts);
+		return m.init(module.v);
 	}
 
+	newChild(identifier: ModuleIdentifier, module: _Module) {
+		return RemoteModule.fromModule(this, identifier, module);
+	}
+
+	public async newInstance(version: Truthy<Version>, { artifacts, providers }: _Store) {
+		const remoteModuleInstance = new RemoteModuleInstance(this, version, null, artifacts, providers);
+
+		this.instances.set(version, remoteModuleInstance);
+
+		if (remoteModuleInstance.isEnabled()) {
+			requestIdleCallback(async () => remoteModuleInstance.loadProviders());
+		}
+
+		return remoteModuleInstance;
+	}
+}
+
+export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
+	override newChild(identifier: ModuleIdentifier, module: _Module) {
+		return RemoteModule.fromModule(this, identifier, module);
+	}
+
+	override async newInstance(version: Truthy<Version>, { artifacts, installed, providers }: _Store) {
+		const shouldEnableAtStartup = version === this.getEnabledVersion();
+		const metadata = shouldEnableAtStartup && installed
+			? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
+			: null;
+
+		const localModuleInstance = new LocalModuleInstance(this, version, metadata, artifacts, providers, installed);
+
+		this.instances.set(version, localModuleInstance);
+
+		if (localModuleInstance.isEnabled()) {
+			requestIdleCallback(async () => localModuleInstance.loadProviders());
+		}
+
+		return localModuleInstance;
+	}
+}
+
+export interface MixinLoader {
+	awaitedMixins: Promise<void>[];
+}
+
+export class ModuleInstance<M extends Module<any>> {
 	public getName() {
 		return this.metadata?.name ?? null;
 	}
@@ -208,10 +227,6 @@ export class ModuleInstance extends MixinLoader {
 		return this.getRemoteArtifact()?.replace(/\.zip$/, ".metadata.json");
 	}
 
-	public isInstalled() {
-		return this.installed;
-	}
-
 	public getModuleIdentifier() {
 		return this.module.getIdentifier();
 	}
@@ -220,27 +235,88 @@ export class ModuleInstance extends MixinLoader {
 		return `${this.getModuleIdentifier()}@${this.getVersion()}`;
 	}
 
-	public getModule(): Module {
+	public getModule() {
 		return this.module;
 	}
 
 	constructor(
-		private module: Module,
-		private version: Truthy<Version>,
+		protected module: M,
+		protected version: Truthy<Version>,
 		public metadata: Metadata | null,
-		private installed: boolean,
-	) {
-		super();
-		module.instances.set(version, this);
+		public artifacts: Array<string>,
+		public providers: Array<string>
+	) { }
+
+	// ?
+	public updateMetadata(metadata: Metadata) {
+		this.metadata = metadata;
 	}
+
+	public isEnabled() {
+		return this.getVersion() === this.module.getEnabledVersion();
+	}
+
+	public async loadProviders() {
+		const vaults = await Promise.all(this.providers.map(fetchJSON<_Vault>));
+		const provider = vaults.reduce(
+			(acc, vault) => deepMerge(vault.modules, acc),
+			{} as _Vault["modules"],
+		);
+
+		// TODO: revisit this check
+		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (identifier) =>
+			this.module.newChild(identifier, provider[identifier])
+		);
+	}
+}
+
+export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
+	public async add() {
+		if (!(await ModuleManager.add(this))) {
+			return null;
+		}
+
+		const store: _Store = { installed: true, artifacts: this.artifacts, providers: this.providers };
+		const module: _Module = { enabled: "", v: { [this.version]: store } };
+		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier(), module);
+		return await localModule.newInstance(this.version, store);
+	}
+
+}
+
+export class LocalModuleInstance extends ModuleInstance<LocalModule> implements MixinLoader {
+	private _transformer = createTransformer(this);
+
+	get transformer() {
+		return this._transformer;
+	}
+
+	public awaitedMixins = new Array<Promise<void>>();
+
+	_unloadJS: (() => Promise<void>) | null = null;
+	_unloadCSS: (() => void) | null = null;
+	private preloaded = false;
+	private loaded = false;
+	private transition: Promise<void> | undefined;
+	private dependants = new Set<LocalModuleInstance>();
 
 	public isLoaded() {
 		return this.loaded;
 	}
 
-	// ?
-	public updateMetadata(metadata: Metadata) {
-		this.metadata = metadata;
+	public isInstalled() {
+		return this.installed;
+	}
+
+	constructor(
+		module: LocalModule,
+		version: Truthy<Version>,
+		metadata: Metadata | null,
+		artifacts: Array<string>,
+		providers: Array<string>,
+		private installed: boolean
+	) {
+		super(module, version, metadata, artifacts, providers);
 	}
 
 	public getRelPath(rel: string) {
@@ -315,10 +391,6 @@ export class ModuleInstance extends MixinLoader {
 		};
 	}
 
-	public isEnabled() {
-		return this.getVersion() === this.module.getEnabledVersion();
-	}
-
 	private canLoadRecur(isPreload = false, range = ">=0.0.0") {
 		if (!this.metadata) {
 			return false;
@@ -334,7 +406,7 @@ export class ModuleInstance extends MixinLoader {
 				if (dependency === "spotify") {
 					return satisfies(SPOTIFY_VERSION, range);
 				}
-				const module = Module.get(dependency)?.getEnabledInstance();
+				const module = RootModule.INSTANCE.getChild(dependency)?.getEnabledInstance();
 				if (!module?.canLoadRecur(isPreload, range)) {
 					return false;
 				}
@@ -353,7 +425,7 @@ export class ModuleInstance extends MixinLoader {
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = Module.get(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
 				return module.preloadRecur();
 			}),
 		);
@@ -374,7 +446,7 @@ export class ModuleInstance extends MixinLoader {
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = Module.get(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
 				module.dependants.add(this);
 				return module.loadRecur();
 			}),
@@ -409,7 +481,7 @@ export class ModuleInstance extends MixinLoader {
 		this.transition = promise;
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
-			const module = Module.get(dependency)!.getEnabledInstance()!;
+			const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
 			module.dependants.delete(this);
 		}
 		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
@@ -434,17 +506,9 @@ export class ModuleInstance extends MixinLoader {
 		console.warn(
 			"Can't enable mixins for",
 			this.getModuleIdentifier(),
-			" reason: Dependencies not met",
+			"reason: Dependencies not met",
 		);
 		return false;
-	}
-
-	public async add() {
-		const remote = this.artifacts[0];
-		if (!remote) {
-			return false;
-		}
-		return await ModuleManager.add(this.artifacts[0]);
 	}
 
 	public async load() {
@@ -457,8 +521,16 @@ export class ModuleInstance extends MixinLoader {
 			return true;
 		}
 
-		console.warn("Can't enable", this.getModuleIdentifier(), " reason: Dependencies not met");
+		console.warn("Can't enable", this.getModuleIdentifier(), "reason: Dependencies not met");
 		return false;
+	}
+
+	public async enable() {
+		const ok = await ModuleManager.enable(this);
+		if (ok) {
+			this.getModule().updateEnabled(this.getVersion());
+		}
+		return ok;
 	}
 
 	public async unload() {
@@ -474,37 +546,29 @@ export class ModuleInstance extends MixinLoader {
 		console.warn(
 			"Can't disable",
 			this.getModuleIdentifier(),
-			" reason: Module required by enabled dependencies",
+			"reason: Module required by enabled dependencies",
 		);
 		return false;
 	}
 
-	public async dispose() {
-		await this.unload();
-		if (this.loaded) {
-			return false;
-		}
-		this.module.instances.delete(this.getVersion());
-		// if ( Object.keys( this.module.instances ).length === 0 ) {
-		//    Module.delete( this.getModuleIdentifier() );
-		// }
-	}
-
 	public async remove() {
-		if (!(await this.dispose())) {
-			return false;
+		if (!(await ModuleManager.remove(this))) {
+			return null;
 		}
-		return await ModuleManager.remove(this);
-	}
 
-	public async enable() {
-		const ok = await ModuleManager.enable(this);
-		if (ok) {
-			this.getModule().updateEnabled(this.getVersion());
+		this.module.instances.delete(this.getVersion());
+		if (Object.keys(this.module.instances).length === 0) {
+			RootModule.INSTANCE.removeChild(this.getModuleIdentifier());
 		}
-		return ok;
+		return this;
 	}
 }
 
+export const INTERNAL_MIXIN_LOADER: MixinLoader = {
+	awaitedMixins: [],
+};
+
+export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
+
 const lock: _Vault = await fetchJSON("/modules/vault.json");
-await Promise.all(Object.entries(lock.modules).flatMap(Module.fromVault));
+await Promise.all(Object.entries(lock.modules).flatMap((m) => RootModule.INSTANCE.newChild(...m)));

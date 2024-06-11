@@ -4,14 +4,18 @@
  */
 
 import mixin, { applyTransforms } from "./mixins.js";
-import { MixinLoader, Module } from "./module.js";
+import { enableAllLoadable, enableAllLoadableMixins, INTERNAL_MIXIN_LOADER, INTERNAL_TRANSFORMER } from "./module.js";
 
-await mixin(MixinLoader.INTERNAL.transformer);
-await Module.enableAllLoadableMixins();
+await mixin(INTERNAL_TRANSFORMER);
+console.time("onSpotifyPreInit");
+await enableAllLoadableMixins();
+console.timeEnd("onSpotifyPreInit");
 
 await Promise.all(
 	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) => import(await p)),
 );
 
-await Promise.all(MixinLoader.INTERNAL.awaitedMixins);
-await Module.enableAllLoadable();
+await Promise.all(INTERNAL_MIXIN_LOADER.awaitedMixins);
+console.time("onSpotifyPostInit");
+await enableAllLoadable();
+console.timeEnd("onSpotifyPostInit");

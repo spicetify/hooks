@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { Module, ModuleInstance } from "./module.js";
+import type { LocalModuleInstance, Module, ModuleInstance, RemoteModuleInstance } from "./module.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
 const websocketProtocol = "ws://localhost:7967/rpc";
@@ -72,16 +72,23 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 };
 
 export const ModuleManager = {
-	add(url: string) {
-		return sendProtocolMessage("add", { url });
+	async add(instance: RemoteModuleInstance) {
+		const artifactUrl = instance.getRemoteArtifact()!;
+		if (!artifactUrl) {
+			return false;
+		}
+		return await sendProtocolMessage("add", { url: artifactUrl });
 	},
-	remove(moduleInstance: ModuleInstance) {
-		return sendProtocolMessage("remove", { id: moduleInstance.getIdentifier() });
+	async remove(instance: LocalModuleInstance) {
+		if (instance.isLoaded()) {
+			return false;
+		}
+		return await sendProtocolMessage("remove", { id: instance.getIdentifier() });
 	},
-	enable(moduleInstance: ModuleInstance) {
-		return sendProtocolMessage("enable", { id: moduleInstance.getIdentifier() });
+	enable(instance: ModuleInstance<any>) {
+		return sendProtocolMessage("enable", { id: instance.getIdentifier() });
 	},
-	disable(module: Module) {
-		return sendProtocolMessage("enable", { id: `${module.getIdentifier()}/` });
+	disable(module: Module<any>) {
+		return sendProtocolMessage("enable", { id: `${module.getIdentifier()}@` });
 	},
 };
