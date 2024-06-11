@@ -63,16 +63,17 @@ export abstract class Module<
 	public instances = new Map<Version, I>();
 
 	constructor(
-		public parent: Module<Module<C, I>>,
+		private parent: Module<Module<C, I>>,
 		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
 	) {}
+
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
 	}
 
-	abstract newChild(identifier: ModuleIdentifier, module: _Module): Promise<C>;
+	public abstract newChild(identifier: ModuleIdentifier, module: _Module): Promise<C>;
 
 	public getChild(identifier: ModuleIdentifier): C | undefined {
 		return this.children[identifier];
@@ -116,7 +117,12 @@ export abstract class Module<
 		return o;
 	}
 
-	abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
+	public getHeritage(): ModuleIdentifier[] {
+		const ancestry = this.parent?.getHeritage() ?? [];
+		return [...ancestry, this.identifier];
+	}
+
+	public abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
 
 	public getEnabledVersion(): Version {
 		return this.enabled;
@@ -127,7 +133,6 @@ export abstract class Module<
 	}
 
 	public async updateEnabled(enabled: Version) {
-		// TODO: load/unload providers
 		this.enabled = enabled;
 	}
 
@@ -135,6 +140,7 @@ export abstract class Module<
 		const ok = await ModuleManager.disable(this);
 		if (ok) {
 			this.updateEnabled("");
+			this.children = {};
 		}
 		return ok;
 	}
@@ -180,11 +186,11 @@ export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
 		return remoteModule.init(module.v);
 	}
 
-	newChild(identifier: ModuleIdentifier, module: _Module) {
+	override newChild(identifier: ModuleIdentifier, module: _Module) {
 		return RemoteModule.fromModule(this, identifier, module);
 	}
 
-	public async newInstance(version: Truthy<Version>, { artifacts, providers }: _Store) {
+	override async newInstance(version: Truthy<Version>, { artifacts, providers }: _Store) {
 		const remoteModuleInstance = new RemoteModuleInstance(this, version, null, artifacts, providers);
 
 		this.instances.set(version, remoteModuleInstance);
@@ -292,6 +298,11 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (
 			identifier,
 		) => this.module.newChild(identifier, provider[identifier]));
+	}
+
+	public enable() {
+		this.getModule().updateEnabled(this.getVersion());
+		this.loadProviders();
 	}
 }
 
@@ -549,10 +560,10 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return false;
 	}
 
-	public async enable() {
+	public override async enable() {
 		const ok = await ModuleManager.enable(this);
 		if (ok) {
-			this.getModule().updateEnabled(this.getVersion());
+			super.enable();
 		}
 		return ok;
 	}
