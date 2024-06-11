@@ -4,10 +4,10 @@
  */
 
 // @ts-ignore
-const check = ({ props, name }: { props: Array<string>; name: string; }) => {
+const check = ({ props, name }: { props: Array<string>; name: string }) => {
 	const object = name.split(".").reduce((pobj, k) => pobj[k], globalThis as any);
-	const nonExistantProps = props.filter(prop => !object[prop]);
-	const nonReportedProps = Object.keys(object).filter(key => props.indexOf(key) === -1);
+	const nonExistantProps = props.filter((prop) => !object[prop]);
+	const nonReportedProps = Object.keys(object).filter((key) => props.indexOf(key) === -1);
 
 	console.group(
 		`[${name}]: ${props.length - nonExistantProps.length}/${props.length} props EXIST.`,
@@ -15,9 +15,11 @@ const check = ({ props, name }: { props: Array<string>; name: string; }) => {
 
 	for (const prop of nonExistantProps) {
 		console.warn(
-			`${name}[\`${String(
-				prop,
-			)}\`] is not available. Please open an issue in the Spicetify repository to inform us about it.`,
+			`${name}[\`${
+				String(
+					prop,
+				)
+			}\`] is not available. Please open an issue in the Spicetify repository to inform us about it.`,
 		);
 	}
 
@@ -28,4 +30,4 @@ const check = ({ props, name }: { props: Array<string>; name: string; }) => {
 	console.groupEnd();
 };
 
-export const test = () => { };
+export const test = () => {};

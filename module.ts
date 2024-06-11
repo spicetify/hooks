@@ -56,7 +56,10 @@ export const enableAllLoadableMixins = () =>
 export const enableAllLoadable = () =>
 	Promise.all(getEnabledChildrenInstances().map((instance) => instance.load()));
 
-export abstract class Module<C extends Module<any>, I extends ModuleInstance<Module<C, I>> = ModuleInstance<Module<C, any>>> {
+export abstract class Module<
+	C extends Module<any>,
+	I extends ModuleInstance<Module<C, I>> = ModuleInstance<Module<C, any>>,
+> {
 	public instances = new Map<Version, I>();
 
 	constructor(
@@ -64,7 +67,7 @@ export abstract class Module<C extends Module<any>, I extends ModuleInstance<Mod
 		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
-	) { }
+	) {}
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
 	}
@@ -136,11 +139,10 @@ export abstract class Module<C extends Module<any>, I extends ModuleInstance<Mod
 }
 
 class RootModule extends Module<LocalModule, never> {
-	override newChild(identifier: ModuleIdentifier, module: _Module) {
-		module.enabled ??= "";
-		const m = new LocalModule(this, {}, identifier, module.enabled);
+	override newChild(identifier: ModuleIdentifier, module: _Module): Promise<LocalModule> {
+		const localModule = new LocalModule(this, {}, identifier, module.enabled);
 
-		return m.init(module.v);
+		return localModule.init(module.v);
 	}
 
 	override newInstance(version: Truthy<Version>, store: _Store): Promise<never> {
@@ -155,11 +157,14 @@ class RootModule extends Module<LocalModule, never> {
 }
 
 export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
-	static fromModule(parent: Module<any>, identifier: ModuleIdentifier, module: _Module) {
-		module.enabled ??= "";
-		const m = new RemoteModule(parent, {}, identifier, module.enabled);
+	static fromModule(
+		parent: Module<any>,
+		identifier: ModuleIdentifier,
+		module: _Module,
+	): Promise<RemoteModule> {
+		const remoteModule = new RemoteModule(parent, {}, identifier, module.enabled);
 
-		return m.init(module.v);
+		return remoteModule.init(module.v);
 	}
 
 	newChild(identifier: ModuleIdentifier, module: _Module) {
@@ -190,7 +195,14 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 			? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
 			: null;
 
-		const localModuleInstance = new LocalModuleInstance(this, version, metadata, artifacts, providers, installed);
+		const localModuleInstance = new LocalModuleInstance(
+			this,
+			version,
+			metadata,
+			artifacts,
+			providers,
+			installed,
+		);
 
 		this.instances.set(version, localModuleInstance);
 
@@ -244,8 +256,8 @@ export class ModuleInstance<M extends Module<any>> {
 		protected version: Truthy<Version>,
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
-		public providers: Array<string>
-	) { }
+		public providers: Array<string>,
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -264,9 +276,9 @@ export class ModuleInstance<M extends Module<any>> {
 		);
 
 		// TODO: revisit this check
-		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (identifier) =>
-			this.module.newChild(identifier, provider[identifier])
-		);
+		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (
+			identifier,
+		) => this.module.newChild(identifier, provider[identifier]));
 	}
 }
 
@@ -281,7 +293,6 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier(), module);
 		return await localModule.newInstance(this.version, store);
 	}
-
 }
 
 export class LocalModuleInstance extends ModuleInstance<LocalModule> implements MixinLoader {
@@ -314,7 +325,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		metadata: Metadata | null,
 		artifacts: Array<string>,
 		providers: Array<string>,
-		private installed: boolean
+		private installed: boolean,
 	) {
 		super(module, version, metadata, artifacts, providers);
 	}

@@ -1,4 +1,4 @@
-import { compareSegments, validateAndParse } from './utils.js';
+import { compareSegments, validateAndParse } from "./utils.js";
 
 /**
  * Compare [semver](https://semver.org/) version strings to find greater, equal or lesser.
@@ -22,7 +22,7 @@ export const compareVersions = (v1: string, v2: string) => {
 
 	// validate pre-release
 	if (p1 && p2) {
-		return compareSegments(p1.split('.'), p2.split('.'));
+		return compareSegments(p1.split("."), p2.split("."));
 	} else if (p1 || p2) {
 		return p1 ? -1 : 1;
 	}

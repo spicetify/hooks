@@ -3,8 +3,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+export type { LocalModuleInstance as Module } from "./module.ts";
+
 import mixin, { applyTransforms } from "./mixins.js";
-import { enableAllLoadable, enableAllLoadableMixins, INTERNAL_MIXIN_LOADER, INTERNAL_TRANSFORMER } from "./module.js";
+import {
+	enableAllLoadable,
+	enableAllLoadableMixins,
+	INTERNAL_MIXIN_LOADER,
+	INTERNAL_TRANSFORMER,
+} from "./module.js";
 
 await mixin(INTERNAL_TRANSFORMER);
 console.time("onSpotifyPreInit");

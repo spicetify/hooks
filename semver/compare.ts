@@ -1,5 +1,5 @@
-import { compareVersions } from './compareVersions.js';
-import type { CompareOperator } from './utils.js';
+import { compareVersions } from "./compareVersions.js";
+import type { CompareOperator } from "./utils.js";
 
 /**
  * Compare [semver](https://semver.org/) version strings using the specified operator.
@@ -30,25 +30,25 @@ export const compare = (v1: string, v2: string, operator: CompareOperator) => {
 };
 
 const operatorResMap = {
-	'>': [1],
-	'>=': [0, 1],
-	'=': [0],
-	'<=': [-1, 0],
-	'<': [-1],
-	'!=': [-1, 1],
+	">": [1],
+	">=": [0, 1],
+	"=": [0],
+	"<=": [-1, 0],
+	"<": [-1],
+	"!=": [-1, 1],
 };
 
 const allowedOperators = Object.keys(operatorResMap);
 
 const assertValidOperator = (op: string) => {
-	if (typeof op !== 'string') {
+	if (typeof op !== "string") {
 		throw new TypeError(
-			`Invalid operator type, expected string but got ${typeof op}`
+			`Invalid operator type, expected string but got ${typeof op}`,
 		);
 	}
 	if (allowedOperators.indexOf(op) === -1) {
 		throw new Error(
-			`Invalid operator, expected one of ${allowedOperators.join('|')}`
+			`Invalid operator, expected one of ${allowedOperators.join("|")}`,
 		);
 	}
 };

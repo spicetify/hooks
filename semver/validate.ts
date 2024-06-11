@@ -1,4 +1,4 @@
-import { semver } from './utils.js';
+import { semver } from "./utils.js";
 
 /**
  * Validate [semver](https://semver.org/) version strings.
@@ -14,7 +14,7 @@ import { semver } from './utils.js';
  * ```
  */
 export const validate = (version: string) =>
-	typeof version === 'string' && /^[v\d]/.test(version) && semver.test(version);
+	typeof version === "string" && /^[v\d]/.test(version) && semver.test(version);
 
 /**
  * Validate [semver](https://semver.org/) version strings strictly. Will not accept wildcards and version ranges.
@@ -30,7 +30,8 @@ export const validate = (version: string) =>
  * ```
  */
 export const validateStrict = (version: string) =>
-	typeof version === 'string' &&
-	/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/.test(
-		version
-	);
+	typeof version === "string" &&
+	/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
+		.test(
+			version,
+		);
