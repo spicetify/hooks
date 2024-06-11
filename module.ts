@@ -103,6 +103,19 @@ export abstract class Module<
 		);
 	}
 
+	public getAllDescendantsByBreadth(): Array<Module<Module<any>>> {
+		const i: Array<Module<Module<any>>> = [this];
+		const o: Array<Module<Module<any>>> = [];
+
+		while (i.length) {
+			const e = i.shift()!;
+			o.push(e);
+			i.push(...e.getChildren());
+		}
+
+		return o;
+	}
+
 	abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
 
 	public getEnabledVersion(): Version {
@@ -138,7 +151,7 @@ export abstract class Module<
 	}
 }
 
-class RootModule extends Module<LocalModule, never> {
+export class RootModule extends Module<LocalModule, never> {
 	override newChild(identifier: ModuleIdentifier, module: _Module): Promise<LocalModule> {
 		const localModule = new LocalModule(this, {}, identifier, module.enabled);
 
@@ -207,7 +220,7 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 		this.instances.set(version, localModuleInstance);
 
 		if (localModuleInstance.isEnabled()) {
-			requestIdleCallback(async () => localModuleInstance.loadProviders());
+			requestIdleCallback(() => localModuleInstance.loadProviders());
 		}
 
 		return localModuleInstance;
@@ -218,7 +231,7 @@ export interface MixinLoader {
 	awaitedMixins: Promise<void>[];
 }
 
-export class ModuleInstance<M extends Module<any>> {
+export class ModuleInstance<M extends Module<any> = Module<any>> {
 	public getName() {
 		return this.metadata?.name ?? null;
 	}
