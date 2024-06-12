@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) {}
+				} catch (_) { }
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");
@@ -121,13 +121,12 @@ export const type = (obj: any, access: string): string => {
 			}
 			const uniqueKeys = Array.from(new Set(keys));
 			const blacklist = ["constructor"];
-			return `{${
-				uniqueKeys
+			return `{${uniqueKeys
 					.filter((k) => !blacklist.includes(k))
 					.sort()
 					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
 					.join(";")
-			}}`;
+				}}`;
 		}
 		default:
 			return typeof obj;
@@ -165,4 +164,18 @@ export function deepMerge<T, S>(target: T, source: S, override = defaultOverride
 	}
 	// @ts-ignore
 	return target;
+}
+
+export function stringifyUrlSearchParams(params: Record<string, string | string[]>) {
+	const searchParams = new URLSearchParams();
+	for (const [key, value] of Object.entries(params)) {
+		if (Array.isArray(value)) {
+			for (const v of value) {
+				searchParams.append(key, v);
+			}
+		} else {
+			searchParams.append(key, value);
+		}
+	}
+	return searchParams.toString();
 }

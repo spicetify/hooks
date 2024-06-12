@@ -67,7 +67,7 @@ export abstract class Module<
 		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
-	) {}
+	) { }
 
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
@@ -79,8 +79,8 @@ export abstract class Module<
 		return this.children[identifier];
 	}
 
-	public async getChildOrNew(identifier: ModuleIdentifier, module: _Module): Promise<C> {
-		return this.getChild(identifier) ?? await this.newChild(identifier, module);
+	public async getChildOrNew(identifier: ModuleIdentifier): Promise<C> {
+		return this.getChild(identifier) ?? await this.newChild(identifier, { enabled: "", v: {} });
 	}
 
 	public setChild(identifier: ModuleIdentifier, child: C) {
@@ -276,7 +276,7 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public providers: Array<string>,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -312,9 +312,8 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 			return null;
 		}
 
+		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
 		const store: _Store = { installed: true, artifacts: this.artifacts, providers: this.providers };
-		const module: _Module = { enabled: "", v: { [this.version]: store } };
-		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier(), module);
 		return await localModule.newInstance(this.version, store);
 	}
 }

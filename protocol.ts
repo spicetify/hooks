@@ -4,6 +4,7 @@
  */
 
 import type { LocalModuleInstance, Module, ModuleInstance, RemoteModuleInstance } from "./module.js";
+import { stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
 const websocketProtocol = "ws://localhost:7967/rpc";
@@ -32,14 +33,13 @@ function tryConnectToDaemon() {
 tryConnectToDaemon();
 
 export const nsUrlHandlers = new Map<string, (m: string) => void>();
-const sendProtocolMessage = async (action: string, options: Record<string, string>) => {
+const sendProtocolMessage = async (action: string, options: Record<string, string | string[]>) => {
 	const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
 	const hash = crypto.randomUUID();
 	const base = `${protocol + hash}:`;
 	const uri = new URL(base + action);
-	// @ts-ignore
-	uri.search = new URLSearchParams(options);
+	uri.search = stringifyUrlSearchParams(options);
 
 	let cancelSubscription: () => void;
 
@@ -73,22 +73,25 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 
 export const ModuleManager = {
 	async add(instance: RemoteModuleInstance) {
-		const artifactUrl = instance.getRemoteArtifact()!;
-		if (!artifactUrl) {
-			return false;
-		}
-		return await sendProtocolMessage("add", { url: artifactUrl });
+		return await sendProtocolMessage("add", {
+			id: instance.getIdentifier(),
+			artifacts: instance.artifacts,
+			providers: instance.providers,
+		});
+	},
+	async install(instance: LocalModuleInstance) {
+		return await sendProtocolMessage("install", { id: instance.getIdentifier() });
+	},
+	async enable(instance: LocalModuleInstance) {
+		return await sendProtocolMessage("enable", { id: instance.getIdentifier() });
+	},
+	async disable(module: Module<any>) {
+		return await sendProtocolMessage("enable", { id: `${module.getIdentifier()}@` });
+	},
+	async delete(instance: LocalModuleInstance) {
+		return await sendProtocolMessage("delete", { id: instance.getIdentifier() });
 	},
 	async remove(instance: LocalModuleInstance) {
-		if (instance.isLoaded()) {
-			return false;
-		}
 		return await sendProtocolMessage("remove", { id: instance.getIdentifier() });
-	},
-	enable(instance: ModuleInstance<any>) {
-		return sendProtocolMessage("enable", { id: instance.getIdentifier() });
-	},
-	disable(module: Module<any>) {
-		return sendProtocolMessage("enable", { id: `${module.getIdentifier()}@` });
 	},
 };
