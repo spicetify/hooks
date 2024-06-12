@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) { }
+				} catch (_) {}
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");
@@ -121,12 +121,13 @@ export const type = (obj: any, access: string): string => {
 			}
 			const uniqueKeys = Array.from(new Set(keys));
 			const blacklist = ["constructor"];
-			return `{${uniqueKeys
+			return `{${
+				uniqueKeys
 					.filter((k) => !blacklist.includes(k))
 					.sort()
 					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
 					.join(";")
-				}}`;
+			}}`;
 		}
 		default:
 			return typeof obj;
@@ -178,4 +179,25 @@ export function stringifyUrlSearchParams(params: Record<string, string | string[
 		}
 	}
 	return searchParams.toString();
+}
+
+export class Transition {
+	private complete = true;
+	private promise = Promise.resolve();
+	constructor() {}
+
+	public extend() {
+		this.complete = false;
+		const p = Promise.withResolvers<void>();
+		this.promise = this.promise.then(() => p.promise).finally(() => this.complete = true);
+		return p.resolve;
+	}
+
+	public isComplete() {
+		return this.complete;
+	}
+
+	public block() {
+		return this.promise;
+	}
 }

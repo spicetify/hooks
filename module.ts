@@ -7,7 +7,7 @@ import { ModuleManager } from "./protocol.js";
 import { satisfies } from "./semver/satisfies.js";
 import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
-import { deepMerge, fetchJSON } from "./util.js";
+import { deepMerge, fetchJSON, Transition } from "./util.js";
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -635,24 +635,3 @@ export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
 const lock: _Vault = await fetchJSON("/modules/vault.json");
 await Promise.all(Object.entries(lock.modules).flatMap((m) => RootModule.INSTANCE.newChild(...m)));
-
-class Transition {
-	private complete = true;
-	private promise = Promise.resolve();
-	constructor() {}
-
-	public extend() {
-		this.complete = false;
-		const p = Promise.withResolvers<void>();
-		this.promise = this.promise.then(() => p.promise).finally(() => this.complete = true);
-		return p.resolve;
-	}
-
-	public isComplete() {
-		return this.complete;
-	}
-
-	public block() {
-		return this.promise;
-	}
-}
