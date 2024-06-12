@@ -67,7 +67,7 @@ export abstract class Module<
 		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
-	) { }
+	) {}
 
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
@@ -276,7 +276,7 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public providers: Array<string>,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
