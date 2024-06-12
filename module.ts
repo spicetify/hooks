@@ -132,6 +132,7 @@ export abstract class Module<
 		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
 
+	// ?
 	public async updateEnabled(enabled: Version) {
 		this.enabled = enabled;
 	}
@@ -331,7 +332,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	_unloadCSS: (() => void) | null = null;
 	private preloaded = false;
 	private loaded = false;
-	private transition: Promise<void> | undefined;
+	private transition = new Transition();
 	private dependants = new Set<LocalModuleInstance>();
 
 	public isLoaded() {
@@ -433,7 +434,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			return false;
 		}
 		if (!this.loaded) {
-			if (!this.isEnabled() || !satisfies(this.version, range)) {
+			if (!this.isEnabled() || !this.isInstalled() || !satisfies(this.version, range)) {
 				return false;
 			}
 			for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
@@ -451,11 +452,10 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	private async preloadRecur() {
 		if (this.preloaded) {
-			return this.transition;
+			return this.transition.block();
 		}
 		this.preloaded = true;
-		const { promise, resolve } = Promise.withResolvers<void>();
-		this.transition = promise;
+		const resolve = this.transition.extend();
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
@@ -467,16 +467,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		await this._loadMixins();
 
 		resolve();
-		this.transition = undefined;
 	}
 
 	private async loadRecur() {
 		if (this.loaded) {
-			return this.transition;
+			return this.transition.block();
 		}
 		this.loaded = true;
-		const { promise, resolve } = Promise.withResolvers<void>();
-		this.transition = promise;
+		const resolve = this.transition.extend();
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
@@ -491,7 +489,6 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		await this._loadJS();
 
 		resolve();
-		this.transition = undefined;
 	}
 
 	// ? As is, this always returns true. Recur Impl for easier future modification
@@ -508,11 +505,10 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	private async unloadRecur() {
 		if (!this.loaded) {
-			return this.transition;
+			return this.transition.block();
 		}
 		this.loaded = false;
-		const { promise, resolve } = Promise.withResolvers<void>();
-		this.transition = promise;
+		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
 			const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
@@ -524,12 +520,11 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		await this._unloadJS?.();
 
 		resolve();
-		this.transition = undefined;
 	}
 
 	async loadMixins() {
+		await this.transition.block();
 		if (this.preloaded) {
-			await this.transition;
 			return false;
 		}
 		if (this.canLoadRecur(true)) {
@@ -546,8 +541,8 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public async load() {
+		await this.transition.block();
 		if (this.loaded) {
-			await this.transition;
 			return false;
 		}
 		if (this.canLoadRecur(false)) {
@@ -559,17 +554,9 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return false;
 	}
 
-	public override async enable() {
-		const ok = await ModuleManager.enable(this);
-		if (ok) {
-			super.enable();
-		}
-		return ok;
-	}
-
 	public async unload() {
+		await this.transition.block();
 		if (!this.loaded) {
-			await this.transition;
 			return false;
 		}
 		if (this.canUnloadRecur()) {
@@ -583,6 +570,48 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			"reason: Module required by enabled dependencies",
 		);
 		return false;
+	}
+
+	public async install() {
+		await this.transition.block();
+		const resolve = this.transition.extend();
+
+		if (!(await ModuleManager.install(this))) {
+			return null;
+		}
+
+		this.installed = true;
+		resolve();
+
+		return this;
+	}
+
+	public override async enable() {
+		await this.transition.block();
+		const resolve = this.transition.extend();
+
+		const ok = await ModuleManager.enable(this);
+		if (ok) {
+			super.enable();
+		}
+
+		resolve();
+
+		return ok;
+	}
+
+	public async delete() {
+		await this.transition.block();
+		const resolve = this.transition.extend();
+
+		if (!(await ModuleManager.delete(this))) {
+			return null;
+		}
+
+		this.installed = false;
+		resolve();
+
+		return this;
 	}
 
 	public async remove() {
@@ -606,3 +635,24 @@ export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
 const lock: _Vault = await fetchJSON("/modules/vault.json");
 await Promise.all(Object.entries(lock.modules).flatMap((m) => RootModule.INSTANCE.newChild(...m)));
+
+class Transition {
+	private complete = true;
+	private promise = Promise.resolve();
+	constructor() {}
+
+	public extend() {
+		this.complete = false;
+		const p = Promise.withResolvers<void>();
+		this.promise = this.promise.then(() => p.promise).finally(() => this.complete = true);
+		return p.resolve;
+	}
+
+	public isComplete() {
+		return this.complete;
+	}
+
+	public block() {
+		return this.promise;
+	}
+}
