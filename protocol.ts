@@ -37,9 +37,8 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 	const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
 	const hash = crypto.randomUUID();
-	const base = `${protocol + hash}:`;
-	const uri = new URL(base + action);
-	uri.search = stringifyUrlSearchParams(options);
+	const base = `${hash}:`;
+	const uri = base + action + "?" + stringifyUrlSearchParams(options);
 
 	let cancelSubscription: () => void;
 
@@ -53,14 +52,14 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 
 	daemonConn ?? (await tryConnectToDaemon());
 	if (daemonConn) {
-		daemonConn.send(uri.href);
+		daemonConn.send(uri);
 		const listener = (e: any) => handleIncomingMessage(e.data);
 		cancelSubscription = () => daemonConn?.removeEventListener("message", listener);
 		daemonConn.addEventListener("message", listener);
 	} else {
-		open(workerProtocol + uri.href);
-		cancelSubscription = () => nsUrlHandlers.delete(base);
-		nsUrlHandlers.set(base, handleIncomingMessage);
+		open(workerProtocol + protocol + uri);
+		cancelSubscription = () => nsUrlHandlers.delete(hash);
+		nsUrlHandlers.set(hash, handleIncomingMessage);
 	}
 
 	setTimeout(() => {

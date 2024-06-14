@@ -32,7 +32,7 @@ function interceptNavigationControlMessage(e: Event): boolean {
 		document.location.reload();
 	}
 	{
-		const hash = trimmedUri.slice(0, 47);
+		const hash = trimmedUri.slice(0, 36);
 		nsUrlHandlers.get(hash)?.(trimmedUri);
 	}
 	return false;

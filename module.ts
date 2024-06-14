@@ -63,7 +63,7 @@ export abstract class Module<
 	public instances = new Map<Version, I>();
 
 	constructor(
-		private parent: Module<Module<C, I>>,
+		public parent: Module<Module<C, I>> | null,
 		private children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
 		private enabled: Version,
@@ -118,8 +118,12 @@ export abstract class Module<
 	}
 
 	public getHeritage(): ModuleIdentifier[] {
-		const ancestry = this.parent?.getHeritage() ?? [];
-		return [...ancestry, this.identifier];
+		if (!this.parent) {
+			return [this.identifier];
+		}
+		const ancestry = this.parent.getHeritage();
+		const reducedIdentifier = this.identifier.slice(this.parent.identifier.length);
+		return [...ancestry, reducedIdentifier];
 	}
 
 	public abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
@@ -152,7 +156,7 @@ export abstract class Module<
 				.map(([version, store]) => this.newInstance(version, store)),
 		);
 
-		this.parent.setChild(this.identifier, this);
+		this.parent!.setChild(this.identifier, this);
 
 		return this;
 	}
@@ -171,7 +175,7 @@ export class RootModule extends Module<LocalModule, never> {
 	public static INSTANCE = new RootModule({});
 
 	constructor(children: Record<string, LocalModule>) {
-		super(null as any, children, "", "");
+		super(null, children, "", "");
 		Object.freeze(this.instances);
 	}
 }
@@ -197,7 +201,7 @@ export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
 		this.instances.set(version, remoteModuleInstance);
 
 		if (remoteModuleInstance.isEnabled()) {
-			requestIdleCallback(async () => remoteModuleInstance.loadProviders());
+			requestIdleCallback(() => remoteModuleInstance.loadProviders());
 		}
 
 		return remoteModuleInstance;
@@ -210,15 +214,10 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 	}
 
 	override async newInstance(version: Truthy<Version>, { artifacts, installed, providers }: _Store) {
-		const shouldEnableAtStartup = version === this.getEnabledVersion();
-		const metadata = shouldEnableAtStartup && installed
-			? await fetchJSON<Metadata>(`/modules/${this.getIdentifier()}/metadata.json`)
-			: null;
-
 		const localModuleInstance = new LocalModuleInstance(
 			this,
 			version,
-			metadata,
+			null,
 			artifacts,
 			providers,
 			installed,
@@ -227,7 +226,8 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 		this.instances.set(version, localModuleInstance);
 
 		if (localModuleInstance.isEnabled()) {
-			requestIdleCallback(() => localModuleInstance.loadProviders());
+			await localModuleInstance.loadProviders();
+			await localModuleInstance.onEnable();
 		}
 
 		return localModuleInstance;
@@ -240,11 +240,7 @@ export interface MixinLoader {
 
 export class ModuleInstance<M extends Module<any> = Module<any>> {
 	public getName() {
-		return this.metadata?.name ?? null;
-	}
-
-	public getAuthor() {
-		return this.metadata?.authors[0] ?? null;
+		return this.metadata?.name;
 	}
 
 	public getVersion() {
@@ -314,7 +310,7 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 		}
 
 		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
-		const store: _Store = { installed: true, artifacts: this.artifacts, providers: this.providers };
+		const store: _Store = { installed: false, artifacts: this.artifacts, providers: this.providers };
 		return await localModule.newInstance(this.version, store);
 	}
 }
@@ -586,6 +582,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return this;
 	}
 
+	public async onEnable() {
+		if (!this.metadata && this.installed) {
+			const store = `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
+			const metadata = await fetchJSON<Metadata>(store);
+			this.updateMetadata(metadata);
+		}
+	}
+
 	public override async enable() {
 		await this.transition.block();
 		const resolve = this.transition.extend();
@@ -593,6 +597,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		const ok = await ModuleManager.enable(this);
 		if (ok) {
 			super.enable();
+			this.onEnable();
 		}
 
 		resolve();
@@ -621,6 +626,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 		this.module.instances.delete(this.getVersion());
 		if (Object.keys(this.module.instances).length === 0) {
+			this.getModule().parent = null;
 			RootModule.INSTANCE.removeChild(this.getModuleIdentifier());
 		}
 		return this;
