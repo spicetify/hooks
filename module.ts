@@ -137,7 +137,7 @@ export abstract class Module<
 	}
 
 	// ?
-	public async updateEnabled(enabled: Version) {
+	public updateEnabled(enabled: Version) {
 		this.enabled = enabled;
 	}
 
@@ -297,9 +297,9 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		) => this.module.newChild(identifier, provider[identifier]));
 	}
 
-	public enable() {
+	public async enable() {
 		this.getModule().updateEnabled(this.getVersion());
-		this.loadProviders();
+		await this.loadProviders();
 	}
 }
 
@@ -596,8 +596,8 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 		const ok = await ModuleManager.enable(this);
 		if (ok) {
-			super.enable();
-			this.onEnable();
+			await super.enable();
+			await this.onEnable();
 		}
 
 		resolve();
