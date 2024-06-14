@@ -426,7 +426,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		};
 	}
 
-	private canLoadRecur(isPreload = false, range = ">=0.0.0") {
+	private canLoadRecur(isPreload = false, range = ">=0.0.0-0") {
 		if (!this.metadata) {
 			return false;
 		}
