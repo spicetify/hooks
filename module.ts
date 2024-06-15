@@ -136,18 +136,33 @@ export abstract class Module<
 		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
 
-	// ?
-	public updateEnabled(enabled: Version) {
-		this.enabled = enabled;
+	public canEnable(instance: I) {
+		const enabledInstance = this.getEnabledInstance();
+		return !instance.isEnabled() && (!enabledInstance || this.canDisable(enabledInstance));
+	}
+
+	public async enable(instance: I) {
+		if (!this.canEnable(instance)) {
+			return false;
+		}
+
+		this.enabled = instance.getVersion();
+		await instance.onEnable();
+		return true;
+	}
+
+	public canDisable(instance: I) {
+		return instance.isEnabled();
 	}
 
 	public async disable() {
-		const ok = await ModuleManager.disable(this);
-		if (ok) {
-			this.updateEnabled("");
-			this.children = {};
+		const enabledInstance = this.getEnabledInstance();
+		if (!enabledInstance || !this.canDisable(enabledInstance)) {
+			return false;
 		}
-		return ok;
+		this.enabled = "";
+		this.children = {};
+		return true;
 	}
 
 	public async init(versions: _Module["v"]) {
@@ -232,6 +247,41 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 
 		return localModuleInstance;
 	}
+
+	override enable(instance: LocalModuleInstance) {
+		if (!this.canEnable(instance)) {
+			return Promise.resolve(false);
+		}
+
+		return instance.transition.new(async () => {
+			const ok = await ModuleManager.enable(instance);
+			if (ok) {
+				// TODO: assert returns true
+				await super.enable(instance);
+			}
+			return ok;
+		});
+	}
+
+	override canDisable(instance: LocalModuleInstance) {
+		return super.canDisable(instance) && !instance.isLoaded();
+	}
+
+	override disable() {
+		const enabledInstance = this.getEnabledInstance();
+		if (!enabledInstance || !this.canDisable(enabledInstance)) {
+			return Promise.resolve(false);
+		}
+
+		return enabledInstance.transition.new(async () => {
+			const ok = await ModuleManager.disable(this);
+			if (ok) {
+				// TODO: assert returns true
+				await super.disable();
+			}
+			return ok;
+		});
+	}
 }
 
 export interface MixinLoader {
@@ -284,6 +334,10 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		return this.getVersion() === this.module.getEnabledVersion();
 	}
 
+	public async onEnable() {
+		await this.loadProviders();
+	}
+
 	public async loadProviders() {
 		const vaults = await Promise.all(this.providers.map(fetchJSON<_Vault>));
 		const provider = vaults.reduce(
@@ -295,11 +349,6 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (
 			identifier,
 		) => this.module.newChild(identifier, provider[identifier]));
-	}
-
-	public async enable() {
-		this.getModule().updateEnabled(this.getVersion());
-		await this.loadProviders();
 	}
 }
 
@@ -328,7 +377,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	_unloadCSS: (() => void) | null = null;
 	private preloaded = false;
 	private loaded = false;
-	private transition = new Transition();
+	public transition = new Transition();
 	private dependants = new Set<LocalModuleInstance>();
 
 	public isLoaded() {
@@ -352,6 +401,10 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	public getRelPath(rel: string) {
 		return `/modules/${this.getModuleIdentifier()}/${rel}`;
+	}
+
+	public getStoreMetadata() {
+		return `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
 	}
 
 	private async _loadMixins() {
@@ -536,6 +589,82 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return false;
 	}
 
+	override async onEnable() {
+		await super.onEnable();
+		if (this.installed) {
+			const store = this.getStoreMetadata();
+			const metadata = await fetchJSON<Metadata>(store);
+			this.updateMetadata(metadata);
+		}
+	}
+
+	public canInstallRemove() {
+		return !this.installed;
+	}
+
+	public async install() {
+		await this.transition.block();
+
+		if (!this.canInstallRemove()) {
+			return null;
+		}
+
+		const resolve = this.transition.extend();
+
+		if (!(await ModuleManager.install(this))) {
+			return null;
+		}
+
+		this.installed = true;
+		resolve();
+
+		return this;
+	}
+
+	public canDelete() {
+		return this.installed && !this.loaded;
+	}
+
+	public async delete() {
+		await this.transition.block();
+
+		if (!this.canDelete()) {
+			return null;
+		}
+
+		const resolve = this.transition.extend();
+
+		if (!(await ModuleManager.delete(this))) {
+			return null;
+		}
+
+		this.installed = false;
+		resolve();
+
+		return this;
+	}
+
+	public async remove() {
+		if (!this.canInstallRemove()) {
+			return null;
+		}
+
+		if (!(await ModuleManager.remove(this))) {
+			return null;
+		}
+
+		this.module.instances.delete(this.getVersion());
+		if (this.module.instances.size === 0) {
+			this.module.parent = null;
+			RootModule.INSTANCE.removeChild(this.module.getIdentifier());
+		}
+		return this;
+	}
+
+	public canLoad() {
+		return this.canDelete() && this.isEnabled();
+	}
+
 	public async load() {
 		await this.transition.block();
 		if (this.loaded) {
@@ -550,9 +679,13 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return false;
 	}
 
+	public canUnload() {
+		return this.loaded;
+	}
+
 	public async unload() {
 		await this.transition.block();
-		if (!this.loaded) {
+		if (!this.canUnload()) {
 			return false;
 		}
 		if (this.canUnloadRecur()) {
@@ -566,70 +699,6 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			"reason: Module required by enabled dependencies",
 		);
 		return false;
-	}
-
-	public async install() {
-		await this.transition.block();
-		const resolve = this.transition.extend();
-
-		if (!(await ModuleManager.install(this))) {
-			return null;
-		}
-
-		this.installed = true;
-		resolve();
-
-		return this;
-	}
-
-	public async onEnable() {
-		if (!this.metadata && this.installed) {
-			const store = `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
-			const metadata = await fetchJSON<Metadata>(store);
-			this.updateMetadata(metadata);
-		}
-	}
-
-	public override async enable() {
-		await this.transition.block();
-		const resolve = this.transition.extend();
-
-		const ok = await ModuleManager.enable(this);
-		if (ok) {
-			await super.enable();
-			await this.onEnable();
-		}
-
-		resolve();
-
-		return ok;
-	}
-
-	public async delete() {
-		await this.transition.block();
-		const resolve = this.transition.extend();
-
-		if (!(await ModuleManager.delete(this))) {
-			return null;
-		}
-
-		this.installed = false;
-		resolve();
-
-		return this;
-	}
-
-	public async remove() {
-		if (!(await ModuleManager.remove(this))) {
-			return null;
-		}
-
-		this.module.instances.delete(this.getVersion());
-		if (Object.keys(this.module.instances).length === 0) {
-			this.getModule().parent = null;
-			RootModule.INSTANCE.removeChild(this.getModuleIdentifier());
-		}
-		return this;
 	}
 }
 

@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) {}
+				} catch (_) { }
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");
@@ -121,13 +121,12 @@ export const type = (obj: any, access: string): string => {
 			}
 			const uniqueKeys = Array.from(new Set(keys));
 			const blacklist = ["constructor"];
-			return `{${
-				uniqueKeys
-					.filter((k) => !blacklist.includes(k))
-					.sort()
-					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-					.join(";")
-			}}`;
+			return `{${uniqueKeys
+				.filter((k) => !blacklist.includes(k))
+				.sort()
+				.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+				.join(";")
+				}}`;
 		}
 		default:
 			return typeof obj;
@@ -184,7 +183,7 @@ export function stringifyUrlSearchParams(params: Record<string, string | string[
 export class Transition {
 	private complete = true;
 	private promise = Promise.resolve();
-	constructor() {}
+	constructor() { }
 
 	public extend() {
 		this.complete = false;
@@ -199,6 +198,14 @@ export class Transition {
 
 	public block() {
 		return this.promise;
+	}
+
+	public async new<R>(task: () => Promise<R>) {
+		await this.block();
+		const resolve = this.extend();
+		const r = await task();
+		resolve();
+		return r;
 	}
 }
 
