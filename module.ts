@@ -7,7 +7,7 @@ import { ModuleManager } from "./protocol.js";
 import { satisfies } from "./semver/satisfies.js";
 import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
-import { deepMerge, fetchJSON, Transition } from "./util.js";
+import { deepMerge, fetchJSON, proxy, Transition } from "./util.js";
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -216,7 +216,7 @@ export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
 		this.instances.set(version, remoteModuleInstance);
 
 		if (remoteModuleInstance.isEnabled()) {
-			requestIdleCallback(() => remoteModuleInstance.loadProviders());
+			requestIdleCallback(() => remoteModuleInstance.onEnable());
 		}
 
 		return remoteModuleInstance;
@@ -229,19 +229,11 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 	}
 
 	override async newInstance(version: Truthy<Version>, { artifacts, installed, providers }: _Store) {
-		const localModuleInstance = new LocalModuleInstance(
-			this,
-			version,
-			null,
-			artifacts,
-			providers,
-			installed,
-		);
+		const localModuleInstance = new LocalModuleInstance(this, version, null, artifacts, providers, installed);
 
 		this.instances.set(version, localModuleInstance);
 
 		if (localModuleInstance.isEnabled()) {
-			await localModuleInstance.loadProviders();
 			await localModuleInstance.onEnable();
 		}
 
@@ -353,6 +345,15 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 }
 
 export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
+	override async onEnable() {
+		await super.onEnable();
+		const metadataUrl = this.getRemoteMetadata();
+		if (metadataUrl) {
+			const metadata: Metadata = await fetch(proxy(metadataUrl)).then((r) => r.json());
+			this.updateMetadata(metadata);
+		}
+	}
+
 	public async add() {
 		if (!(await ModuleManager.add(this))) {
 			return null;
@@ -449,7 +450,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			};
 		} catch (e) {
 			this._unloadJS();
-			console.error(`Error loading ${this.getModuleIdentifier()}:`, e);
+			console.error(`Error loading \`${this.getModuleIdentifier()}\`:`, e);
 		}
 
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJS`);
@@ -477,14 +478,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	private canLoadRecur(isPreload = false, range = ">=0.0.0-0") {
 		if (!this.metadata) {
-			return false;
+			throw `can't load \`${this.getModuleIdentifier()}\` because it has no metadata`;
 		}
 		if (!isPreload && !this.preloaded && this.metadata.entries.mixin) {
-			return false;
+			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
 		if (!this.loaded) {
 			if (!this.isEnabled() || !this.isInstalled() || !satisfies(this.version, range)) {
-				return false;
+				throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 			}
 			for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
 				if (dependency === "spotify") {
@@ -576,24 +577,22 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		if (this.preloaded) {
 			return false;
 		}
-		if (this.canLoadRecur(true)) {
-			await this.preloadRecur();
-			return true;
+		try {
+			if (this.canLoadRecur(true)) {
+				await this.preloadRecur();
+				return true;
+			}
+		} catch (e) {
+			console.error(`Can't inject mixins for \`${this.getModuleIdentifier()}\`, reason:\n`, e);
 		}
-
-		console.warn(
-			"Can't enable mixins for",
-			this.getModuleIdentifier(),
-			"reason: Dependencies not met",
-		);
 		return false;
 	}
 
 	override async onEnable() {
 		await super.onEnable();
 		if (this.installed) {
-			const store = this.getStoreMetadata();
-			const metadata = await fetchJSON<Metadata>(store);
+			const storeUrl = this.getStoreMetadata();
+			const metadata = await fetchJSON<Metadata>(storeUrl);
 			this.updateMetadata(metadata);
 		}
 	}
@@ -670,12 +669,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		if (this.loaded) {
 			return false;
 		}
-		if (this.canLoadRecur(false)) {
-			await this.loadRecur();
-			return true;
+		try {
+			if (this.canLoadRecur(false)) {
+				await this.loadRecur();
+				return true;
+			}
+		} catch (e) {
+			console.error(`Can't load \`${this.getModuleIdentifier()}\`, reason:\n`, e);
 		}
-
-		console.warn("Can't enable", this.getModuleIdentifier(), "reason: Dependencies not met");
 		return false;
 	}
 
@@ -688,16 +689,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		if (!this.canUnload()) {
 			return false;
 		}
-		if (this.canUnloadRecur()) {
-			await this.unloadRecur();
-			return true;
+		try {
+			if (this.canUnloadRecur()) {
+				await this.unloadRecur();
+				return true;
+			}
+		} catch (e) {
+			console.error(`Can't unload \`${this.getModuleIdentifier()}\`, reason:\n`, e);
 		}
-
-		console.warn(
-			"Can't disable",
-			this.getModuleIdentifier(),
-			"reason: Module required by enabled dependencies",
-		);
 		return false;
 	}
 }

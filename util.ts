@@ -90,7 +90,7 @@ export const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) { }
+				} catch (_) {}
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("");
@@ -121,12 +121,13 @@ export const type = (obj: any, access: string): string => {
 			}
 			const uniqueKeys = Array.from(new Set(keys));
 			const blacklist = ["constructor"];
-			return `{${uniqueKeys
-				.filter((k) => !blacklist.includes(k))
-				.sort()
-				.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-				.join(";")
-				}}`;
+			return `{${
+				uniqueKeys
+					.filter((k) => !blacklist.includes(k))
+					.sort()
+					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+					.join(";")
+			}}`;
 		}
 		default:
 			return typeof obj;
@@ -183,7 +184,7 @@ export function stringifyUrlSearchParams(params: Record<string, string | string[
 export class Transition {
 	private complete = true;
 	private promise = Promise.resolve();
-	constructor() { }
+	constructor() {}
 
 	public extend() {
 		this.complete = false;
@@ -209,11 +210,10 @@ export class Transition {
 	}
 }
 
-export const xfetch = (
+export const proxy = (
 	input: RequestInfo | URL,
-	init?: RequestInit,
-	onFetch?: (request: Request, init: RequestInit) => void,
-): Promise<Response> => {
+	init: RequestInit = {},
+): [Request, RequestInit] => {
 	let url: URL;
 	if (typeof input === "string") {
 		url = new URL(input);
@@ -225,8 +225,6 @@ export const xfetch = (
 		throw "Unsupported input type";
 	}
 	url.host = `${url.host.replaceAll(".", "-20")}.delusoire.top`;
-
-	init ??= {};
 
 	let headers: Headers;
 	if (init.headers) {
@@ -248,7 +246,5 @@ export const xfetch = (
 	}
 
 	const request = new Request(url, input instanceof Request ? input : undefined);
-
-	onFetch?.(request, init);
-	return fetch(request, init);
+	return [request, init];
 };
