@@ -37,14 +37,14 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 	const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
 	const hash = crypto.randomUUID();
-	const base = `${hash}:`;
-	const uri = base + action + "?" + stringifyUrlSearchParams(options);
+	const frame = protocol + hash + ":";
+	const uri = frame + action + "?" + stringifyUrlSearchParams(options);
 
 	let cancelSubscription: () => void;
 
 	const handleIncomingMessage = (m: string) => {
-		if (m.startsWith(base)) {
-			const payload = m.slice(base.length);
+		if (m.startsWith(frame)) {
+			const payload = m.slice(frame.length);
 			resolve(payload === "1");
 			cancelSubscription();
 		}
@@ -57,7 +57,7 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 		cancelSubscription = () => daemonConn?.removeEventListener("message", listener);
 		daemonConn.addEventListener("message", listener);
 	} else {
-		open(workerProtocol + protocol + uri);
+		open(workerProtocol + uri);
 		cancelSubscription = () => nsUrlHandlers.delete(hash);
 		nsUrlHandlers.set(hash, handleIncomingMessage);
 	}

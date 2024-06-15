@@ -21,7 +21,7 @@ export const applyTransforms = (path: string) => {
 };
 globalThis.__applyTransforms = applyTransforms;
 
-const rpc = "spotify:app:spicetify:";
+const rpc = "spotify:app:rpc:";
 function interceptNavigationControlMessage(e: Event): boolean {
 	const uri: string = (e as any).data.data;
 	if (!uri.startsWith(rpc)) {
@@ -32,7 +32,9 @@ function interceptNavigationControlMessage(e: Event): boolean {
 		document.location.reload();
 	}
 	{
-		const hash = trimmedUri.slice(0, 36);
+		const uuidStart = "spicetify:".length;
+		const uuidLength = 36;
+		const hash = trimmedUri.slice(uuidStart, uuidStart + uuidLength);
 		nsUrlHandlers.get(hash)?.(trimmedUri);
 	}
 	return false;
