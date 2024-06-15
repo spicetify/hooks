@@ -349,7 +349,7 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 		await super.onEnable();
 		const metadataUrl = this.getRemoteMetadata();
 		if (metadataUrl) {
-			const metadata: Metadata = await fetch(proxy(metadataUrl)).then((r) => r.json());
+			const metadata: Metadata = await fetch(...proxy(metadataUrl)).then((r) => r.json());
 			this.updateMetadata(metadata);
 		}
 	}
