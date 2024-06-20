@@ -289,12 +289,12 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		return this.version;
 	}
 
-	public getRemoteArtifact(): string | undefined {
+	public getRemoteArtifactURL(): string | undefined {
 		return this.artifacts[0];
 	}
 
-	public getRemoteMetadata() {
-		return this.getRemoteArtifact()?.replace(/\.zip$/, ".metadata.json");
+	public getRemoteMetadataURL() {
+		return this.getRemoteArtifactURL()?.replace(/\.zip$/, ".metadata.json");
 	}
 
 	public getModuleIdentifier() {
@@ -345,9 +345,13 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 }
 
 export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
+	public getMetadataURL() {
+		return this.getRemoteMetadataURL();
+	}
+
 	override async onEnable() {
 		await super.onEnable();
-		const metadataUrl = this.getRemoteMetadata();
+		const metadataUrl = this.getMetadataURL();
 		if (metadataUrl) {
 			const metadata: Metadata = await fetch(...proxy(metadataUrl)).then((r) => r.json());
 			this.updateMetadata(metadata);
@@ -401,11 +405,11 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public getRelPath(rel: string) {
-		return `/modules/${this.getModuleIdentifier()}/${rel}`;
+		return `/modules/${this.getModuleIdentifier()}/${rel}`.replaceAll(/\/+/g, "/");
 	}
 
-	public getStoreMetadata() {
-		return `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
+	public getMetadataURL() {
+		return `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`.replaceAll(/\/+/g, "/");
 	}
 
 	private async _loadMixins() {
@@ -591,7 +595,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	override async onEnable() {
 		await super.onEnable();
 		if (this.installed) {
-			const storeUrl = this.getStoreMetadata();
+			const storeUrl = this.getMetadataURL();
 			const metadata = await fetchJSON<Metadata>(storeUrl);
 			this.updateMetadata(metadata);
 		}
