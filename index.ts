@@ -4,6 +4,7 @@
  */
 
 export type { LocalModuleInstance as Module } from "./module.ts";
+export type { Transformer } from "./transform.ts";
 
 import mixin, { applyTransforms } from "./mixins.js";
 import {

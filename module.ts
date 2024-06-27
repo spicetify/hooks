@@ -40,8 +40,9 @@ export interface Metadata {
 	entries: {
 		js?: string;
 		css?: string;
-		mixin?: string;
+		importMap?: string;
 	};
+	hasMixins: boolean;
 	dependencies: Record<string, string>;
 }
 
@@ -374,7 +375,6 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 
 export class LocalModuleInstance extends ModuleInstance<LocalModule> implements MixinLoader {
 	private _transformer = createTransformer(this);
-
 	get transformer() {
 		return this._transformer;
 	}
@@ -383,8 +383,11 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	_unloadJS: (() => Promise<void>) | null = null;
 	_unloadCSS: (() => void) | null = null;
+	_unloadImportMap: (() => void) | null = null;
 	private preloaded = false;
 	private loaded = false;
+	private jsIndex: any;
+
 	public transition = new Transition();
 	private dependants = new Set<LocalModuleInstance>();
 
@@ -421,28 +424,29 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return `/store${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
 	}
 
-	private async _loadMixins() {
-		const entry = this.metadata?.entries.mixin;
-		if (!entry) {
+	async #loadJsMixins() {
+		await this.#loadImportMap();
+		if (!this.jsIndex) {
 			return;
 		}
 
-		console.time(`${this.getModuleIdentifier()}#loadMixin`);
-		const mixin = await import(this.getRelPath(entry)!);
-		await mixin.default(this.transformer);
-		console.timeEnd(`${this.getModuleIdentifier()}#loadMixin`);
+		console.time(`${this.getModuleIdentifier()}#loadJsMixins`);
+		await this.jsIndex.loadMixins?.(this.transformer);
+		console.timeEnd(`${this.getModuleIdentifier()}#loadJsMixins`);
 
-		console.groupCollapsed(`${this.getModuleIdentifier()}#awaitMixins`);
+		console.groupCollapsed(`${this.getModuleIdentifier()}#awaitJsMixins`);
 		console.info(...this.awaitedMixins);
 		console.groupEnd();
 
-		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
+		console.time(`${this.getModuleIdentifier()}#awaitJsMixins`);
 		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
 	}
 
-	private async _loadJS() {
-		const entry = this.metadata?.entries.js;
-		if (!entry) {
+	async #loadJs() {
+		if (!this.preloaded) {
+			await this.#loadImportMap();
+		}
+		if (!this.jsIndex) {
 			return;
 		}
 
@@ -450,12 +454,9 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			this._unloadJS = null;
 		};
 
-		console.time(`${this.getModuleIdentifier()}#loadJS`);
-
+		console.time(`${this.getModuleIdentifier()}#loadJs`);
 		try {
-			const fullPath = this.getRelPath(entry)!;
-			const module = await import(fullPath + `?lt=${Date.now()}`);
-			const dispose = await module.default?.(this);
+			const dispose = await this.jsIndex.load?.(this);
 			const unloadJS = this._unloadJS;
 			this._unloadJS = async () => {
 				await dispose?.();
@@ -465,35 +466,56 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			this._unloadJS();
 			console.error(`Error loading \`${this.getModuleIdentifier()}\`:`, e);
 		}
-
-		console.timeEnd(`${this.getModuleIdentifier()}#loadJS`);
+		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
 
-	private _loadCSS() {
+	#loadCSS() {
 		const entry = this.metadata?.entries.css;
 		if (!entry) {
 			return;
 		}
 
-		const id = `${this.getModuleIdentifier()}-styles`;
-		const fullPath = this.getRelPath(entry)!;
 		const link = document.createElement("link");
-		link.id = id;
 		link.rel = "stylesheet";
 		link.type = "text/css";
-		link.href = fullPath;
+		link.href = this.getRelPath(entry)!;
 		document.head.append(link);
 		this._unloadCSS = () => {
 			this._unloadCSS = null;
-			document.getElementById(id)?.remove();
+			link?.remove();
 		};
+	}
+
+	async #loadImportMap() {
+		const { js, importMap } = this.metadata?.entries ?? {};
+		const now = Date.now();
+
+		if (importMap) {
+			const script = document.createElement("script");
+			script.type = "importmap";
+			script.src = `${this.getRelPath(importMap)!}?t=${now}`;
+			document.head.append(script);
+			this._unloadImportMap = () => {
+				this._unloadImportMap = null;
+				script?.remove();
+			};
+		}
+
+		if (js) {
+			const uniqueEntry = `${this.getRelPath(js)!}?t=${now}`;
+			this.jsIndex = await import(uniqueEntry);
+		}
+	}
+
+	private canPreloadRecur() {
+		return this.canLoadRecur(true);
 	}
 
 	private canLoadRecur(isPreload = false, range = ">=0.0.0-0") {
 		if (!this.metadata) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has no metadata`;
 		}
-		if (!isPreload && !this.preloaded && this.metadata.entries.mixin) {
+		if (!isPreload && !this.preloaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
 		if (!this.loaded) {
@@ -527,7 +549,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			}),
 		);
 
-		await this._loadMixins();
+		await this.#loadJsMixins();
 
 		resolve();
 	}
@@ -547,9 +569,9 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			}),
 		);
 
-		await this._loadCSS();
+		await this.#loadCSS();
 		await Promise.all(this.awaitedMixins);
-		await this._loadJS();
+		await this.#loadJs();
 
 		resolve();
 	}
@@ -580,6 +602,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		}
 		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
 
+		await this._unloadImportMap?.();
 		await this._unloadCSS?.();
 		await this._unloadJS?.();
 
@@ -592,7 +615,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			return false;
 		}
 		try {
-			if (this.canLoadRecur(true)) {
+			if (this.canPreloadRecur()) {
 				await this.preloadRecur();
 				return true;
 			}
