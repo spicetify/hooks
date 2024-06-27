@@ -454,7 +454,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 		try {
 			const fullPath = this.getRelPath(entry)!;
-			const module = await import(fullPath);
+			const module = await import(fullPath + `?lt=${Date.now()}`);
 			const dispose = await module.default?.(this);
 			const unloadJS = this._unloadJS;
 			this._unloadJS = async () => {
