@@ -201,6 +201,7 @@ export class Transition {
 		return this.promise;
 	}
 
+	// If the task rejects, the transition will never complete
 	public async new<R>(task: () => Promise<R>) {
 		await this.block();
 		const resolve = this.extend();

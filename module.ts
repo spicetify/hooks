@@ -104,17 +104,15 @@ export abstract class Module<
 		);
 	}
 
-	public getAllDescendantsByBreadth(): Array<Module<Module<any>>> {
+	public *getAllDescendantsByBreadth(): Generator<Module<Module<any>>> {
 		const i: Array<Module<Module<any>>> = [this];
-		const o: Array<Module<Module<any>>> = [];
 
 		while (i.length) {
 			const e = i.shift()!;
-			o.push(e);
+			// @ts-ignore
+			yield* e.getChildren();
 			i.push(...e.getChildren());
 		}
-
-		return o;
 	}
 
 	public getHeritage(): ModuleIdentifier[] {
