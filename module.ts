@@ -439,7 +439,9 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		console.groupEnd();
 
 		console.time(`${this.getModuleIdentifier()}#awaitJsMixins`);
-		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
+		Promise.all(this.awaitedMixins).then(() =>
+			console.timeEnd(`${this.getModuleIdentifier()}#awaitJsMixins`)
+		);
 	}
 
 	async #loadJs() {
