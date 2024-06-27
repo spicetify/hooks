@@ -287,12 +287,17 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 		return this.version;
 	}
 
-	public getRemoteArtifactURL(): string | undefined {
-		return this.artifacts[0];
+	public getRemoteArtifactURL(): string | null {
+		return this.artifacts[0] ?? null;
 	}
 
-	public getRemoteMetadataURL() {
-		return this.getRemoteArtifactURL()?.replace(/\.zip$/, ".metadata.json");
+	public getRemoteMetadataURL(): string | null {
+		const remoteArtifactURL = this.getRemoteArtifactURL() ?? null;
+		if (!remoteArtifactURL) {
+			return null;
+		}
+		const remoteMetadataURL = remoteArtifactURL.replace(/\.zip$/, ".metadata.json");
+		return proxy(remoteMetadataURL)[0].url;
 	}
 
 	public getModuleIdentifier() {
@@ -351,7 +356,7 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 		await super.onEnable();
 		const metadataUrl = this.getMetadataURL();
 		if (metadataUrl) {
-			const metadata: Metadata = await fetch(...proxy(metadataUrl)).then((r) => r.json());
+			const metadata: Metadata = await fetch(metadataUrl).then((r) => r.json());
 			this.updateMetadata(metadata);
 		}
 	}
@@ -403,11 +408,17 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public getRelPath(rel: string) {
-		return `/modules/${this.getModuleIdentifier()}/${rel}`.replaceAll(/\/+/g, "/");
+		if (!this.installed || !this.isEnabled()) {
+			return null;
+		}
+		return `/modules${this.getModuleIdentifier()}/${rel}`;
 	}
 
 	public getMetadataURL() {
-		return `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`.replaceAll(/\/+/g, "/");
+		if (!this.installed) {
+			return this.getRemoteMetadataURL();
+		}
+		return `/store${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
 	}
 
 	private async _loadMixins() {
@@ -417,7 +428,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		}
 
 		console.time(`${this.getModuleIdentifier()}#loadMixin`);
-		const mixin = await import(this.getRelPath(entry));
+		const mixin = await import(this.getRelPath(entry)!);
 		await mixin.default(this.transformer);
 		console.timeEnd(`${this.getModuleIdentifier()}#loadMixin`);
 
@@ -442,7 +453,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		console.time(`${this.getModuleIdentifier()}#loadJS`);
 
 		try {
-			const fullPath = this.getRelPath(entry);
+			const fullPath = this.getRelPath(entry)!;
 			const module = await import(fullPath);
 			const dispose = await module.default?.(this);
 			const unloadJS = this._unloadJS;
@@ -465,7 +476,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		}
 
 		const id = `${this.getModuleIdentifier()}-styles`;
-		const fullPath = this.getRelPath(entry);
+		const fullPath = this.getRelPath(entry)!;
 		const link = document.createElement("link");
 		link.id = id;
 		link.rel = "stylesheet";
@@ -594,7 +605,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	override async onEnable() {
 		await super.onEnable();
 		if (this.installed) {
-			const storeUrl = this.getMetadataURL();
+			const storeUrl = this.getMetadataURL()!;
 			const metadata = await fetchJSON<Metadata>(storeUrl);
 			this.updateMetadata(metadata);
 		}
