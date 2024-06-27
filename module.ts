@@ -45,16 +45,16 @@ export interface Metadata {
 	dependencies: Record<string, string>;
 }
 
-const getEnabledChildrenInstances = () =>
+const getLoadableChildrenInstances = () =>
 	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
-		Boolean,
+		(instance) => instance?.canLoad(),
 	) as LocalModuleInstance[];
 
 export const enableAllLoadableMixins = () =>
-	Promise.all(getEnabledChildrenInstances().map((instance) => instance.loadMixins()));
+	Promise.all(getLoadableChildrenInstances().map((instance) => instance.loadMixins()));
 
 export const enableAllLoadable = () =>
-	Promise.all(getEnabledChildrenInstances().map((instance) => instance.load()));
+	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
 
 export abstract class Module<
 	C extends Module<any>,
@@ -562,6 +562,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			return this.transition.block();
 		}
 		this.loaded = false;
+		this.preloaded = false;
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
