@@ -3,7 +3,6 @@
  */
 
 /*
-visited.clear()
 Platform.getClipboardAPI().copy(type(Platform, "PlatformAutoGen"))
 */
 
