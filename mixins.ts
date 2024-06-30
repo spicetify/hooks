@@ -47,8 +47,9 @@ function interceptNavigationControlMessage(e: Event): boolean {
 						continue;
 					}
 
-					await instance.unload();
-					await instance.load();
+					if (await instance.unload()) {
+						await instance.load();
+					}
 				}
 			})();
 		}

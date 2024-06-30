@@ -7,7 +7,7 @@ import { ModuleManager } from "./protocol.js";
 import { satisfies } from "./semver/satisfies.js";
 import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer } from "./transform.js";
-import { deepMerge, fetchJSON, proxy, Transition } from "./util.js";
+import { deepMerge, fetchJson, proxy, Transition } from "./util.js";
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -334,7 +334,7 @@ export class ModuleInstance<M extends Module<any> = Module<any>> {
 	}
 
 	public async loadProviders() {
-		const vaults = await Promise.all(this.providers.map(fetchJSON<_Vault>));
+		const vaults = await Promise.all(this.providers.map(fetchJson<_Vault>));
 		const provider = vaults.reduce(
 			(acc, vault) => deepMerge(vault.modules, acc),
 			{} as _Vault["modules"],
@@ -618,7 +618,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		await super.onEnable();
 		if (this.installed) {
 			const storeUrl = this.getMetadataURL()!;
-			const metadata = await fetchJSON<Metadata>(storeUrl);
+			const metadata = await fetchJson<Metadata>(storeUrl);
 			this.updateMetadata(metadata);
 		}
 	}
@@ -733,5 +733,5 @@ export const INTERNAL_MIXIN_LOADER: MixinLoader = {
 
 export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
-const lock: _Vault = await fetchJSON("/modules/vault.json");
+const lock: _Vault = await fetchJson("/modules/vault.json");
 await Promise.all(Object.entries(lock.modules).flatMap((m) => RootModule.INSTANCE.newChild(...m)));
