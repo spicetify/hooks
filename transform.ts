@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { MixinLoader } from "./module.js";
+import type { MixinLoader } from "./module.ts";
 import { fetchText } from "./util.js";
 
 const MimeTypes = {

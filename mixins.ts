@@ -4,8 +4,10 @@
  */
 
 import { nsUrlHandlers } from "./protocol.js";
-import { SourceFile, type Transformer } from "./transform.js";
+import { SourceFile } from "./transform.js";
+import type { Transformer } from "./transform.ts";
 import { matchLast } from "./util.js";
+import { RootModule } from "/hooks/module.js";
 
 declare global {
 	var __applyTransforms: typeof applyTransforms;
@@ -21,23 +23,43 @@ export const applyTransforms = (path: string) => {
 };
 globalThis.__applyTransforms = applyTransforms;
 
-const rpc = "spotify:app:rpc:";
+const spotifyAppScheme = "spotify:app:";
 function interceptNavigationControlMessage(e: Event): boolean {
 	const uri: string = (e as any).data.data;
-	if (!uri.startsWith(rpc)) {
-		return true;
+	if (!uri.startsWith(spotifyAppScheme)) {
+		return false;
 	}
-	const trimmedUri = uri.slice(rpc.length);
-	if (trimmedUri === "reload") {
-		document.location.reload();
+
+	const url = new URL(uri.slice(spotifyAppScheme.length));
+	if (url.protocol !== "rpc:") {
+		return false;
 	}
-	{
+
+	if (url.pathname.startsWith("reload")) {
+		const modules = url.searchParams.getAll("module");
+		if (modules.length === 0) {
+			document.location.reload();
+		} else {
+			(async function () {
+				for (const identifier of modules) {
+					const instance = RootModule.INSTANCE.getChild(identifier)?.getEnabledInstance();
+					if (!instance) {
+						continue;
+					}
+
+					await instance.unload();
+					await instance.load();
+				}
+			})();
+		}
+	} else if (url.pathname.startsWith("spicetify")) {
 		const uuidStart = "spicetify:".length;
 		const uuidLength = 36;
-		const hash = trimmedUri.slice(uuidStart, uuidStart + uuidLength);
-		nsUrlHandlers.get(hash)?.(trimmedUri);
+		const hash = url.pathname.slice(uuidStart, uuidStart + uuidLength);
+		nsUrlHandlers.get(hash)?.(url.pathname);
 	}
-	return false;
+
+	return true;
 }
 globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessage;
 
@@ -103,8 +125,8 @@ export default async function (transformer: Transformer) {
 	transformer(
 		(emit) => (str) => {
 			str = str.replace(
-				/(([a-zA-Z_\$][\w\$]*)\.data\.type===(?:[a-zA-Z_\$][\w\$]*\.){2}NAVIGATION&&)/,
-				"$1__interceptNavigationControlMessage($2)&&",
+				/(([a-zA-Z_\$][\w\$]*)\.data\.type===(?:[a-zA-Z_\$][\w\$]*\.){2}NAVIGATION)&&/,
+				"$1&&!__interceptNavigationControlMessage($2)&&",
 			);
 			emit();
 			return str;

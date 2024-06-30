@@ -40,7 +40,6 @@ export interface Metadata {
 	entries: {
 		js?: string;
 		css?: string;
-		importMap?: string;
 	};
 	hasMixins: boolean;
 	dependencies: Record<string, string>;
@@ -383,7 +382,6 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	_unloadJS: (() => Promise<void>) | null = null;
 	_unloadCSS: (() => void) | null = null;
-	_unloadImportMap: (() => void) | null = null;
 	private preloaded = false;
 	private loaded = false;
 	private jsIndex: any;
@@ -425,7 +423,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	async #loadJsMixins() {
-		await this.#loadImportMap();
+		await this.#loadJsIndex();
 		if (!this.jsIndex) {
 			return;
 		}
@@ -446,7 +444,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	async #loadJs() {
 		if (!this.preloaded) {
-			await this.#loadImportMap();
+			await this.#loadJsIndex();
 		}
 		if (!this.jsIndex) {
 			return;
@@ -488,25 +486,15 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		};
 	}
 
-	async #loadImportMap() {
-		const { js, importMap } = this.metadata?.entries ?? {};
+	async #loadJsIndex() {
+		const { js } = this.metadata?.entries ?? {};
+		if (!js) {
+			return;
+		}
+
 		const now = Date.now();
-
-		if (importMap) {
-			const script = document.createElement("script");
-			script.type = "importmap";
-			script.src = `${this.getRelPath(importMap)!}?t=${now}`;
-			document.head.append(script);
-			this._unloadImportMap = () => {
-				this._unloadImportMap = null;
-				script?.remove();
-			};
-		}
-
-		if (js) {
-			const uniqueEntry = `${this.getRelPath(js)!}?t=${now}`;
-			this.jsIndex = await import(uniqueEntry);
-		}
+		const uniqueEntry = `${this.getRelPath(js)!}?t=${now}`;
+		this.jsIndex = await import(uniqueEntry);
 	}
 
 	private canPreloadRecur() {
@@ -604,7 +592,6 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		}
 		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
 
-		await this._unloadImportMap?.();
 		await this._unloadCSS?.();
 		await this._unloadJS?.();
 

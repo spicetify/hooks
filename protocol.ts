@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { LocalModuleInstance, Module, RemoteModuleInstance } from "./module.js";
+import type { LocalModuleInstance, Module, RemoteModuleInstance } from "./module.ts";
 import { stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
