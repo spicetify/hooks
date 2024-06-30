@@ -380,8 +380,8 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 	public awaitedMixins = new Array<Promise<void>>();
 
-	_unloadJS: (() => Promise<void>) | null = null;
-	_unloadCSS: (() => void) | null = null;
+	_unloadJs: (() => Promise<void>) | null = null;
+	_unloadCss: (() => void) | null = null;
 	private preloaded = false;
 	private loaded = false;
 	private jsIndex: any;
@@ -450,26 +450,26 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			return;
 		}
 
-		this._unloadJS = async () => {
-			this._unloadJS = null;
+		this._unloadJs = async () => {
+			this._unloadJs = null;
 		};
 
 		console.time(`${this.getModuleIdentifier()}#loadJs`);
 		try {
 			const dispose = await this.jsIndex.load?.(this);
-			const unloadJS = this._unloadJS;
-			this._unloadJS = async () => {
+			const unloadJS = this._unloadJs;
+			this._unloadJs = async () => {
 				await dispose?.();
 				await unloadJS();
 			};
 		} catch (e) {
-			this._unloadJS();
+			this._unloadJs();
 			console.error(`Error loading \`${this.getModuleIdentifier()}\`:`, e);
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
 
-	#loadCSS() {
+	#loadCss() {
 		const entry = this.metadata?.entries.css;
 		if (!entry) {
 			return;
@@ -480,8 +480,8 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		link.type = "text/css";
 		link.href = this.getRelPath(entry)!;
 		document.head.append(link);
-		this._unloadCSS = () => {
-			this._unloadCSS = null;
+		this._unloadCss = () => {
+			this._unloadCss = null;
 			link?.remove();
 		};
 	}
@@ -559,7 +559,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 			}),
 		);
 
-		await this.#loadCSS();
+		await this.#loadCss();
 		await Promise.all(this.awaitedMixins);
 		await this.#loadJs();
 
@@ -592,8 +592,8 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		}
 		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
 
-		await this._unloadCSS?.();
-		await this._unloadJS?.();
+		await this._unloadJs?.();
+		await this._unloadCss?.();
 
 		resolve();
 	}
