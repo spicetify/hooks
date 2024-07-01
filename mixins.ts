@@ -9,11 +9,13 @@ import type { Transformer } from "./transform.ts";
 import { matchLast } from "./util.js";
 import { RootModule } from "/hooks/module.js";
 
+type CHUNKS = Record<string, PromiseWithResolvers<void>>;
+
 declare global {
 	var __applyTransforms: typeof applyTransforms;
 	var __interceptNavigationControlMessage: typeof interceptNavigationControlMessage;
 	var __onScriptLoaded: (path: string) => void;
-	var CHUNKS: Record<string, PromiseWithResolvers<void>>;
+	var CHUNKS: CHUNKS;
 }
 
 export const applyTransforms = (path: string) => {
@@ -63,8 +65,7 @@ function interceptNavigationControlMessage(e: Event): boolean {
 	return true;
 }
 globalThis.__interceptNavigationControlMessage = interceptNavigationControlMessage;
-
-globalThis.CHUNKS = {};
+export const CHUNKS: CHUNKS = globalThis.CHUNKS = {};
 globalThis.__onScriptLoaded = (path: string) => {
 	CHUNKS[path] ??= Promise.withResolvers();
 	setTimeout(CHUNKS[path].resolve);
