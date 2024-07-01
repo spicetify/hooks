@@ -228,7 +228,59 @@ export const proxy = (
 	}
 
 	const _headers = new Headers();
-	_headers.set("X-Set-Headers", JSON.stringify(Object.fromEntries(headers.entries())));
+	_headers.set("X-Set-Headers", JSON.stringify(Object.fromEntries(headers)));
+
+	init.headers = _headers;
+
+	if (input instanceof Request) {
+		// @ts-ignore
+		input.duplex = "half";
+	}
+
+	const request = new Request(url, input instanceof Request ? input : undefined);
+	return [request, init];
+};
+
+export const proxy2 = (
+	input: RequestInfo | URL,
+	init: RequestInit = {},
+): [Request, RequestInit] => {
+	let url: URL | string;
+	if (typeof input === "string") {
+		url = new URL(input);
+	} else if (input instanceof Request) {
+		url = new URL(input.url);
+	} else if (input instanceof URL) {
+		url = input;
+	} else {
+		throw "Unsupported input type";
+	}
+	url = `https://cors-proxy.spicetify.app/${url}`;
+
+	let headers: Headers;
+	if (init.headers) {
+		headers = new Headers(init.headers);
+	} else if (input instanceof Request) {
+		headers = input.headers;
+	} else {
+		headers = new Headers();
+	}
+
+	const _headers = new Headers();
+	for (
+		const [kp, k] of [
+			["X-Cookie", "Cookie"],
+			["X-Referer", "Referer"],
+			["X-Origin", "Origin"],
+			["X-User-Agent", "User-Agent"],
+			["X-X-Real-Ip", "X-Real-Ip"],
+		]
+	) {
+		const v = headers.get(k);
+		if (v) {
+			_headers.set(kp, v);
+		}
+	}
 
 	init.headers = _headers;
 
