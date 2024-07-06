@@ -66,7 +66,7 @@ export abstract class Module<
 		public parent: Module<Module<C, I>> | null,
 		protected children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
-	) { }
+	) {}
 
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
@@ -125,7 +125,6 @@ export abstract class Module<
 
 	public abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
 
-
 	public async init(versions: _Module["v"]) {
 		await Promise.all(
 			Object.entries(versions)
@@ -181,7 +180,12 @@ export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
 }
 
 export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
-	constructor(parent: RootModule, children: Record<ModuleIdentifier, RemoteModule>, identifier: ModuleIdentifier, public enabled: Version) {
+	constructor(
+		parent: RootModule,
+		children: Record<ModuleIdentifier, RemoteModule>,
+		identifier: ModuleIdentifier,
+		public enabled: Version,
+	) {
 		super(parent, children, identifier);
 	}
 
@@ -203,7 +207,8 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 
 	public canEnable(instance: LocalModuleInstance) {
 		const enabledInstance = this.getEnabledInstance();
-		return !instance.isEnabled() && instance.isInstalled() && (!enabledInstance || this.canDisable(enabledInstance));
+		return !instance.isEnabled() && instance.isInstalled() &&
+			(!enabledInstance || this.canDisable(enabledInstance));
 	}
 
 	public enable(instance: LocalModuleInstance) {
@@ -248,7 +253,6 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 	public getEnabledInstance(): LocalModuleInstance | undefined {
 		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
-
 }
 
 export interface MixinLoader {
@@ -295,7 +299,7 @@ export abstract class ModuleInstance<M extends Module<any> = Module<any>> {
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -702,7 +706,12 @@ export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
 const vaults = [
 	await fetchJson<_Vault>("/modules/vault.json"),
-	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json")
+	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/modules/main/vault.json"),
+	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json"),
 ];
 const provider = vaults.reduce<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
-await Promise.all(Object.keys(provider).map(async (identifier) => RootModule.INSTANCE.newChild(identifier, provider[identifier])));
+await Promise.all(
+	Object.keys(provider).map(async (identifier) =>
+		RootModule.INSTANCE.newChild(identifier, provider[identifier])
+	),
+);
