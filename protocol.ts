@@ -75,7 +75,7 @@ export const ModuleManager = {
 		return await sendProtocolMessage("add", {
 			id: instance.getIdentifier(),
 			artifacts: instance.artifacts,
-			providers: instance.providers,
+			checksum: instance.checksum,
 		});
 	},
 	async install(instance: LocalModuleInstance) {
