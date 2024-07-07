@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { LocalModuleInstance, Module, RemoteModuleInstance } from "./module.ts";
+import type { ModuleInstance, ModuleBase } from "./module.ts";
 import { stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
@@ -71,26 +71,26 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 };
 
 export const ModuleManager = {
-	async add(instance: RemoteModuleInstance) {
+	async add(instance: ModuleInstance) {
 		return await sendProtocolMessage("add", {
 			id: instance.getIdentifier(),
 			artifacts: instance.artifacts,
 			checksum: instance.checksum,
 		});
 	},
-	async install(instance: LocalModuleInstance) {
+	async install(instance: ModuleInstance) {
 		return await sendProtocolMessage("install", { id: instance.getIdentifier() });
 	},
-	async enable(instance: LocalModuleInstance) {
+	async enable(instance: ModuleInstance) {
 		return await sendProtocolMessage("enable", { id: instance.getIdentifier() });
 	},
-	async disable(module: Module<any>) {
+	async disable(module: ModuleBase<any>) {
 		return await sendProtocolMessage("enable", { id: `${module.getIdentifier()}@` });
 	},
-	async delete(instance: LocalModuleInstance) {
+	async delete(instance: ModuleInstance) {
 		return await sendProtocolMessage("delete", { id: instance.getIdentifier() });
 	},
-	async remove(instance: LocalModuleInstance) {
+	async remove(instance: ModuleInstance) {
 		return await sendProtocolMessage("remove", { id: instance.getIdentifier() });
 	},
 };

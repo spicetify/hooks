@@ -48,7 +48,7 @@ export interface Metadata {
 const getLoadableChildrenInstances = () =>
 	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
 		(instance) => instance?.canLoad(),
-	) as LocalModuleInstance[];
+	) as ModuleInstance[];
 
 export const enableAllLoadableMixins = () =>
 	Promise.all(getLoadableChildrenInstances().map((instance) => instance.loadMixins()));
@@ -56,17 +56,19 @@ export const enableAllLoadableMixins = () =>
 export const enableAllLoadable = () =>
 	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
 
-export abstract class Module<
-	C extends Module<any>,
-	I extends ModuleInstance<Module<C, I>> = ModuleInstance<Module<C, any>>,
+export abstract class ModuleBase<
+	C extends ModuleBase<any>,
+	I extends ModuleInstanceBase<ModuleBase<C, I>> = ModuleInstanceBase<ModuleBase<C, any>>,
 > {
 	public instances = new Map<Version, I>();
 
 	constructor(
-		public parent: Module<Module<C, I>> | null,
+		public parent: ModuleBase<ModuleBase<C, I>> | null,
 		protected children: Record<ModuleIdentifier, C>,
 		private identifier: ModuleIdentifier,
-	) {}
+	) {
+		this.parent?.setChild(this.identifier, this);
+	}
 
 	public getIdentifier(): ModuleIdentifier {
 		return this.identifier;
@@ -79,10 +81,10 @@ export abstract class Module<
 	}
 
 	public async getChildOrNew(identifier: ModuleIdentifier): Promise<C> {
-		return this.getChild(identifier) ?? await this.newChild(identifier, { enabled: "", v: {} });
+		return this.getChild(identifier) ?? this.newChild(identifier, { enabled: "", v: {} });
 	}
 
-	public setChild(identifier: ModuleIdentifier, child: C) {
+	private setChild(identifier: ModuleIdentifier, child: C) {
 		this.children[identifier] = child;
 	}
 
@@ -94,7 +96,7 @@ export abstract class Module<
 		return Object.values(this.children);
 	}
 
-	public getDescendants(identifier: ModuleIdentifier): Array<Module<any, ModuleInstance<any>>> {
+	public getDescendants(identifier: ModuleIdentifier): Array<ModuleBase<any, ModuleInstanceBase<any>>> {
 		if (identifier === this.identifier) {
 			return [this];
 		}
@@ -103,8 +105,8 @@ export abstract class Module<
 		);
 	}
 
-	public *getAllDescendantsByBreadth(): Generator<Module<Module<any>>> {
-		const i: Array<Module<Module<any>>> = [this];
+	public *getAllDescendantsByBreadth(): Generator<ModuleBase<ModuleBase<any>>> {
+		const i: Array<ModuleBase<ModuleBase<any>>> = [this];
 
 		while (i.length) {
 			const e = i.shift()!;
@@ -123,28 +125,20 @@ export abstract class Module<
 		return [...ancestry, reducedIdentifier];
 	}
 
-	public abstract newInstance(version: Truthy<Version>, store: _Store): Promise<I>;
+	public abstract newInstance(version: Truthy<Version>, store: _Store, local: boolean): Promise<I>;
 
-	public async init(versions: _Module["v"]) {
+	public async init(versions: _Module["v"], local: boolean) {
 		await Promise.all(
 			Object.entries(versions)
-				.map(([version, store]) => this.newInstance(version, store)),
+				.map(([version, store]) => this.newInstance(version, store, local)),
 		);
-
-		this.parent!.setChild(this.identifier, this);
 
 		return this;
 	}
 }
 
-export class RootModule extends Module<LocalModule, never> {
-	override newChild(identifier: ModuleIdentifier, module: _Module): Promise<LocalModule> {
-		const localModule = new LocalModule(this, {}, identifier, module.enabled);
-
-		return localModule.init(module.v);
-	}
-
-	override newInstance(version: Truthy<Version>, store: _Store): Promise<never> {
+export class RootModule extends ModuleBase<Module, never> {
+	override newInstance(): Promise<never> {
 		throw new Error("RootModule can't have instances");
 	}
 	public static INSTANCE = new RootModule();
@@ -153,65 +147,52 @@ export class RootModule extends Module<LocalModule, never> {
 		super(null, {}, "");
 		Object.freeze(this.instances);
 	}
-}
 
-export class RemoteModule extends Module<RemoteModule, RemoteModuleInstance> {
-	static fromModule(
-		parent: Module<any>,
-		identifier: ModuleIdentifier,
-		module: _Module,
-	): Promise<RemoteModule> {
-		const remoteModule = new RemoteModule(parent, {}, identifier);
-
-		return remoteModule.init(module.v);
-	}
-
-	override newChild(identifier: ModuleIdentifier, module: _Module) {
-		return RemoteModule.fromModule(this, identifier, module);
-	}
-
-	override async newInstance(version: Truthy<Version>, { artifacts, checksum }: _Store) {
-		const remoteModuleInstance = new RemoteModuleInstance(this, version, null, artifacts, checksum);
-
-		this.instances.set(version, remoteModuleInstance);
-
-		return remoteModuleInstance;
+	override newChild(identifier: ModuleIdentifier, module: _Module, local = false) {
+		return Module.prototype.newChild.call(this, identifier, module, local);
 	}
 }
 
-export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
+export class Module extends ModuleBase<Module, ModuleInstance> {
 	constructor(
-		parent: RootModule,
-		children: Record<ModuleIdentifier, RemoteModule>,
+		parent: RootModule | Module,
+		children: Record<ModuleIdentifier, Module>,
 		identifier: ModuleIdentifier,
 		public enabled: Version,
 	) {
 		super(parent, children, identifier);
 	}
 
-	override newChild(identifier: ModuleIdentifier, module: _Module) {
-		return RemoteModule.fromModule(this, identifier, module);
+	override newChild(identifier: ModuleIdentifier, module: _Module, local = false) {
+		if (this.getChild(identifier)) {
+			throw new Error(`Module ${identifier} already exists`);
+		}
+		return new Module(this, {}, identifier, module.enabled).init(module.v, local);
 	}
 
-	override async newInstance(version: Truthy<Version>, { artifacts, installed, checksum }: _Store) {
-		const localModuleInstance = new LocalModuleInstance(this, version, null, artifacts, checksum, installed);
+	override async newInstance(
+		version: Truthy<Version>,
+		{ artifacts, installed, checksum }: _Store,
+		local = false,
+	) {
+		const instance = new ModuleInstance(this, version, null, artifacts, checksum, local, installed);
 
-		this.instances.set(version, localModuleInstance);
+		this.instances.set(version, instance);
 
-		if (localModuleInstance.isEnabled()) {
-			await localModuleInstance.onEnable();
+		if (instance.isEnabled()) {
+			await instance.onEnable();
 		}
 
-		return localModuleInstance;
+		return instance;
 	}
 
-	public canEnable(instance: LocalModuleInstance) {
+	public canEnable(instance: ModuleInstance) {
 		const enabledInstance = this.getEnabledInstance();
-		return !instance.isEnabled() && instance.isInstalled() &&
+		return instance.canDelete() &&
 			(!enabledInstance || this.canDisable(enabledInstance));
 	}
 
-	public enable(instance: LocalModuleInstance) {
+	public enable(instance: ModuleInstance) {
 		if (!this.canEnable(instance)) {
 			return Promise.resolve(false);
 		}
@@ -226,7 +207,7 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 		});
 	}
 
-	public canDisable(instance: LocalModuleInstance) {
+	public canDisable(instance: ModuleInstance) {
 		return instance.isEnabled() && !instance.isLoaded();
 	}
 
@@ -250,7 +231,7 @@ export class LocalModule extends Module<RemoteModule, LocalModuleInstance> {
 		return this.enabled;
 	}
 
-	public getEnabledInstance(): LocalModuleInstance | undefined {
+	public getEnabledInstance(): ModuleInstance | undefined {
 		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
 }
@@ -259,7 +240,7 @@ export interface MixinLoader {
 	awaitedMixins: Promise<void>[];
 }
 
-export abstract class ModuleInstance<M extends Module<any> = Module<any>> {
+export abstract class ModuleInstanceBase<M extends ModuleBase<any> = ModuleBase<any>> {
 	public getName() {
 		return this.metadata?.name;
 	}
@@ -299,7 +280,7 @@ export abstract class ModuleInstance<M extends Module<any> = Module<any>> {
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -309,23 +290,7 @@ export abstract class ModuleInstance<M extends Module<any> = Module<any>> {
 	abstract getMetadataURL(): string | null;
 }
 
-export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
-	public getMetadataURL() {
-		return this.getRemoteMetadataURL();
-	}
-
-	public async add() {
-		if (!(await ModuleManager.add(this))) {
-			return null;
-		}
-
-		const localModule = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
-		const store: _Store = { installed: false, artifacts: this.artifacts, checksum: this.checksum };
-		return await localModule.newInstance(this.version, store);
-	}
-}
-
-export class LocalModuleInstance extends ModuleInstance<LocalModule> implements MixinLoader {
+export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinLoader {
 	public async loadProviders() {
 		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!).catch(() => null);
 		const provider = vault?.modules ?? {};
@@ -350,10 +315,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	private jsIndex: any;
 
 	public transition = new Transition();
-	private dependants = new Set<LocalModuleInstance>();
+	private dependants = new Set<ModuleInstance>();
 
 	public isLoaded() {
 		return this.loaded;
+	}
+
+	public isLocal() {
+		return this.added;
 	}
 
 	public isInstalled() {
@@ -361,11 +330,12 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	constructor(
-		module: LocalModule,
+		module: Module,
 		version: Truthy<Version>,
 		metadata: Metadata | null,
 		artifacts: Array<string>,
 		checksum: string,
+		private added: boolean,
 		private installed: boolean,
 	) {
 		super(module, version, metadata, artifacts, checksum);
@@ -533,15 +503,14 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		resolve();
 	}
 
-	// ? As is, this always returns true. Recur Impl for easier future modification
 	private canUnloadRecur() {
-		if (this.loaded) {
-			for (const dependant of this.dependants) {
-				if (!dependant.canUnloadRecur()) {
-					return false;
-				}
-			}
-		}
+		// if (this.loaded) {
+		// 	for (const dependant of this.dependants) {
+		// 		if (!dependant.canUnloadRecur()) {
+		// 			return false;
+		// 		}
+		// 	}
+		// }
 		return true;
 	}
 
@@ -581,8 +550,34 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 		return false;
 	}
 
+	public canAdd() {
+		return !this.added;
+	}
+
+	public async add() {
+		await this.transition.block();
+
+		if (!this.canAdd()) {
+			return null;
+		}
+
+		const resolve = this.transition.extend();
+
+		if (!(await ModuleManager.add(this))) {
+			return null;
+		}
+
+		const module = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
+		const instance = new ModuleInstance(module, this.getVersion(), this.metadata, this.artifacts, this.checksum, true, false);
+		module.instances.set(instance.getVersion(), instance);
+		this.added = true;
+		resolve();
+
+		return this;
+	}
+
 	public canInstallRemove() {
-		return !this.installed;
+		return this.added && !this.installed;
 	}
 
 	public async install() {
@@ -605,7 +600,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public isEnabled() {
-		return this.getVersion() === this.module.getEnabledVersion();
+		return this.isInstalled() && (this.getVersion() === this.module.getEnabledVersion());
 	}
 
 	public async onEnable() {
@@ -618,12 +613,12 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public canLoad() {
-		return this.canDelete() && this.isEnabled();
+		return this.isEnabled() && !this.loaded;
 	}
 
 	public async load() {
 		await this.transition.block();
-		if (this.loaded) {
+		if (!this.canLoad()) {
 			return false;
 		}
 		try {
@@ -638,7 +633,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public canUnload() {
-		return this.loaded && !this.isEnabled();
+		return this.loaded;
 	}
 
 	public async unload() {
@@ -658,7 +653,7 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public canDelete() {
-		return this.installed && !this.loaded;
+		return this.installed && !this.isEnabled();
 	}
 
 	public async delete() {
@@ -681,9 +676,13 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 	}
 
 	public async remove() {
+		await this.transition.block();
+
 		if (!this.canInstallRemove()) {
 			return null;
 		}
+
+		const resolve = this.transition.extend();
 
 		if (!(await ModuleManager.remove(this))) {
 			return null;
@@ -691,9 +690,12 @@ export class LocalModuleInstance extends ModuleInstance<LocalModule> implements 
 
 		this.module.instances.delete(this.getVersion());
 		if (this.module.instances.size === 0) {
+			this.module.parent!.removeChild(this.getModuleIdentifier());
 			this.module.parent = null;
-			RootModule.INSTANCE.removeChild(this.module.getIdentifier());
 		}
+		this.added = false;
+		resolve();
+
 		return this;
 	}
 }
@@ -704,14 +706,24 @@ export const INTERNAL_MIXIN_LOADER: MixinLoader = {
 
 export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
-const vaults = [
+const localModules = [
 	await fetchJson<_Vault>("/modules/vault.json"),
 	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/modules/main/vault.json"),
+].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+
+const remoteModules = [
 	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json"),
-];
-const provider = vaults.reduce<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+
 await Promise.all(
-	Object.keys(provider).map(async (identifier) =>
-		RootModule.INSTANCE.newChild(identifier, provider[identifier])
+	Object.keys(localModules).map((identifier) =>
+		RootModule.INSTANCE.newChild(identifier, localModules[identifier], true)
 	),
+);
+requestIdleCallback(() =>
+	Promise.all(
+		Object.keys(remoteModules).map((identifier) => {
+			RootModule.INSTANCE.newChild(identifier, remoteModules[identifier]);
+		}),
+	)
 );

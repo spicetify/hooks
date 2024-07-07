@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-export type { LocalModuleInstance as Module } from "./module.ts";
+export type { ModuleInstance as Module } from "./module.ts";
 export type { Transformer } from "./transform.ts";
 
 import mixin, { applyTransforms } from "./mixins.js";
