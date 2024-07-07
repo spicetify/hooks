@@ -327,13 +327,13 @@ export class RemoteModuleInstance extends ModuleInstance<RemoteModule> {
 
 export class LocalModuleInstance extends ModuleInstance<LocalModule> implements MixinLoader {
 	public async loadProviders() {
-		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!);
-		const provider = vault.modules;
+		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!).catch(() => null);
+		const provider = vault?.modules ?? {};
 
-		// TODO: revisit this check
-		Object.keys(provider).filter((i) => i.startsWith(this.getModuleIdentifier())).forEach(async (
-			identifier,
-		) => this.module.newChild(identifier, provider[identifier]));
+		Object.keys(provider)
+			// TODO: revisit this check
+			.filter((i) => i.startsWith(this.getModuleIdentifier()))
+			.forEach(async (identifier) => this.module.newChild(identifier, provider[identifier]));
 	}
 
 	private _transformer = createTransformer(this);
