@@ -16,9 +16,7 @@ import {
 	loadRemoteModules,
 } from "./module.js";
 
-await loadLocalModules();
-
-await mixin(INTERNAL_TRANSFORMER);
+await Promise.all([mixin(INTERNAL_TRANSFORMER), loadLocalModules()]);
 console.time("onSpotifyPreInit");
 await enableAllLoadableMixins();
 console.timeEnd("onSpotifyPreInit");
