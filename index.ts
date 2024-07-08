@@ -19,11 +19,13 @@ console.time("onSpotifyPreInit");
 await enableAllLoadableMixins();
 console.timeEnd("onSpotifyPreInit");
 
+console.time("onSpotifyInit");
 await Promise.all(
 	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) => import(await p)),
 );
+console.timeEnd("onSpotifyInit");
 
-await Promise.all(INTERNAL_MIXIN_LOADER.awaitedMixins);
 console.time("onSpotifyPostInit");
+await Promise.all(INTERNAL_MIXIN_LOADER.awaitedMixins);
 await enableAllLoadable();
 console.timeEnd("onSpotifyPostInit");
