@@ -51,7 +51,7 @@ const getLoadableChildrenInstances = () =>
 	) as ModuleInstance[];
 
 export const enableAllLoadableMixins = () =>
-	Promise.all(getLoadableChildrenInstances().map((instance) => instance.loadMixins()));
+	Promise.all(getLoadableChildrenInstances().map((instance) => instance._loadMixins()));
 
 export const enableAllLoadable = () =>
 	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
@@ -130,6 +130,7 @@ export abstract class ModuleBase<
 	public async init(versions: _Module["v"], local: boolean) {
 		await Promise.all(
 			Object.entries(versions)
+				.filter(([version]) => !this.instances.has(version))
 				.map(([version, store]) => this.newInstance(version, store, local)),
 		);
 
@@ -167,7 +168,7 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		if (this.getChild(identifier)) {
 			throw new Error(`Module ${identifier} already exists`);
 		}
-		return new Module(this, {}, identifier, module.enabled).init(module.v, local);
+		return new Module(this, {}, identifier, local ? module.enabled : "").init(module.v, local);
 	}
 
 	override async newInstance(
@@ -280,7 +281,7 @@ export abstract class ModuleInstanceBase<M extends ModuleBase<any> = ModuleBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -310,7 +311,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 	_unloadJs: (() => Promise<void>) | null = null;
 	_unloadCss: (() => void) | null = null;
-	private preloaded = false;
+	private mixinsLoaded = false;
 	private loaded = false;
 	private jsIndex: any;
 
@@ -359,28 +360,30 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return this.getLocalMetadataURL() ?? this.getRemoteMetadataURL();
 	}
 
-	async #loadJsMixins() {
+	async #loadMixins() {
 		await this.#loadJsIndex();
 		if (!this.jsIndex) {
 			return;
 		}
 
-		console.time(`${this.getModuleIdentifier()}#loadJsMixins`);
-		await this.jsIndex.loadMixins?.(this.transformer);
-		console.timeEnd(`${this.getModuleIdentifier()}#loadJsMixins`);
+		console.time(`${this.getModuleIdentifier()}#loadMixins`);
+		try {
+			await this.jsIndex.mixin?.(this.transformer);
+		} catch (e) {
+			console.error(`Error loading mixins for \`${this.getModuleIdentifier()}\`:`, e);
+		}
+		console.timeEnd(`${this.getModuleIdentifier()}#loadMixins`);
 
-		console.groupCollapsed(`${this.getModuleIdentifier()}#awaitJsMixins`);
+		console.groupCollapsed(`${this.getModuleIdentifier()}#awaitMixins`);
 		console.info(...this.awaitedMixins);
 		console.groupEnd();
 
-		console.time(`${this.getModuleIdentifier()}#awaitJsMixins`);
-		Promise.all(this.awaitedMixins).then(() =>
-			console.timeEnd(`${this.getModuleIdentifier()}#awaitJsMixins`)
-		);
+		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
+		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
 	}
 
-	async #loadJs() {
-		if (!this.preloaded) {
+	async #preloadJs() {
+		if (!this.mixinsLoaded) {
 			await this.#loadJsIndex();
 		}
 		if (!this.jsIndex) {
@@ -391,17 +394,41 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			this._unloadJs = null;
 		};
 
+		console.time(`${this.getModuleIdentifier()}#preloadJs`);
+		try {
+			const predispose = await this.jsIndex.preload?.(this);
+			const unloadJs = this._unloadJs;
+			this._unloadJs = async () => {
+				await predispose?.();
+				await unloadJs();
+			};
+		} catch (e) {
+			await this._unloadJs!();
+			console.error(`Error preloading javascript for \`${this.getModuleIdentifier()}\`:`, e);
+		}
+		console.timeEnd(`${this.getModuleIdentifier()}#preloadJs`);
+	}
+
+	async #loadJs() {
+		if (!this.jsIndex) {
+			return;
+		}
+
+		if (!this._unloadJs) {
+			return;
+		}
+
 		console.time(`${this.getModuleIdentifier()}#loadJs`);
 		try {
 			const dispose = await this.jsIndex.load?.(this);
-			const unloadJS = this._unloadJs;
+			const predispose = this._unloadJs!;
 			this._unloadJs = async () => {
 				await dispose?.();
-				await unloadJS();
+				await predispose();
 			};
 		} catch (e) {
-			this._unloadJs();
-			console.error(`Error loading \`${this.getModuleIdentifier()}\`:`, e);
+			await this._unloadJs!();
+			console.error(`Error loading javascript for \`${this.getModuleIdentifier()}\`:`, e);
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
@@ -434,15 +461,19 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		this.jsIndex = await import(uniqueEntry);
 	}
 
-	private canPreloadRecur() {
+	private canLoadMixinsRecur() {
 		return this.canLoadRecur(true);
 	}
 
-	private canLoadRecur(isPreload = false, range = ">=0.0.0-0") {
+	private canLoadJsRecur() {
+		return this.canLoadRecur(false);
+	}
+
+	private canLoadRecur(isPreload: boolean, range = ">=0.0.0-0") {
 		if (!this.metadata) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has no metadata`;
 		}
-		if (!isPreload && !this.preloaded && this.metadata.hasMixins) {
+		if (!isPreload && !this.mixinsLoaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
 		if (!this.loaded) {
@@ -462,21 +493,32 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return true;
 	}
 
-	private async preloadRecur() {
-		if (this.preloaded) {
+	private canUnloadJsRecur() {
+		// if (this.loaded) {
+		// 	for (const dependant of this.dependants) {
+		// 		if (!dependant.canUnloadJsRecur()) {
+		// 			return false;
+		// 		}
+		// 	}
+		// }
+		return true;
+	}
+
+	private async loadMixinsRecur() {
+		if (this.mixinsLoaded) {
 			return this.transition.block();
 		}
-		this.preloaded = true;
+		this.mixinsLoaded = true;
 		const resolve = this.transition.extend();
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
 				const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
-				return module.preloadRecur();
+				return module.loadMixinsRecur();
 			}),
 		);
 
-		await this.#loadJsMixins();
+		await this.#loadMixins();
 
 		resolve();
 	}
@@ -503,23 +545,12 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		resolve();
 	}
 
-	private canUnloadRecur() {
-		// if (this.loaded) {
-		// 	for (const dependant of this.dependants) {
-		// 		if (!dependant.canUnloadRecur()) {
-		// 			return false;
-		// 		}
-		// 	}
-		// }
-		return true;
-	}
-
 	private async unloadRecur() {
 		if (!this.loaded) {
 			return this.transition.block();
 		}
 		this.loaded = false;
-		this.preloaded = false;
+		this.mixinsLoaded = false;
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
@@ -534,14 +565,14 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		resolve();
 	}
 
-	async loadMixins() {
+	async _loadMixins() {
 		await this.transition.block();
-		if (this.preloaded) {
+		if (this.mixinsLoaded) {
 			return false;
 		}
 		try {
-			if (this.canPreloadRecur()) {
-				await this.preloadRecur();
+			if (this.canLoadMixinsRecur()) {
+				await this.loadMixinsRecur();
 				return true;
 			}
 		} catch (e) {
@@ -568,7 +599,15 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		}
 
 		const module = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
-		const instance = new ModuleInstance(module, this.getVersion(), this.metadata, this.artifacts, this.checksum, true, false);
+		const instance = new ModuleInstance(
+			module,
+			this.getVersion(),
+			this.metadata,
+			this.artifacts,
+			this.checksum,
+			true,
+			false,
+		);
 		module.instances.set(instance.getVersion(), instance);
 		this.added = true;
 		resolve();
@@ -622,7 +661,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			return false;
 		}
 		try {
-			if (this.canLoadRecur(false)) {
+			if (this.canLoadJsRecur()) {
+				await this.#preloadJs();
 				await this.loadRecur();
 				return true;
 			}
@@ -642,7 +682,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			return false;
 		}
 		try {
-			if (this.canUnloadRecur()) {
+			if (this.canUnloadJsRecur()) {
 				await this.unloadRecur();
 				return true;
 			}
@@ -722,8 +762,9 @@ await Promise.all(
 );
 requestIdleCallback(() =>
 	Promise.all(
-		Object.keys(remoteModules).map((identifier) => {
-			RootModule.INSTANCE.newChild(identifier, remoteModules[identifier]);
+		Object.keys(remoteModules).map(async (identifier) => {
+			const module = await RootModule.INSTANCE.getChildOrNew(identifier);
+			await module.init(remoteModules[identifier].v, false);
 		}),
 	)
 );
