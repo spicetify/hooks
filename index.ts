@@ -12,7 +12,11 @@ import {
 	enableAllLoadableMixins,
 	INTERNAL_MIXIN_LOADER,
 	INTERNAL_TRANSFORMER,
+	loadLocalModules,
+	loadRemoteModules,
 } from "./module.js";
+
+await loadLocalModules();
 
 await mixin(INTERNAL_TRANSFORMER);
 console.time("onSpotifyPreInit");
@@ -29,3 +33,5 @@ console.time("onSpotifyPostInit");
 await Promise.all(INTERNAL_MIXIN_LOADER.awaitedMixins);
 await enableAllLoadable();
 console.timeEnd("onSpotifyPostInit");
+
+requestIdleCallback(loadRemoteModules);

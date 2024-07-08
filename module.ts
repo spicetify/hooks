@@ -45,17 +45,6 @@ export interface Metadata {
 	dependencies: Record<string, string>;
 }
 
-const getLoadableChildrenInstances = () =>
-	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
-		(instance) => instance?.canLoad(),
-	) as ModuleInstance[];
-
-export const enableAllLoadableMixins = () =>
-	Promise.all(getLoadableChildrenInstances().map((instance) => instance._loadMixins()));
-
-export const enableAllLoadable = () =>
-	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
-
 export abstract class ModuleBase<
 	C extends ModuleBase<any>,
 	I extends ModuleInstanceBase<ModuleBase<C, I>> = ModuleInstanceBase<ModuleBase<C, any>>,
@@ -353,7 +342,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		if (!this.installed) {
 			return null;
 		}
-		return `/modules/${this.getModuleIdentifier()}/metadata.json`;
+		return `/store/${this.getModuleIdentifier()}/${this.getVersion()}/metadata.json`;
 	}
 
 	public getMetadataURL() {
@@ -746,25 +735,39 @@ export const INTERNAL_MIXIN_LOADER: MixinLoader = {
 
 export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 
-const localModules = [
-	await fetchJson<_Vault>("/modules/vault.json"),
-	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/modules/main/vault.json"),
-].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+export async function loadLocalModules() {
+	const localModules = [
+		await fetchJson<_Vault>("/modules/vault.json"),
+	].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
 
-const remoteModules = [
-	await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json"),
-].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+	return Promise.all(
+		Object.keys(localModules).map((identifier) =>
+			RootModule.INSTANCE.newChild(identifier, localModules[identifier], true)
+		),
+	);
+}
 
-await Promise.all(
-	Object.keys(localModules).map((identifier) =>
-		RootModule.INSTANCE.newChild(identifier, localModules[identifier], true)
-	),
-);
-requestIdleCallback(() =>
-	Promise.all(
+export async function loadRemoteModules() {
+	const remoteModules = [
+		await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/modules/main/vault.json"),
+		await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json"),
+	].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+
+	await Promise.all(
 		Object.keys(remoteModules).map(async (identifier) => {
 			const module = await RootModule.INSTANCE.getChildOrNew(identifier);
 			await module.init(remoteModules[identifier].v, false);
 		}),
-	)
-);
+	);
+}
+
+const getLoadableChildrenInstances = () =>
+	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
+		(instance) => instance?.canLoad(),
+	) as ModuleInstance[];
+
+export const enableAllLoadableMixins = () =>
+	Promise.all(getLoadableChildrenInstances().map((instance) => instance._loadMixins()));
+
+export const enableAllLoadable = () =>
+	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
