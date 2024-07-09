@@ -601,7 +601,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		this.added = true;
 		resolve();
 
-		return this;
+		return instance;
 	}
 
 	public canInstallRemove() {
