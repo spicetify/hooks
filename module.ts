@@ -270,7 +270,7 @@ export abstract class ModuleInstanceBase<M extends ModuleBase<any> = ModuleBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -359,7 +359,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		try {
 			await this.jsIndex.mixin?.(this.transformer);
 		} catch (e) {
-			console.error(`Error loading mixins for \`${this.getModuleIdentifier()}\`:`, e);
+			console.error(new Error(`Error loading mixins for \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadMixins`);
 
@@ -393,7 +393,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			};
 		} catch (e) {
 			await this._unloadJs!();
-			console.error(`Error preloading javascript for \`${this.getModuleIdentifier()}\`:`, e);
+			console.error(new Error(`Error preloading javascript for \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#preloadJs`);
 	}
@@ -417,7 +417,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			};
 		} catch (e) {
 			await this._unloadJs!();
-			console.error(`Error loading javascript for \`${this.getModuleIdentifier()}\`:`, e);
+			console.error(new Error(`Error loading javascript for \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
@@ -565,7 +565,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(`Can't inject mixins for \`${this.getModuleIdentifier()}\`, reason:\n`, e);
+			console.error(new Error(`Can't inject mixins for \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		return false;
 	}
@@ -656,7 +656,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(`Can't load \`${this.getModuleIdentifier()}\`, reason:\n`, e);
+			console.error(new Error(`Can't load \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		return false;
 	}
@@ -676,7 +676,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(`Can't unload \`${this.getModuleIdentifier()}\`, reason:\n`, e);
+			console.error(new Error(`Can't unload \`${this.getModuleIdentifier()}\``, { cause: e }));
 		}
 		return false;
 	}
