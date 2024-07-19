@@ -65,7 +65,7 @@ const sendProtocolMessage = async (action: string, options: Record<string, strin
 	setTimeout(() => {
 		reject(new Error("RPC timed out"));
 		cancelSubscription();
-	}, 5000);
+	}, 30000);
 
 	return promise;
 };
