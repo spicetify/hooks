@@ -466,7 +466,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
 		if (!this.loaded) {
-			if (!this.isEnabled() || !this.installed || !satisfies(this.version, range)) {
+			if (!this.canLoad() || !satisfies(this.version, range)) {
 				throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 			}
 			for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
