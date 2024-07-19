@@ -32,11 +32,11 @@ interface _Vault {
 export interface Metadata {
 	name: string;
 	tags: string[];
-	preview: string;
+	preview?: string;
 	version: string;
 	authors: string[];
 	description: string;
-	readme: string;
+	readme?: string;
 	entries: {
 		js?: string;
 		css?: string;
