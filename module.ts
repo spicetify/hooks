@@ -539,7 +539,6 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			return this.transition.block();
 		}
 		this.loaded = false;
-		this.mixinsLoaded = false;
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
