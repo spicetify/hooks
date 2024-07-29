@@ -46,7 +46,7 @@ export interface Metadata {
 }
 
 export abstract class ModuleBase<
-	C extends ModuleBase<any>,
+	C extends ModuleBase<C, any>,
 	I extends ModuleInstanceBase<ModuleBase<C, I>> = ModuleInstanceBase<ModuleBase<C, any>>,
 > {
 	public instances = new Map<Version, I>();
@@ -63,14 +63,32 @@ export abstract class ModuleBase<
 		return this.identifier;
 	}
 
-	public abstract newChild(identifier: ModuleIdentifier, module: _Module): Promise<C>;
+	public abstract newDescendant(identifier: ModuleIdentifier, module: _Module): Promise<C>;
 
-	public getChild(identifier: ModuleIdentifier): C | undefined {
-		return this.children[identifier];
+	public getDescendant(identifier: ModuleIdentifier): C | null {
+		for (const child of this.getChildren()) {
+			if (identifier.startsWith(child.identifier)) {
+				if (identifier.length === child.identifier.length) {
+					return child;
+				}
+				return child.getDescendant(identifier);
+			}
+		}
+		return null;
 	}
 
-	public async getChildOrNew(identifier: ModuleIdentifier): Promise<C> {
-		return this.getChild(identifier) ?? this.newChild(identifier, { enabled: "", v: {} });
+	public getLastParentOf(identifier: ModuleIdentifier): C | null {
+		for (const child of this.getChildren()) {
+			if (identifier.startsWith(child.identifier)) {
+				return child.getLastParentOf(identifier);
+			}
+		}
+		// @ts-ignore :(
+		return this;
+	}
+
+	public async getDescendantOrNew(identifier: ModuleIdentifier): Promise<C> {
+		return this.getDescendant(identifier) ?? this.newDescendant(identifier, { enabled: "", v: {} });
 	}
 
 	private setChild(identifier: ModuleIdentifier, child: C) {
@@ -85,16 +103,14 @@ export abstract class ModuleBase<
 		return Object.values(this.children);
 	}
 
-	public getDescendants(identifier: ModuleIdentifier): Array<ModuleBase<any, ModuleInstanceBase<any>>> {
-		if (identifier === this.identifier) {
-			return [this];
+	public *getDescendantsByDepth(): Generator<ModuleBase<any, ModuleInstanceBase<any>>> {
+		for (const child of this.getChildren()) {
+			yield child;
+			yield* child.getDescendantsByDepth();
 		}
-		return this.getChildren().filter((child) => child.identifier.startsWith(identifier)).flatMap((child) =>
-			child.getDescendants(identifier)
-		);
 	}
 
-	public *getAllDescendantsByBreadth(): Generator<ModuleBase<ModuleBase<any>>> {
+	public *getDescendantsByBreadth(): Generator<ModuleBase<ModuleBase<any>>> {
 		const i: Array<ModuleBase<ModuleBase<any>>> = [this];
 
 		while (i.length) {
@@ -138,8 +154,8 @@ export class RootModule extends ModuleBase<Module, never> {
 		Object.freeze(this.instances);
 	}
 
-	override newChild(identifier: ModuleIdentifier, module: _Module, local = false) {
-		return Module.prototype.newChild.call(this, identifier, module, local);
+	override newDescendant(identifier: ModuleIdentifier, module: _Module, local = false) {
+		return Module.prototype.newDescendant.call(this, identifier, module, local);
 	}
 }
 
@@ -153,11 +169,20 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		super(parent, children, identifier);
 	}
 
-	override newChild(identifier: ModuleIdentifier, module: _Module, local = false) {
-		if (this.getChild(identifier)) {
+	override newDescendant(identifier: ModuleIdentifier, module: _Module, local = false) {
+		if (this.getDescendant(identifier)) {
 			throw new Error(`Module ${identifier} already exists`);
 		}
-		return new Module(this, {}, identifier, local ? module.enabled : "").init(module.v, local);
+
+		const parent = this.getLastParentOf(identifier) as Module;
+		const descendant = new Module(parent, {}, identifier, local ? module.enabled : "");
+		for (const child of parent.getChildren()) {
+			if (child.getIdentifier().startsWith(identifier) && child != descendant) {
+				child.parent = descendant;
+			}
+		}
+
+		return descendant.init(module.v, local);;
 	}
 
 	override async newInstance(
@@ -230,7 +255,7 @@ export interface MixinLoader {
 	awaitedMixins: Promise<void>[];
 }
 
-export abstract class ModuleInstanceBase<M extends ModuleBase<any> = ModuleBase<any>> {
+export abstract class ModuleInstanceBase<M extends ModuleBase<M> = ModuleBase<any>> {
 	public getName() {
 		return this.metadata?.name;
 	}
@@ -288,7 +313,10 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		Object.keys(provider)
 			// TODO: revisit this check
 			.filter((i) => i.startsWith(this.getModuleIdentifier()))
-			.forEach(async (identifier) => this.module.newChild(identifier, provider[identifier]));
+			.forEach(async (identifier) => {
+				const module = await this.module.getDescendantOrNew(identifier);
+				await module.init(provider[identifier].v, false);
+			});
 	}
 
 	private _transformer = createTransformer(this);
@@ -473,7 +501,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				if (dependency === "spotify") {
 					return satisfies(SPOTIFY_VERSION, range);
 				}
-				const module = RootModule.INSTANCE.getChild(dependency)?.getEnabledInstance();
+				const module = RootModule.INSTANCE.getDescendant(dependency)?.getEnabledInstance();
 				if (!module?.canLoadRecur(isPreload, range)) {
 					return false;
 				}
@@ -502,7 +530,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
 				return module.loadMixinsRecur();
 			}),
 		);
@@ -521,7 +549,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
 				module.dependants.add(this);
 				return module.loadRecur();
 			}),
@@ -542,7 +570,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
-			const module = RootModule.INSTANCE.getChild(dependency)!.getEnabledInstance()!;
+			const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
 			module.dependants.delete(this);
 		}
 		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
@@ -586,21 +614,10 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			return null;
 		}
 
-		const module = await RootModule.INSTANCE.getChildOrNew(this.getModuleIdentifier());
-		const instance = new ModuleInstance(
-			module,
-			this.getVersion(),
-			this.metadata,
-			this.artifacts,
-			this.checksum,
-			true,
-			false,
-		);
-		module.instances.set(instance.getVersion(), instance);
 		this.added = true;
 		resolve();
 
-		return instance;
+		return this;
 	}
 
 	public canInstallRemove() {
@@ -741,7 +758,7 @@ export async function loadLocalModules() {
 
 	return Promise.all(
 		Object.keys(localModules).map((identifier) =>
-			RootModule.INSTANCE.newChild(identifier, localModules[identifier], true)
+			RootModule.INSTANCE.newDescendant(identifier, localModules[identifier], true)
 		),
 	);
 }
@@ -754,16 +771,18 @@ export async function loadRemoteModules() {
 
 	await Promise.all(
 		Object.keys(remoteModules).map(async (identifier) => {
-			const module = await RootModule.INSTANCE.getChildOrNew(identifier);
+			const module = await RootModule.INSTANCE.getDescendantOrNew(identifier);
 			await module.init(remoteModules[identifier].v, false);
 		}),
 	);
 }
 
 const getLoadableChildrenInstances = () =>
-	RootModule.INSTANCE.getChildren().map((module) => module.getEnabledInstance()).filter(
-		(instance) => instance?.canLoad(),
-	) as ModuleInstance[];
+	Array.from(RootModule.INSTANCE.getDescendantsByBreadth())
+		.map((module) => (module as Module).getEnabledInstance())
+		.filter(
+			(instance) => instance?.canLoad(),
+		) as ModuleInstance[];
 
 export const enableAllLoadableMixins = () =>
 	Promise.all(getLoadableChildrenInstances().map((instance) => instance._loadMixins()));

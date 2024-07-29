@@ -44,7 +44,7 @@ function interceptNavigationControlMessage(e: Event): boolean {
 		} else {
 			(async function () {
 				for (const identifier of modules) {
-					const instance = RootModule.INSTANCE.getChild(identifier)?.getEnabledInstance();
+					const instance = RootModule.INSTANCE.getDescendant(identifier)?.getEnabledInstance();
 					if (!instance) {
 						continue;
 					}
