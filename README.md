@@ -3,7 +3,7 @@ cd $env.LOCALAPPDATA/spicetify/
 rm -r $env.LOCALAPPDATA/spicetify/hooks/
 git clone github.com/spicetify/hooks
 cd hooks
-tsc
+npx --package=typescript tsc
 ```
 
 ## License
