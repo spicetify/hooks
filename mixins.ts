@@ -100,7 +100,7 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str) => {
-			str = str.replace("new Date(2021,6,20)", "new Date(null)");
+			str = str.replace("/864e5<30", "<0");
 			emit();
 			return str;
 		},
