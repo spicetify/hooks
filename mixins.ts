@@ -100,7 +100,7 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str) => {
-			str = str.replace(/(\("[^"]+sentry.io)/, ",$1");
+			str = str.replace("new Date(2021,6,20)", "new Date(null)");
 			emit();
 			return str;
 		},
