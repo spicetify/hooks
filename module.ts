@@ -266,7 +266,7 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		await instance.onEnable();
 	}
 
-	public async fastEnable(instance: ModuleInstance) {
+	public async fastEnable(instance: ModuleInstance): Promise<boolean> {
 		return instance.transition.new(async () => {
 			const enabledInstance = this.getEnabledInstance();
 			await enabledInstance?.transition.block();
@@ -759,7 +759,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		this.installed = true;
 	}
 
-	public async fastInstall() {
+	public async fastInstall(): Promise<this | null> {
 		return this.transition.new(async () => {
 			if (this.isInstalled()) {
 				return null;
@@ -863,7 +863,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		this.installed = false;
 	}
 
-	public async fastDelete() {
+	public async fastDelete(): Promise<this | null> {
 		return this.transition.new(async () => {
 			if (!this.isInstalled() || this.isLoaded()) {
 				return null;
@@ -900,7 +900,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		this.added = false;
 	}
 
-	public async fastRemove() {
+	public async fastRemove(): Promise<this | null> {
 		return this.transition.new(async () => {
 			if (!this.isLocal() || this.isLoaded()) {
 				return null;
