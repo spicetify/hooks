@@ -271,7 +271,10 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 			const enabledInstance = this.getEnabledInstance();
 			await enabledInstance?.transition.block();
 
-			if (instance.isEnabled() || (enabledInstance && !this.canDisable(enabledInstance))) {
+			if (
+				instance.isEnabled() ||
+				(enabledInstance && !this.canDisable(enabledInstance))
+			) {
 				return false;
 			}
 
@@ -373,7 +376,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -784,9 +787,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	public async onEnable() {
 		if (this.installed) {
 			await this.loadProviders();
-			const storeUrl = this.getMetadataURL()!;
-			const metadata = await fetchJson<Metadata>(storeUrl);
-			this.updateMetadata(metadata);
+			await this.ensureMetadata();
 		}
 	}
 
@@ -923,6 +924,20 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (this.module.instances.size === 0) {
 			this.module.parent!.removeChild(this.getModuleIdentifier());
 			this.module.parent = null;
+		}
+	}
+	public async ensureMetadata() {
+		if (!this.metadata) {
+			try {
+				const storeUrl = this.getMetadataURL()!;
+				const metadata = await fetchJson<Metadata>(storeUrl);
+				this.updateMetadata(metadata);
+			} catch (e) {
+				throw new Error(
+					`couldn't load metadata for module '${this.getIdentifier()}'`,
+					{ cause: e },
+				);
+			}
 		}
 	}
 }
