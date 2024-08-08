@@ -81,8 +81,22 @@ export const ModuleManager = {
 	async install(instance: ModuleInstance) {
 		return await sendProtocolMessage("install", { id: instance.getIdentifier() });
 	},
+	async fastInstall(instance: ModuleInstance) {
+		return await sendProtocolMessage("fast-install", {
+			id: instance.getIdentifier(),
+			artifacts: instance.artifacts,
+			checksum: instance.checksum,
+		});
+	},
 	async enable(instance: ModuleInstance) {
 		return await sendProtocolMessage("enable", { id: instance.getIdentifier() });
+	},
+	async fastEnable(instance: ModuleInstance) {
+		return await sendProtocolMessage("fast-enable", {
+			id: instance.getIdentifier(),
+			artifacts: instance.artifacts,
+			checksum: instance.checksum,
+		});
 	},
 	async disable(module: ModuleBase<any>) {
 		return await sendProtocolMessage("enable", { id: `${module.getIdentifier()}@` });
@@ -90,7 +104,13 @@ export const ModuleManager = {
 	async delete(instance: ModuleInstance) {
 		return await sendProtocolMessage("delete", { id: instance.getIdentifier() });
 	},
+	async fastDelete(instance: ModuleInstance) {
+		return await sendProtocolMessage("fast-delete", { id: instance.getIdentifier() });
+	},
 	async remove(instance: ModuleInstance) {
 		return await sendProtocolMessage("remove", { id: instance.getIdentifier() });
+	},
+	async fastRemove(instance: ModuleInstance) {
+		return await sendProtocolMessage("fast-remove", { id: instance.getIdentifier() });
 	},
 };

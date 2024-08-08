@@ -47,7 +47,9 @@ export interface Metadata {
 
 export abstract class ModuleBase<
 	C extends ModuleBase<C, any>,
-	I extends ModuleInstanceBase<ModuleBase<C, I>> = ModuleInstanceBase<ModuleBase<C, any>>,
+	I extends ModuleInstanceBase<ModuleBase<C, I>> = ModuleInstanceBase<
+		ModuleBase<C, any>
+	>,
 > {
 	public instances = new Map<Version, I>();
 
@@ -63,7 +65,10 @@ export abstract class ModuleBase<
 		return this.identifier;
 	}
 
-	public abstract newDescendant(identifier: ModuleIdentifier, module: _Module): Promise<C>;
+	public abstract newDescendant(
+		identifier: ModuleIdentifier,
+		module: _Module,
+	): Promise<C>;
 
 	public getDescendant(identifier: ModuleIdentifier): C | null {
 		for (const child of this.getChildren()) {
@@ -88,7 +93,8 @@ export abstract class ModuleBase<
 	}
 
 	public async getDescendantOrNew(identifier: ModuleIdentifier): Promise<C> {
-		return this.getDescendant(identifier) ?? this.newDescendant(identifier, { enabled: "", v: {} });
+		return this.getDescendant(identifier) ??
+			this.newDescendant(identifier, { enabled: "", v: {} });
 	}
 
 	private setChild(identifier: ModuleIdentifier, child: C) {
@@ -103,14 +109,14 @@ export abstract class ModuleBase<
 		return Object.values(this.children);
 	}
 
-	public *getDescendantsByDepth(): Generator<ModuleBase<any, ModuleInstanceBase<any>>> {
+	public *getDescendantsByDepth(): Generator<C> {
 		for (const child of this.getChildren()) {
 			yield child;
 			yield* child.getDescendantsByDepth();
 		}
 	}
 
-	public *getDescendantsByBreadth(): Generator<ModuleBase<ModuleBase<any>>> {
+	public *getDescendantsByBreadth(): Generator<C> {
 		const i: Array<ModuleBase<ModuleBase<any>>> = [this];
 
 		while (i.length) {
@@ -126,11 +132,17 @@ export abstract class ModuleBase<
 			return [this.identifier];
 		}
 		const ancestry = this.parent.getHeritage();
-		const reducedIdentifier = this.identifier.slice(this.parent.identifier.length);
+		const reducedIdentifier = this.identifier.slice(
+			this.parent.identifier.length,
+		);
 		return [...ancestry, reducedIdentifier];
 	}
 
-	public abstract newInstance(version: Truthy<Version>, store: _Store, local: boolean): Promise<I>;
+	public abstract newInstance(
+		version: Truthy<Version>,
+		store: _Store,
+		local: boolean,
+	): Promise<I>;
 
 	public async init(versions: _Module["v"], local: boolean) {
 		await Promise.all(
@@ -154,8 +166,17 @@ export class RootModule extends ModuleBase<Module, never> {
 		Object.freeze(this.instances);
 	}
 
-	override newDescendant(identifier: ModuleIdentifier, module: _Module, local = false) {
-		return Module.prototype.newDescendant.call(this, identifier, module, local);
+	override newDescendant(
+		identifier: ModuleIdentifier,
+		module: _Module,
+		local = false,
+	) {
+		return Module.prototype.newDescendant.call(
+			this,
+			identifier,
+			module,
+			local,
+		);
 	}
 }
 
@@ -169,20 +190,31 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		super(parent, children, identifier);
 	}
 
-	override newDescendant(identifier: ModuleIdentifier, module: _Module, local = false) {
+	override newDescendant(
+		identifier: ModuleIdentifier,
+		module: _Module,
+		local = false,
+	) {
 		if (this.getDescendant(identifier)) {
 			throw new Error(`Module ${identifier} already exists`);
 		}
 
 		const parent = this.getLastParentOf(identifier) as Module;
-		const descendant = new Module(parent, {}, identifier, local ? module.enabled : "");
+		const descendant = new Module(
+			parent,
+			{},
+			identifier,
+			local ? module.enabled : "",
+		);
 		for (const child of parent.getChildren()) {
-			if (child.getIdentifier().startsWith(identifier) && child != descendant) {
+			if (
+				child.getIdentifier().startsWith(identifier) && child != descendant
+			) {
 				child.parent = descendant;
 			}
 		}
 
-		return descendant.init(module.v, local);;
+		return descendant.init(module.v, local);
 	}
 
 	override async newInstance(
@@ -190,7 +222,15 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		{ artifacts, installed, checksum }: _Store,
 		local = false,
 	) {
-		const instance = new ModuleInstance(this, version, null, artifacts, checksum, local, installed);
+		const instance = new ModuleInstance(
+			this,
+			version,
+			null,
+			artifacts,
+			checksum,
+			local,
+			installed,
+		);
 
 		this.instances.set(version, instance);
 
@@ -207,16 +247,39 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 			(!enabledInstance || this.canDisable(enabledInstance));
 	}
 
-	public enable(instance: ModuleInstance) {
-		if (!this.canEnable(instance)) {
-			return Promise.resolve(false);
-		}
-
+	public enable(instance: ModuleInstance): Promise<boolean> {
 		return instance.transition.new(async () => {
+			if (!this.canEnable(instance)) {
+				return false;
+			}
+
 			const ok = await ModuleManager.enable(instance);
 			if (ok) {
-				this.enabled = instance.getVersion();
-				await instance.onEnable();
+				await this.forceEnable(instance);
+			}
+			return ok;
+		});
+	}
+
+	async forceEnable(instance: ModuleInstance) {
+		this.enabled = instance.getVersion();
+		await instance.onEnable();
+	}
+
+	public async fastEnable(instance: ModuleInstance) {
+		return instance.transition.new(async () => {
+			const enabledInstance = this.getEnabledInstance();
+			await enabledInstance?.transition.block();
+
+			if (instance.isEnabled() || (enabledInstance && !this.canDisable(enabledInstance))) {
+				return false;
+			}
+
+			const ok = await ModuleManager.fastEnable(instance);
+			if (ok) {
+				instance.forceAdd();
+				instance.forceInstall();
+				await this.forceEnable(instance);
 			}
 			return ok;
 		});
@@ -226,20 +289,28 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		return instance.isEnabled() && !instance.isLoaded();
 	}
 
-	public disable() {
+	public disable(): Promise<boolean> {
 		const enabledInstance = this.getEnabledInstance();
-		if (!enabledInstance || !this.canDisable(enabledInstance)) {
+		if (!enabledInstance) {
 			return Promise.resolve(false);
 		}
 
 		return enabledInstance.transition.new(async () => {
+			if (!this.canDisable(enabledInstance)) {
+				return false;
+			}
+
 			const ok = await ModuleManager.disable(this);
 			if (ok) {
-				this.enabled = "";
-				this.children = {};
+				this.forceDisable();
 			}
 			return ok;
 		});
+	}
+
+	forceDisable() {
+		this.enabled = "";
+		this.children = {};
 	}
 
 	public getEnabledVersion(): Version {
@@ -247,7 +318,9 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 	}
 
 	public getEnabledInstance(): ModuleInstance | undefined {
-		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
+		return this.getEnabledVersion()
+			? this.instances.get(this.getEnabledVersion()!)!
+			: undefined;
 	}
 }
 
@@ -255,7 +328,9 @@ export interface MixinLoader {
 	awaitedMixins: Promise<void>[];
 }
 
-export abstract class ModuleInstanceBase<M extends ModuleBase<M> = ModuleBase<any>> {
+export abstract class ModuleInstanceBase<
+	M extends ModuleBase<M> = ModuleBase<any>,
+> {
 	public getName() {
 		return this.metadata?.name;
 	}
@@ -273,7 +348,10 @@ export abstract class ModuleInstanceBase<M extends ModuleBase<M> = ModuleBase<an
 		if (!remoteArtifactURL) {
 			return null;
 		}
-		const remoteMetadataURL = remoteArtifactURL.replace(/\.zip$/, ".metadata.json");
+		const remoteMetadataURL = remoteArtifactURL.replace(
+			/\.zip$/,
+			".metadata.json",
+		);
 		return proxy(remoteMetadataURL)[0].url;
 	}
 
@@ -305,9 +383,11 @@ export abstract class ModuleInstanceBase<M extends ModuleBase<M> = ModuleBase<an
 	abstract getMetadataURL(): string | null;
 }
 
-export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinLoader {
+export class ModuleInstance extends ModuleInstanceBase<Module>
+	implements MixinLoader {
 	public async loadProviders() {
-		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!).catch(() => null);
+		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!)
+			.catch(() => null);
 		const provider = vault?.modules ?? {};
 
 		Object.keys(provider)
@@ -387,7 +467,12 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		try {
 			await this.jsIndex.mixin?.(this.transformer);
 		} catch (e) {
-			console.error(new Error(`Error loading mixins for \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(
+					`Error loading mixins for \`${this.getModuleIdentifier()}\``,
+					{ cause: e },
+				),
+			);
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadMixins`);
 
@@ -396,7 +481,9 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		console.groupEnd();
 
 		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
-		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
+		Promise.all(this.awaitedMixins).then(() =>
+			console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`)
+		);
 	}
 
 	async #preloadJs() {
@@ -421,7 +508,12 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			};
 		} catch (e) {
 			await this._unloadJs!();
-			console.error(new Error(`Error preloading javascript for \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(
+					`Error preloading javascript for \`${this.getModuleIdentifier()}\``,
+					{ cause: e },
+				),
+			);
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#preloadJs`);
 	}
@@ -445,7 +537,12 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			};
 		} catch (e) {
 			await this._unloadJs!();
-			console.error(new Error(`Error loading javascript for \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(
+					`Error loading javascript for \`${this.getModuleIdentifier()}\``,
+					{ cause: e },
+				),
+			);
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
@@ -497,11 +594,16 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			if (!this.canLoad() || !satisfies(this.version, range)) {
 				throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 			}
-			for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
+			for (
+				const [dependency, range] of Object.entries(
+					this.metadata.dependencies,
+				)
+			) {
 				if (dependency === "spotify") {
 					return satisfies(SPOTIFY_VERSION, range);
 				}
-				const module = RootModule.INSTANCE.getDescendant(dependency)?.getEnabledInstance();
+				const module = RootModule.INSTANCE.getDescendant(dependency)
+					?.getEnabledInstance();
 				if (!module?.canLoadRecur(isPreload, range)) {
 					return false;
 				}
@@ -530,7 +632,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getDescendant(dependency)!
+					.getEnabledInstance()!;
 				return module.loadMixinsRecur();
 			}),
 		);
@@ -549,7 +652,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		await Promise.all(
 			Object.keys(this.metadata!.dependencies).map((dependency) => {
-				const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
+				const module = RootModule.INSTANCE.getDescendant(dependency)!
+					.getEnabledInstance()!;
 				module.dependants.add(this);
 				return module.loadRecur();
 			}),
@@ -570,10 +674,15 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
-			const module = RootModule.INSTANCE.getDescendant(dependency)!.getEnabledInstance()!;
+			const module = RootModule.INSTANCE.getDescendant(dependency)!
+				.getEnabledInstance()!;
 			module.dependants.delete(this);
 		}
-		await Promise.all(Array.from(this.dependants).map((dependant) => dependant.unloadRecur()));
+		await Promise.all(
+			Array.from(this.dependants).map((dependant) =>
+				dependant.unloadRecur()
+			),
+		);
 
 		await this._unloadJs?.();
 		await this._unloadCss?.();
@@ -592,7 +701,12 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(new Error(`Can't inject mixins for \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(
+					`Can't inject mixins for \`${this.getModuleIdentifier()}\``,
+					{ cause: e },
+				),
+			);
 		}
 		return false;
 	}
@@ -601,50 +715,70 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return !this.added;
 	}
 
-	public async add() {
-		await this.transition.block();
+	public add(): Promise<this | null> {
+		return this.transition.new(async () => {
+			if (!this.canAdd()) {
+				return null;
+			}
 
-		if (!this.canAdd()) {
-			return null;
-		}
+			if (!(await ModuleManager.add(this))) {
+				return null;
+			}
 
-		const resolve = this.transition.extend();
+			this.forceAdd();
 
-		if (!(await ModuleManager.add(this))) {
-			return null;
-		}
+			return this;
+		});
+	}
 
+	forceAdd() {
 		this.added = true;
-		resolve();
-
-		return this;
 	}
 
 	public canInstallRemove() {
 		return this.added && !this.installed;
 	}
 
-	public async install() {
-		await this.transition.block();
+	public async install(): Promise<this | null> {
+		return this.transition.new(async () => {
+			if (!this.canInstallRemove()) {
+				return null;
+			}
 
-		if (!this.canInstallRemove()) {
-			return null;
-		}
+			if (!(await ModuleManager.install(this))) {
+				return null;
+			}
 
-		const resolve = this.transition.extend();
+			this.forceInstall();
 
-		if (!(await ModuleManager.install(this))) {
-			return null;
-		}
+			return this;
+		});
+	}
 
+	forceInstall() {
 		this.installed = true;
-		resolve();
+	}
 
-		return this;
+	public async fastInstall() {
+		return this.transition.new(async () => {
+			if (this.isInstalled()) {
+				return null;
+			}
+
+			if (!(await ModuleManager.fastInstall(this))) {
+				return null;
+			}
+
+			this.forceAdd();
+			this.forceInstall();
+
+			return this;
+		});
 	}
 
 	public isEnabled() {
-		return this.isInstalled() && (this.getVersion() === this.module.getEnabledVersion());
+		return this.isInstalled() &&
+			(this.getVersion() === this.module.getEnabledVersion());
 	}
 
 	public async onEnable() {
@@ -660,7 +794,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return this.isEnabled() && !this.loaded;
 	}
 
-	public async load() {
+	public async load(): Promise<boolean> {
 		await this.transition.block();
 		if (!this.canLoad()) {
 			return false;
@@ -672,7 +806,11 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(new Error(`Can't load \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(`Can't load \`${this.getModuleIdentifier()}\``, {
+					cause: e,
+				}),
+			);
 		}
 		return false;
 	}
@@ -681,7 +819,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return this.loaded;
 	}
 
-	public async unload() {
+	public async unload(): Promise<boolean> {
 		await this.transition.block();
 		if (!this.canUnload()) {
 			return false;
@@ -692,56 +830,100 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				return true;
 			}
 		} catch (e) {
-			console.error(new Error(`Can't unload \`${this.getModuleIdentifier()}\``, { cause: e }));
+			console.error(
+				new Error(`Can't unload \`${this.getModuleIdentifier()}\``, {
+					cause: e,
+				}),
+			);
 		}
 		return false;
 	}
 
 	public canDelete() {
-		return this.installed && !this.isEnabled();
+		return this.isInstalled() && !this.isEnabled();
 	}
 
-	public async delete() {
-		await this.transition.block();
+	public async delete(): Promise<this | null> {
+		return this.transition.new(async () => {
+			if (!this.canDelete()) {
+				return null;
+			}
 
-		if (!this.canDelete()) {
-			return null;
-		}
+			if (!(await ModuleManager.delete(this))) {
+				return null;
+			}
 
-		const resolve = this.transition.extend();
+			this.forceDelete();
 
-		if (!(await ModuleManager.delete(this))) {
-			return null;
-		}
+			return this;
+		});
+	}
 
+	forceDelete() {
 		this.installed = false;
-		resolve();
-
-		return this;
 	}
 
-	public async remove() {
-		await this.transition.block();
+	public async fastDelete() {
+		return this.transition.new(async () => {
+			if (!this.isInstalled() || this.isLoaded()) {
+				return null;
+			}
 
-		if (!this.canInstallRemove()) {
-			return null;
-		}
+			if (!(await ModuleManager.fastDelete(this))) {
+				return null;
+			}
 
-		const resolve = this.transition.extend();
+			this.getModule().forceDisable();
+			this.forceDelete();
 
-		if (!(await ModuleManager.remove(this))) {
-			return null;
-		}
+			return this;
+		});
+	}
 
+	public async remove(): Promise<this | null> {
+		return this.transition.new(async () => {
+			if (!this.canInstallRemove()) {
+				return null;
+			}
+
+			if (!(await ModuleManager.remove(this))) {
+				return null;
+			}
+
+			this.forceRemove();
+
+			return this;
+		});
+	}
+
+	forceRemove() {
+		this.added = false;
+	}
+
+	public async fastRemove() {
+		return this.transition.new(async () => {
+			if (!this.isLocal() || this.isLoaded()) {
+				return null;
+			}
+
+			if (!(await ModuleManager.fastRemove(this))) {
+				return null;
+			}
+
+			this.getModule().forceDisable();
+			this.forceDelete();
+			this.forceRemove();
+
+			return this;
+		});
+	}
+
+	public async dispose() {
 		this.module.instances.delete(this.getVersion());
 		if (this.module.instances.size === 0) {
 			this.module.parent!.removeChild(this.getModuleIdentifier());
 			this.module.parent = null;
 		}
-		this.added = false;
-		resolve();
-
-		return this;
 	}
 }
 
@@ -754,24 +936,40 @@ export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 export async function loadLocalModules() {
 	const localModules = [
 		await fetchJson<_Vault>("/modules/vault.json"),
-	].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+	].reduceRight<_Vault["modules"]>(
+		(acc, vault) => deepMerge(acc, vault.modules),
+		{},
+	);
 
 	return Promise.all(
 		Object.keys(localModules).map((identifier) =>
-			RootModule.INSTANCE.newDescendant(identifier, localModules[identifier], true)
+			RootModule.INSTANCE.newDescendant(
+				identifier,
+				localModules[identifier],
+				true,
+			)
 		),
 	);
 }
 
 export async function loadRemoteModules() {
 	const remoteModules = [
-		await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/modules/main/vault.json"),
-		await fetchJson<_Vault>("https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json"),
-	].reduceRight<_Vault["modules"]>((acc, vault) => deepMerge(acc, vault.modules), {});
+		await fetchJson<_Vault>(
+			"https://raw.githubusercontent.com/spicetify/modules/main/vault.json",
+		),
+		await fetchJson<_Vault>(
+			"https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json",
+		),
+	].reduceRight<_Vault["modules"]>(
+		(acc, vault) => deepMerge(acc, vault.modules),
+		{},
+	);
 
 	await Promise.all(
 		Object.keys(remoteModules).map(async (identifier) => {
-			const module = await RootModule.INSTANCE.getDescendantOrNew(identifier);
+			const module = await RootModule.INSTANCE.getDescendantOrNew(
+				identifier,
+			);
 			await module.init(remoteModules[identifier].v, false);
 		}),
 	);
@@ -785,7 +983,11 @@ const getLoadableChildrenInstances = () =>
 		) as ModuleInstance[];
 
 export const enableAllLoadableMixins = () =>
-	Promise.all(getLoadableChildrenInstances().map((instance) => instance._loadMixins()));
+	Promise.all(
+		getLoadableChildrenInstances().map((instance) => instance._loadMixins()),
+	);
 
 export const enableAllLoadable = () =>
-	Promise.all(getLoadableChildrenInstances().map((instance) => instance.load()));
+	Promise.all(
+		getLoadableChildrenInstances().map((instance) => instance.load()),
+	);
