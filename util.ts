@@ -81,7 +81,7 @@ const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) {}
+				} catch (_) { }
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("").map((i) => `${i}:any`);
@@ -112,13 +112,12 @@ const type = (obj: any, access: string): string => {
 			}
 			const blacklist = ["constructor"];
 			return prototypes.reduce((acc, p) => {
-				return `${acc}&{${
-					Object.getOwnPropertyNames(p)
-						.filter((k) => !blacklist.includes(k))
-						.sort()
-						.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-						.join(";")
-				}}`;
+				return `${acc}&{${Object.getOwnPropertyNames(p)
+					.filter((k) => !blacklist.includes(k))
+					.sort()
+					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+					.join(";")
+					}}`;
 			}, "");
 		}
 		default:
@@ -176,7 +175,7 @@ export function stringifyUrlSearchParams(params: Record<string, string | string[
 export class Transition {
 	private complete = true;
 	private promise = Promise.resolve();
-	constructor() {}
+	constructor() { }
 
 	public extend() {
 		this.complete = false;
@@ -202,6 +201,51 @@ export class Transition {
 		return r;
 	}
 }
+
+export const localProxyHost = "localhost:7967";
+const localProxyUrl = new URL(`http://${localProxyHost}/proxy`);
+
+export const localProxy = (
+	input: RequestInfo | URL,
+	init: RequestInit = {},
+) => {
+	let url: URL;
+	if (typeof input === "string") {
+		url = new URL(input);
+	} else if (input instanceof Request) {
+		url = new URL(input.url);
+	} else if (input instanceof URL) {
+		url = input;
+	} else {
+		throw "Unsupported input type";
+	}
+
+	url.pathname = `/proxy/${url.protocol}//${url.host}${url.pathname}`;
+	url.protocol = localProxyUrl.protocol;
+	url.host = localProxyUrl.host;
+
+	let headers: Headers;
+	if (init.headers) {
+		headers = new Headers(init.headers);
+	} else if (input instanceof Request) {
+		headers = input.headers;
+	} else {
+		headers = new Headers();
+	}
+
+	const _headers = new Headers();
+	_headers.set("X-Set-Headers", JSON.stringify(Object.fromEntries(headers)));
+
+	init.headers = _headers;
+
+	if (input instanceof Request) {
+		// @ts-ignore
+		input.duplex = "half";
+	}
+
+	const request = new Request(url, input instanceof Request ? input : undefined);
+	return [request, init];
+};
 
 export const proxy = (
 	input: RequestInfo | URL,

@@ -4,10 +4,10 @@
  */
 
 import type { ModuleInstance, ModuleBase } from "./module.ts";
-import { stringifyUrlSearchParams } from "./util.js";
+import { localProxyHost, stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
-const websocketProtocol = "ws://localhost:7967/rpc";
+const websocketUrl = `ws://${localProxyHost}/rpc`;
 const protocol = "spicetify:";
 
 let daemonConn: WebSocket | undefined;
@@ -18,7 +18,7 @@ function tryConnectToDaemon() {
 		return Promise.resolve();
 	}
 	lastDeamonConnAttempt = timestamp;
-	const ws = new WebSocket(websocketProtocol);
+	const ws = new WebSocket(websocketUrl);
 	const { promise, resolve, reject } = Promise.withResolvers<Event>();
 	ws.onopen = (e) => resolve(e);
 	ws.onclose = (e) => reject(e);
