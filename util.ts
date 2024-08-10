@@ -203,7 +203,7 @@ export class Transition {
 }
 
 export const localProxyHost = "localhost:7967";
-const localProxyUrl = new URL(`http://${localProxyHost}/proxy`);
+const localProxyUrl = new URL(`http://${localProxyHost}/proxy/`);
 
 export const localProxy = (
 	input: RequestInfo | URL,
@@ -220,10 +220,7 @@ export const localProxy = (
 		throw "Unsupported input type";
 	}
 
-	const encodedUrl = encodeURIComponent(`${url.protocol}//${url.host}${url.pathname}`);
-	url.pathname = `/proxy/${encodedUrl}`;
-	url.protocol = localProxyUrl.protocol;
-	url.host = localProxyUrl.host;
+	url = new URL(localProxyUrl + encodeURIComponent(url.toString()));
 
 	let headers: Headers;
 	if (init.headers) {
