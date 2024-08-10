@@ -19,7 +19,8 @@ export function findBy(...tests: Array<string | RegExp | Predicate<any>>) {
 	return <A>(xs: A[]) => xs.find(testFn)!;
 }
 
-export const fetchText = (path: string) => fetch(path).then((res) => res.text()).catch(() => null);
+export const fetchText = (path: string) =>
+	fetch(path).then((res) => res.text()).catch(() => null);
 export const fetchJson = <R>(path: string) =>
 	fetch(path).then((res) => res.json()).catch(() => null) as Promise<R>;
 
@@ -81,10 +82,12 @@ const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) { }
+				} catch (_) {}
 				return `()=>${ret}`;
 			}
-			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("").map((i) => `${i}:any`);
+			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("").map((i) =>
+				`${i}:any`
+			);
 			return `(${identifiers.slice(0, obj.length).join(",")})=>any`;
 		}
 		case "object": {
@@ -112,12 +115,13 @@ const type = (obj: any, access: string): string => {
 			}
 			const blacklist = ["constructor"];
 			return prototypes.reduce((acc, p) => {
-				return `${acc}&{${Object.getOwnPropertyNames(p)
-					.filter((k) => !blacklist.includes(k))
-					.sort()
-					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-					.join(";")
-					}}`;
+				return `${acc}&{${
+					Object.getOwnPropertyNames(p)
+						.filter((k) => !blacklist.includes(k))
+						.sort()
+						.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+						.join(";")
+				}}`;
 			}, "");
 		}
 		default:
@@ -136,7 +140,11 @@ const defaultOverride = (curr: any, val: any, key: any) => {
 	return val;
 };
 
-export function deepMerge<T, S>(target: T, source: S, override = defaultOverride): T & S {
+export function deepMerge<T, S>(
+	target: T,
+	source: S,
+	override = defaultOverride,
+): T & S {
 	// @ts-ignore
 	for (const [key, val] of Object.entries(source)) {
 		// @ts-ignore
@@ -158,7 +166,9 @@ export function deepMerge<T, S>(target: T, source: S, override = defaultOverride
 	return target;
 }
 
-export function stringifyUrlSearchParams(params: Record<string, string | string[]>) {
+export function stringifyUrlSearchParams(
+	params: Record<string, string | string[]>,
+) {
 	const searchParams = new URLSearchParams();
 	for (const [key, value] of Object.entries(params)) {
 		if (Array.isArray(value)) {
@@ -175,12 +185,14 @@ export function stringifyUrlSearchParams(params: Record<string, string | string[
 export class Transition {
 	private complete = true;
 	private promise = Promise.resolve();
-	constructor() { }
+	constructor() {}
 
 	public extend() {
 		this.complete = false;
 		const p = Promise.withResolvers<void>();
-		this.promise = this.promise.then(() => p.promise).finally(() => this.complete = true);
+		this.promise = this.promise.then(() => p.promise).finally(() =>
+			this.complete = true
+		);
 		return p.resolve;
 	}
 
@@ -208,7 +220,7 @@ const localProxyUrl = new URL(`http://${localProxyHost}/proxy/`);
 export const localProxy = (
 	input: RequestInfo | URL,
 	init: RequestInit = {},
-) => {
+): [Request, RequestInit] => {
 	let url: URL;
 	if (typeof input === "string") {
 		url = new URL(input);
@@ -241,7 +253,10 @@ export const localProxy = (
 		input.duplex = "half";
 	}
 
-	const request = new Request(url, input instanceof Request ? input : undefined);
+	const request = new Request(
+		url,
+		input instanceof Request ? input : undefined,
+	);
 	return [request, init];
 };
 
@@ -280,7 +295,10 @@ export const proxy = (
 		input.duplex = "half";
 	}
 
-	const request = new Request(url, input instanceof Request ? input : undefined);
+	const request = new Request(
+		url,
+		input instanceof Request ? input : undefined,
+	);
 	return [request, init];
 };
 
@@ -332,6 +350,9 @@ export const proxy2 = (
 		input.duplex = "half";
 	}
 
-	const request = new Request(url, input instanceof Request ? input : undefined);
+	const request = new Request(
+		url,
+		input instanceof Request ? input : undefined,
+	);
 	return [request, init];
 };
