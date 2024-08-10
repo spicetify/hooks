@@ -267,9 +267,16 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 	}
 
 	public async fastEnable(instance: ModuleInstance): Promise<boolean> {
-		return instance.transition.new(async () => {
-			const enabledInstance = this.getEnabledInstance();
+		let enabledInstance = this.getEnabledInstance();
+		if (enabledInstance === instance) {
 			await enabledInstance?.transition.block();
+		}
+
+		return instance.transition.new(async () => {
+			enabledInstance = this.getEnabledInstance();
+			if (enabledInstance !== instance) {
+				await enabledInstance?.transition.block();
+			}
 
 			if (
 				instance.isEnabled() ||
