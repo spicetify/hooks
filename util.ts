@@ -220,7 +220,8 @@ export const localProxy = (
 		throw "Unsupported input type";
 	}
 
-	url.pathname = `/proxy/${url.protocol}//${url.host}${url.pathname}`;
+	const encodedUrl = encodeURIComponent(`${url.protocol}//${url.host}${url.pathname}`);
+	url.pathname = `/proxy/${encodedUrl}`;
 	url.protocol = localProxyUrl.protocol;
 	url.host = localProxyUrl.host;
 
