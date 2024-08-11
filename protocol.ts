@@ -4,11 +4,14 @@
  */
 
 import type { ModuleInstance, ModuleBase } from "./module.ts";
-import { localProxyHost, stringifyUrlSearchParams } from "./util.js";
+import { LOCAL_PROXY_HOST } from "./static.js";
+import { stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";
-const websocketUrl = `ws://${localProxyHost}/rpc`;
+const websocketUrl = `ws://${LOCAL_PROXY_HOST}/rpc`;
 const protocol = "spicetify:";
+
+export const isOpen = () => daemonConn;
 
 let daemonConn: WebSocket | undefined;
 let lastDeamonConnAttempt = 0;
@@ -114,3 +117,10 @@ export const ModuleManager = {
 		return await sendProtocolMessage("fast-remove", { id: instance.getIdentifier() });
 	},
 };
+
+export function handleProtocol(uri: string) {
+	const uuidStart = "spicetify:".length;
+	const uuidLength = 36;
+	const hash = uri.slice(uuidStart, uuidStart + uuidLength);
+	nsUrlHandlers.get(hash)?.(uri);
+}

@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { isOpen } from "./protocol.js";
+import { LOCAL_PROXY_HOST } from "./static.js";
+
 type Predicate<A> = (input: A) => boolean;
 export function findBy(...tests: Array<string | RegExp | Predicate<any>>) {
 	const testFns = tests.map((test): Predicate<any> => {
@@ -82,7 +85,7 @@ const type = (obj: any, access: string): string => {
 				let ret = "any";
 				try {
 					ret = type(obj(), `ReturnType<${access}>`);
-				} catch (_) {}
+				} catch (_) { }
 				return `()=>${ret}`;
 			}
 			const identifiers = "abcdefghijklmnopqrstuvwzyz_$".split("").map((i) =>
@@ -115,13 +118,12 @@ const type = (obj: any, access: string): string => {
 			}
 			const blacklist = ["constructor"];
 			return prototypes.reduce((acc, p) => {
-				return `${acc}&{${
-					Object.getOwnPropertyNames(p)
-						.filter((k) => !blacklist.includes(k))
-						.sort()
-						.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
-						.join(";")
-				}}`;
+				return `${acc}&{${Object.getOwnPropertyNames(p)
+					.filter((k) => !blacklist.includes(k))
+					.sort()
+					.map((k) => `"${k}":${type(obj[k], `${access}["${k}"]`)}`)
+					.join(";")
+					}}`;
 			}, "");
 		}
 		default:
@@ -185,7 +187,7 @@ export function stringifyUrlSearchParams(
 export class Transition {
 	private complete = true;
 	private promise = Promise.resolve();
-	constructor() {}
+	constructor() { }
 
 	public extend() {
 		this.complete = false;
@@ -214,9 +216,12 @@ export class Transition {
 	}
 }
 
-export const localProxyHost = "localhost:7967";
-const localProxyUrl = new URL(`http://${localProxyHost}/proxy/`);
+export const proxy = (init: RequestInfo | URL, options: RequestInit = {}) => {
+	const proxy = isOpen() ? localProxy : remoteProxy;
+	return proxy(init, options);
+};
 
+const localProxyUrl = new URL(`http://${LOCAL_PROXY_HOST}/proxy/`);
 export const localProxy = (
 	input: RequestInfo | URL,
 	init: RequestInit = {},
@@ -260,7 +265,7 @@ export const localProxy = (
 	return [request, init];
 };
 
-export const proxy = (
+export const remoteProxy = (
 	input: RequestInfo | URL,
 	init: RequestInit = {},
 ): [Request, RequestInit] => {
@@ -302,7 +307,7 @@ export const proxy = (
 	return [request, init];
 };
 
-export const proxy2 = (
+export const remoteProxy2 = (
 	input: RequestInfo | URL,
 	init: RequestInit = {},
 ): [Request, RequestInit] => {

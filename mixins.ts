@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { nsUrlHandlers } from "./protocol.js";
+import { handleProtocol } from "./protocol.js";
 import { SourceFile } from "./transform.js";
 import type { Transformer } from "./transform.ts";
 import { matchLast } from "./util.js";
@@ -56,10 +56,7 @@ function interceptNavigationControlMessage(e: Event): boolean {
 			})();
 		}
 	} else if (url.pathname.startsWith("spicetify")) {
-		const uuidStart = "spicetify:".length;
-		const uuidLength = 36;
-		const hash = url.pathname.slice(uuidStart, uuidStart + uuidLength);
-		nsUrlHandlers.get(hash)?.(url.pathname);
+		handleProtocol(url.pathname);
 	}
 
 	return true;
