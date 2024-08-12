@@ -164,6 +164,27 @@ export class RootModule extends ModuleBase<Module, never> {
 	private constructor() {
 		super(null, {}, "");
 		Object.freeze(this.instances);
+
+		const spotifyModule = new Module(
+			this,
+			{},
+			"Spotify",
+			SPOTIFY_VERSION,
+		);
+
+		const spotifyModuleInstance = new ModuleInstance(
+			spotifyModule,
+			SPOTIFY_VERSION,
+			null,
+			[],
+			"",
+			true,
+			true,
+		);
+
+		spotifyModuleInstance.forceLoad();
+
+		spotifyModule.instances.set(SPOTIFY_VERSION, spotifyModuleInstance);
 	}
 
 	override newDescendant(
@@ -200,16 +221,9 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		}
 
 		const parent = this.getLastParentOf(identifier) as Module;
-		const descendant = new Module(
-			parent,
-			{},
-			identifier,
-			local ? module.enabled : "",
-		);
+		const descendant = new Module(parent, {}, identifier, local ? module.enabled : "");
 		for (const child of parent.getChildren()) {
-			if (
-				child.getIdentifier().startsWith(identifier) && child != descendant
-			) {
+			if (child.getIdentifier().startsWith(identifier) && child != descendant) {
 				child.parent = descendant;
 			}
 		}
@@ -383,7 +397,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -594,31 +608,27 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	}
 
 	private canLoadRecur(isPreload: boolean, range = ">=0.0.0-0") {
+		if (this.isLoaded()) {
+			return true;
+		}
+
 		if (!this.metadata) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has no metadata`;
 		}
 		if (!isPreload && !this.mixinsLoaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
-		if (!this.loaded) {
-			if (!this.canLoad() || !satisfies(this.version, range)) {
-				throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
-			}
-			for (
-				const [dependency, range] of Object.entries(
-					this.metadata.dependencies,
-				)
-			) {
-				if (dependency === "spotify") {
-					return satisfies(SPOTIFY_VERSION, range);
-				}
-				const module = RootModule.INSTANCE.getDescendant(dependency)
-					?.getEnabledInstance();
-				if (!module?.canLoadRecur(isPreload, range)) {
-					return false;
-				}
+		if (!this.canLoad() || !satisfies(this.version, range)) {
+			throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
+		}
+
+		for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
+			const module = RootModule.INSTANCE.getDescendant(dependency)?.getEnabledInstance();
+			if (!module?.canLoadRecur(isPreload, range)) {
+				return false;
 			}
 		}
+
 		return true;
 	}
 
@@ -657,7 +667,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (this.loaded) {
 			return this.transition.block();
 		}
-		this.loaded = true;
+		this.forceLoad();
 		const resolve = this.transition.extend();
 
 		await Promise.all(
@@ -680,7 +690,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (!this.loaded) {
 			return this.transition.block();
 		}
-		this.loaded = false;
+		this.forceUnload();
 		const resolve = this.transition.extend();
 
 		for (const dependency of Object.keys(this.metadata!.dependencies)) {
@@ -787,7 +797,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	}
 
 	public isEnabled() {
-		return this.isInstalled() &&
+		return this.isInstalled() && // just a safeguard
 			(this.getVersion() === this.module.getEnabledVersion());
 	}
 
@@ -924,6 +934,14 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 
 			return this;
 		});
+	}
+
+	forceLoad() {
+		this.loaded = true;
+	}
+
+	forceUnload() {
+		this.loaded = false;
 	}
 
 	public async dispose() {
