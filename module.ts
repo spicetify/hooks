@@ -155,52 +155,6 @@ export abstract class ModuleBase<
 	}
 }
 
-export class RootModule extends ModuleBase<Module, never> {
-	override newInstance(): Promise<never> {
-		throw new Error("RootModule can't have instances");
-	}
-	public static INSTANCE = new RootModule();
-
-	private constructor() {
-		super(null, {}, "");
-		Object.freeze(this.instances);
-
-		const spotifyModule = new Module(
-			this,
-			{},
-			"Spotify",
-			SPOTIFY_VERSION,
-		);
-
-		const spotifyModuleInstance = new ModuleInstance(
-			spotifyModule,
-			SPOTIFY_VERSION,
-			null,
-			[],
-			"",
-			true,
-			true,
-		);
-
-		spotifyModuleInstance.forceLoad();
-
-		spotifyModule.instances.set(SPOTIFY_VERSION, spotifyModuleInstance);
-	}
-
-	override newDescendant(
-		identifier: ModuleIdentifier,
-		module: _Module,
-		local = false,
-	) {
-		return Module.prototype.newDescendant.call(
-			this,
-			identifier,
-			module,
-			local,
-		);
-	}
-}
-
 export class Module extends ModuleBase<Module, ModuleInstance> {
 	constructor(
 		parent: RootModule | Module,
@@ -964,6 +918,52 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 				);
 			}
 		}
+	}
+}
+
+export class RootModule extends ModuleBase<Module, never> {
+	override newInstance(): Promise<never> {
+		throw new Error("RootModule can't have instances");
+	}
+	public static INSTANCE = new RootModule();
+
+	private constructor() {
+		super(null, {}, "");
+		Object.freeze(this.instances);
+
+		const spotifyModule = new Module(
+			this,
+			{},
+			"Spotify",
+			SPOTIFY_VERSION,
+		);
+
+		const spotifyModuleInstance = new ModuleInstance(
+			spotifyModule,
+			SPOTIFY_VERSION,
+			null,
+			[],
+			"",
+			true,
+			true,
+		);
+
+		spotifyModuleInstance.forceLoad();
+
+		spotifyModule.instances.set(SPOTIFY_VERSION, spotifyModuleInstance);
+	}
+
+	override newDescendant(
+		identifier: ModuleIdentifier,
+		module: _Module,
+		local = false,
+	) {
+		return Module.prototype.newDescendant.call(
+			this,
+			identifier,
+			module,
+			local,
+		);
 	}
 }
 
