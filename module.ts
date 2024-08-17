@@ -175,9 +175,16 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		}
 
 		const parent = this.getLastParentOf(identifier) as Module;
-		const descendant = new Module(parent, {}, identifier, local ? module.enabled : "");
+		const descendant = new Module(
+			parent,
+			{},
+			identifier,
+			local ? module.enabled : "",
+		);
 		for (const child of parent.getChildren()) {
-			if (child.getIdentifier().startsWith(identifier) && child != descendant) {
+			if (
+				child.getIdentifier().startsWith(identifier) && child != descendant
+			) {
 				child.parent = descendant;
 			}
 		}
@@ -244,6 +251,10 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 			enabledInstance = this.getEnabledInstance();
 			if (enabledInstance !== instance) {
 				await enabledInstance?.transition.block();
+			}
+
+			if (enabledInstance?.canUnload()) {
+				await enabledInstance.unload();
 			}
 
 			if (
@@ -351,7 +362,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -576,8 +587,11 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 			throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 		}
 
-		for (const [dependency, range] of Object.entries(this.metadata.dependencies)) {
-			const module = RootModule.INSTANCE.getDescendant(dependency)?.getEnabledInstance();
+		for (
+			const [dependency, range] of Object.entries(this.metadata.dependencies)
+		) {
+			const module = RootModule.INSTANCE.getDescendant(dependency)
+				?.getEnabledInstance();
 			if (!module?.canLoadRecur(isPreload, range)) {
 				return false;
 			}
