@@ -42,6 +42,7 @@ export interface Metadata {
 		css?: string;
 	};
 	hasMixins: boolean;
+	hasVault: boolean;
 	dependencies: Record<string, string>;
 }
 
@@ -362,7 +363,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -374,7 +375,12 @@ export abstract class ModuleInstanceBase<
 
 export class ModuleInstance extends ModuleInstanceBase<Module>
 	implements MixinLoader {
+	// assumes installed & enabled
 	public async loadProviders() {
+		if (!this.metadata!.hasVault) {
+			return;
+		}
+
 		const vault = await fetchJson<_Vault>(this.getRelPath("vault.json")!)
 			.catch(() => null);
 		const provider = vault?.modules ?? {};
