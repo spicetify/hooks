@@ -777,8 +777,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 
 	public async onEnable() {
 		if (this.installed) {
-			await this.loadProviders();
 			await this.ensureMetadata();
+			await this.loadProviders();
 		}
 	}
 
