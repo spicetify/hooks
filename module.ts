@@ -930,7 +930,10 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 			try {
 				const storeUrl = this.getMetadataURL()!;
 				const metadata = await fetchJson<Metadata>(storeUrl);
-				this.updateMetadata(metadata);
+				if (!metadata) {
+					throw new Error(`metadata is null`);
+				}
+				this.updateMetadata(metadata!);
 			} catch (e) {
 				throw new Error(
 					`couldn't load metadata for module '${this.getIdentifier()}'`,
@@ -996,10 +999,12 @@ export const INTERNAL_TRANSFORMER = createTransformer(INTERNAL_MIXIN_LOADER);
 export async function loadLocalModules() {
 	const localModules = [
 		await fetchJson<_Vault>("/modules/vault.json"),
-	].reduceRight<_Vault["modules"]>(
-		(acc, vault) => deepMerge(acc, vault.modules),
-		{},
-	);
+	]
+		.filter(Boolean)
+		.reduceRight<_Vault["modules"]>(
+			(acc, vault) => deepMerge(acc, vault!.modules),
+			{},
+		);
 
 	return Promise.all(
 		Object.keys(localModules).map((identifier) =>
@@ -1020,10 +1025,12 @@ export async function loadRemoteModules() {
 		await fetchJson<_Vault>(
 			"https://raw.githubusercontent.com/spicetify/pkgs/main/vault.json",
 		),
-	].reduceRight<_Vault["modules"]>(
-		(acc, vault) => deepMerge(acc, vault.modules),
-		{},
-	);
+	]
+		.filter(Boolean)
+		.reduceRight<_Vault["modules"]>(
+			(acc, vault) => deepMerge(acc, vault!.modules),
+			{},
+		);
 
 	await Promise.all(
 		Object.keys(remoteModules).map(async (identifier) => {
