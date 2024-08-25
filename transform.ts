@@ -17,7 +17,7 @@ export class SourceFile {
 
 	static SOURCES = new Map<string, SourceFile>();
 
-	private constructor(private path: string) { }
+	private constructor(private path: string) {}
 
 	static from(path: string) {
 		return SourceFile.SOURCES.get(path) ?? new SourceFile(path);
@@ -30,7 +30,10 @@ export class SourceFile {
 			return this.path;
 		}
 		const content = await fetchText(this.path);
-		const modifiedContent = trs.reduce((p, [, transform]) => transform(p, this.path), content!);
+		const modifiedContent = trs.reduce(
+			(p, [, transform]) => transform(p, this.path),
+			content!,
+		);
 		const ext = this.path.slice(this.path.lastIndexOf("."));
 		// @ts-ignore
 		const type: string | undefined = MimeTypes[ext];
@@ -48,24 +51,30 @@ export type Thunk<A> = (value: A) => void;
 export type MixinProps<A> = {
 	then?: (emitted: A) => void;
 	glob?: RegExp;
-	noAwait?: boolean;
+	await?: boolean;
 };
 
 export type Transformer = ReturnType<typeof createTransformer>;
 
 export const createTransformer = (module: MixinLoader) =>
-	<A = void>(
-		transform: (emit: Thunk<A>) => (input: string, path: string) => string,
-		{ then = () => { }, glob = /(?:)/, noAwait = false }: MixinProps<A>,
-	) => {
-		const { promise, resolve } = Promise.withResolvers<A>();
+<A = void>(
+	transform: (emit: Thunk<A>) => (input: string, path: string) => string,
+	{ glob = /(?:)/, await = true }: MixinProps<A>,
+) => {
+	const { promise, resolve } = Promise.withResolvers<A>();
 
-		transforms.push([glob, transform(resolve)]);
+	transforms.push([glob, transform(resolve)]);
 
-		promise.then(then);
-		// @ts-ignore
-		promise.transform = transform;
-		noAwait || module.awaitedMixins.push(promise as Promise<void>);
-	};
+	// @ts-ignore
+	promise.transform = transform;
 
-export const transforms = new Array<[RegExp, (input: string, path: string) => string]>();
+	if (await) {
+		module.awaitedMixins.push(promise as Promise<void>);
+	}
+
+	return promise;
+};
+
+export const transforms = new Array<
+	[RegExp, (input: string, path: string) => string]
+>();
