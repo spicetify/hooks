@@ -71,6 +71,8 @@ globalThis.__onScriptLoaded = (path: string) => {
 export default async function (transformer: Transformer) {
 	transformer(
 		(emit) => (str) => {
+			emit();
+
 			str = str.replace(
 				/(([a-zA-Z_\$][\w\$]*)=([a-zA-Z_\$][\w\$]*)\.p\+\3\.u\([a-zA-Z_\$][\w\$]*\))/,
 				"$1,$2=await __applyTransforms($2)",
@@ -87,7 +89,6 @@ export default async function (transformer: Transformer) {
 				"$1async$2,$5=await __applyTransforms($5)",
 			);
 
-			emit();
 			return str;
 		},
 		{
@@ -97,8 +98,10 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str) => {
+			emit();
+
 			str = str.replace("/864e5<30", "<0");
-			emit();
+
 			return str;
 		},
 		{
@@ -108,12 +111,14 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str) => {
+			emit();
+
 			str = str.replace(/("incognito-enabled":[a-zA-Z_\$][\w\$]*)/, '$1,employee:"1"');
 			str = str.replace(
 				/([a-zA-Z_\$][\w\$]*)\("app\.enable-developer-mode",([a-zA-Z_\$][\w\$]*)\)/,
 				'$1("app.enable-developer-mode",$2);$1("app-developer",$2?2:0)',
 			);
-			emit();
+
 			return str;
 		},
 		{
@@ -123,11 +128,13 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str) => {
+			emit();
+
 			str = str.replace(
 				/(([a-zA-Z_\$][\w\$]*)\.data\.type===(?:[a-zA-Z_\$][\w\$]*\.){2}NAVIGATION)&&/,
 				"$1&&!__interceptNavigationControlMessage($2)&&",
 			);
-			emit();
+
 			return str;
 		},
 		{
@@ -137,13 +144,15 @@ export default async function (transformer: Transformer) {
 
 	transformer(
 		(emit) => (str, path) => {
-			str += `;\n__onScriptLoaded("${path}");`;
 			emit();
+
+			str += `;\n__onScriptLoaded("${path}");`;
+
 			return str;
 		},
 		{
 			glob: /\.js$/,
-			noAwait: true,
+			wait: false,
 		},
 	);
 }
