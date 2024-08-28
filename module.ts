@@ -369,7 +369,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -584,7 +584,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		return this.canLoadRecur(false);
 	}
 
-	private canLoadRecur(isPreload: boolean, range = parseRange("*")) {
+	private canLoadRecur(isPreload: boolean, range = parseRange("")) {
 		if (this.isLoaded()) {
 			return true;
 		}
