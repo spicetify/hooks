@@ -3,17 +3,29 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-// @deno-types="./protocol.ts"
-import { ModuleManager } from "./protocol.js";
 // @ts-ignore
 // @deno-types="./std/semver.ts"
 import { parse, parseRange, satisfies } from "./std/semver.js";
+// @ts-ignore
+// @deno-types="./std/collections.ts"
+import { deepMerge } from "./std/collections.js";
+
+
+// @deno-types="./util/transition.ts"
+import { Transition } from "./util/transition.js";
+// @deno-types="./util/fetch.ts"
+import { fetchJson } from "./util/fetch.js";
+
+// @deno-types="./util.ts"
+import { proxy } from "./util.js";
+// @deno-types="./protocol.ts"
+import { ModuleManager } from "./protocol.js";
 // @deno-types="./static.ts"
 import { SPOTIFY_VERSION } from "./static.js";
 // @deno-types="./transform.ts"
 import { createTransformer } from "./transform.js";
-// @deno-types="./util.ts"
-import { deepMerge, fetchJson, proxy, Transition } from "./util.js";
+
+
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -369,7 +381,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) {}
+	) { }
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -1008,7 +1020,7 @@ export async function loadLocalModules() {
 	]
 		.filter(Boolean)
 		.reduceRight<_Vault["modules"]>(
-			(acc, vault) => deepMerge(acc, vault!.modules),
+			(acc, vault) => deepMerge(acc, vault!.modules, { arrays: "merge" }),
 			{},
 		);
 
@@ -1034,7 +1046,7 @@ export async function loadRemoteModules() {
 	]
 		.filter(Boolean)
 		.reduceRight<_Vault["modules"]>(
-			(acc, vault) => deepMerge(acc, vault!.modules),
+			(acc, vault) => deepMerge(acc, vault!.modules, { arrays: "merge" }),
 			{},
 		);
 
