@@ -4,7 +4,10 @@
  */
 
 import type { ModuleInstance, ModuleBase } from "./module.ts";
+
+// @deno-types="./static.ts"
 import { LOCAL_PROXY_HOST } from "./static.js";
+// @deno-types="./util.ts"
 import { stringifyUrlSearchParams } from "./util.js";
 
 const workerProtocol = "https://bespoke.delusoire.workers.dev/protocol/";

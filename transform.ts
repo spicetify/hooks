@@ -4,6 +4,8 @@
  */
 
 import type { MixinLoader } from "./module.ts";
+
+// @deno-types="./util.ts"
 import { fetchText } from "./util.js";
 
 const MimeTypes = {

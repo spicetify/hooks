@@ -3,11 +3,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { handleProtocol } from "./protocol.js";
-import { SourceFile } from "./transform.js";
 import type { Transformer } from "./transform.ts";
+
+// @deno-types="./protocol.ts"
+import { handleProtocol } from "./protocol.js";
+// @deno-types="./transform.ts"
+import { SourceFile } from "./transform.js";
+// @deno-types="./util.ts"
 import { matchLast } from "./util.js";
-import { RootModule } from "/hooks/module.js";
+// @deno-types="./module.ts"
+import { RootModule } from "./module.js";
 
 type CHUNKS = Record<string, PromiseWithResolvers<void>>;
 

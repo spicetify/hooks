@@ -3,10 +3,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+// @deno-types="./protocol.ts"
 import { ModuleManager } from "./protocol.js";
-import { satisfies } from "./semver/satisfies.js";
+// @ts-ignore
+// @deno-types="./std/semver.ts"
+import { parse, parseRange, satisfies } from "./std/semver.js";
+// @deno-types="./static.ts"
 import { SPOTIFY_VERSION } from "./static.js";
+// @deno-types="./transform.ts"
 import { createTransformer } from "./transform.js";
+// @deno-types="./util.ts"
 import { deepMerge, fetchJson, proxy, Transition } from "./util.js";
 
 export type ModuleIdentifier = string;
@@ -578,7 +584,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		return this.canLoadRecur(false);
 	}
 
-	private canLoadRecur(isPreload: boolean, range = ">=0.0.0-0") {
+	private canLoadRecur(isPreload: boolean, range = parseRange("*")) {
 		if (this.isLoaded()) {
 			return true;
 		}
@@ -589,7 +595,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (!isPreload && !this.mixinsLoaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
-		if (!this.canLoad() || !satisfies(this.version, range)) {
+		if (!this.canLoad() || !satisfies(parse(this.version), range)) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 		}
 
@@ -598,7 +604,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		) {
 			const module = RootModule.INSTANCE.getDescendant(dependency)
 				?.getEnabledInstance();
-			if (!module?.canLoadRecur(isPreload, range)) {
+			if (!module?.canLoadRecur(isPreload, parseRange(range))) {
 				return false;
 			}
 		}

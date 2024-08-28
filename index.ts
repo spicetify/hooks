@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-export type { ModuleInstance as Module } from "./module.ts";
+export type { ModuleInstance } from "./module.ts";
 export type { Transformer } from "./transform.ts";
 
+// @deno-types="./mixins.ts"
 import mixin, { applyTransforms } from "./mixins.js";
+// @deno-types="./module.ts"
 import {
 	enableAllLoadable,
 	enableAllLoadableMixins,
@@ -23,7 +25,9 @@ console.timeEnd("onSpotifyPreInit");
 
 console.time("onSpotifyInit");
 await Promise.all(
-	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) => import(await p)),
+	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) =>
+		import(await p)
+	),
 );
 console.timeEnd("onSpotifyInit");
 

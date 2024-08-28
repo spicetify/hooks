@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+// @deno-types="./protocol.ts"
 import { isOpen } from "./protocol.js";
+// @deno-types="./static.ts"
 import { LOCAL_PROXY_HOST } from "./static.js";
 
 type Predicate<A> = (input: A) => boolean;
