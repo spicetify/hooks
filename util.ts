@@ -62,5 +62,3 @@ export function stringifyUrlSearchParams(
 	}
 	return searchParams.toString();
 }
-
-export * from "./util/proxy.js";
