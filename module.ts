@@ -596,7 +596,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		return this.canLoadRecur(false);
 	}
 
-	private canLoadRecur(isPreload: boolean, range = parseRange("")) {
+	private canLoadRecur(isPreload: boolean, range?: string | undefined) {
 		if (this.isLoaded()) {
 			return true;
 		}
@@ -607,7 +607,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (!isPreload && !this.mixinsLoaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
-		if (!this.canLoad() || !satisfies(parse(this.version), range)) {
+		if (!this.canLoad() || (range && !satisfies(parse(this.version), parseRange(range)))) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 		}
 
@@ -616,7 +616,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		) {
 			const module = RootModule.INSTANCE.getDescendant(dependency)
 				?.getEnabledInstance();
-			if (!module?.canLoadRecur(isPreload, parseRange(range))) {
+			if (!module?.canLoadRecur(isPreload, range)) {
 				return false;
 			}
 		}
