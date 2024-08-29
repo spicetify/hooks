@@ -5,8 +5,8 @@
 
 import type { MixinLoader } from "./module.ts";
 
-// @deno-types="./util.ts"
-import { fetchText } from "./util.js";
+// @deno-types="./util/fetch.ts"
+import { fetchText } from "./util/fetch.js";
 
 const MimeTypes = {
 	".js": "application/javascript",
