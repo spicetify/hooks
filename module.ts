@@ -16,16 +16,24 @@ import { Transition } from "./util/transition.js";
 // @deno-types="./util/fetch.ts"
 import { fetchJson } from "./util/fetch.js";
 
-// @deno-types="./util.ts"
-import { proxy } from "./util.js";
+// @deno-types="./util/proxy.ts"
+import { proxy } from "./util/proxy.js";
 // @deno-types="./protocol.ts"
 import { ModuleManager } from "./protocol.js";
 // @deno-types="./static.ts"
 import { SPOTIFY_VERSION } from "./static.js";
 // @deno-types="./transform.ts"
-import { createTransformer } from "./transform.js";
+import { createTransformer, type Transformer } from "./transform.js";
 
+export type IndexMixinFn = (transformer: Transformer) => void;
+export type IndexPreloadFn = (module: ModuleInstance) => Promise<() => void>;
+export type IndexLoadFn = (module: ModuleInstance) => Promise<() => void>;
 
+export type JSIndex = {
+	mixin?: IndexMixinFn;
+	preload?: IndexPreloadFn;
+	load?: IndexLoadFn;
+};
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -423,7 +431,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	_unloadCss: (() => void) | null = null;
 	private mixinsLoaded = false;
 	private loaded = false;
-	private jsIndex: any;
+	private jsIndex: JSIndex | null = null;
 
 	public transition = new Transition();
 	private dependants = new Set<ModuleInstance>();
