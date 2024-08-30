@@ -15,9 +15,9 @@ import { deepMerge } from "./std/collections.js";
 import { Transition } from "./util/transition.js";
 // @deno-types="./util/fetch.ts"
 import { fetchJson } from "./util/fetch.js";
-
 // @deno-types="./util/proxy.ts"
 import { proxy } from "./util/proxy.js";
+
 // @deno-types="./protocol.ts"
 import { ModuleManager } from "./protocol.js";
 // @deno-types="./static.ts"

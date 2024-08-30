@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { Transformer } from "./transform.ts";
-
 // @deno-types="./protocol.ts"
 import { handleProtocol } from "./protocol.js";
 // @deno-types="./transform.ts"
-import { SourceFile } from "./transform.js";
+import { SourceFile, type Transformer } from "./transform.js";
 // @deno-types="./util.ts"
 import { matchLast } from "./util.js";
 // @deno-types="./module.ts"

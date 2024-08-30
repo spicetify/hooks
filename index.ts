@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-export type { ModuleInstance } from "./module.ts";
-export type { Transformer } from "./transform.ts";
-
 // @deno-types="./mixins.ts"
 import mixin, { applyTransforms } from "./mixins.js";
 // @deno-types="./module.ts"
