@@ -38,6 +38,10 @@ export type JSIndex = {
 	load?: IndexLoadFn;
 };
 
+export type CSSIndex = {
+	default: CSSStyleSheet;
+};
+
 export type ModuleIdentifier = string;
 export type Version = string;
 export type StoreIdentifier = string;
@@ -337,9 +341,7 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 	}
 
 	public getEnabledInstance(): ModuleInstance | undefined {
-		return this.getEnabledVersion()
-			? this.instances.get(this.getEnabledVersion()!)!
-			: undefined;
+		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
 	}
 }
 
@@ -402,8 +404,7 @@ export abstract class ModuleInstanceBase<
 	abstract getMetadataURL(): string | null;
 }
 
-export class ModuleInstance extends ModuleInstanceBase<Module>
-	implements MixinLoader {
+export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinLoader {
 	// assumes installed & enabled
 	public async loadProviders() {
 		if (!this.metadata!.hasVault) {
@@ -435,6 +436,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	private mixinsLoaded = false;
 	private loaded = false;
 	private jsIndex: JSIndex | null = null;
+	private cssIndex: CSSIndex | null = null;
 
 	public transition = new Transition();
 	private dependants = new Set<ModuleInstance>();
@@ -505,15 +507,11 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		console.groupEnd();
 
 		console.time(`${this.getModuleIdentifier()}#awaitMixins`);
-		Promise.all(this.awaitedMixins).then(() =>
-			console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`)
-		);
+		Promise.all(this.awaitedMixins).then(() => console.timeEnd(`${this.getModuleIdentifier()}#awaitMixins`));
 	}
 
 	async #preloadJs() {
-		if (!this.mixinsLoaded) {
-			await this.#loadJsIndex();
-		}
+		await this.#loadJsIndex();
 		if (!this.jsIndex) {
 			return;
 		}
@@ -572,19 +570,17 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 	}
 
 	#loadCss() {
-		const entry = this.metadata?.entries.css;
-		if (!entry) {
+		this.#loadCssIndex();
+		if (!this.cssIndex) {
 			return;
 		}
 
-		const link = document.createElement("link");
-		link.rel = "stylesheet";
-		link.type = "text/css";
-		link.href = this.getRelPath(entry)!;
-		document.head.append(link);
+		const styleSheet = this.cssIndex.default;
+		document.adoptedStyleSheets.push(styleSheet);
+
 		this._unloadCss = () => {
 			this._unloadCss = null;
-			link?.remove();
+			document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== styleSheet);
 		};
 	}
 
@@ -597,6 +593,17 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		const now = Date.now();
 		const uniqueEntry = `${this.getRelPath(js)!}?t=${now}`;
 		this.jsIndex = await import(uniqueEntry);
+	}
+
+	async #loadCssIndex() {
+		const { css } = this.metadata?.entries ?? {};
+		if (!css) {
+			return;
+		}
+
+		const now = Date.now();
+		const uniqueEntry = `${this.getRelPath(css)!}?t=${now}`;
+		this.cssIndex = await import(uniqueEntry, { with: { type: "css" } });
 	}
 
 	private canLoadMixinsRecur() {
@@ -705,9 +712,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 			module.dependants.delete(this);
 		}
 		await Promise.all(
-			Array.from(this.dependants).map((dependant) =>
-				dependant.unloadRecur()
-			),
+			Array.from(this.dependants).map((dependant) => dependant.unloadRecur()),
 		);
 
 		await this._unloadJs?.();
