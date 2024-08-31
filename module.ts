@@ -340,8 +340,8 @@ export class Module extends ModuleBase<Module, ModuleInstance> {
 		return this.enabled;
 	}
 
-	public getEnabledInstance(): ModuleInstance | undefined {
-		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : undefined;
+	public getEnabledInstance(): ModuleInstance | null {
+		return this.getEnabledVersion() ? this.instances.get(this.getEnabledVersion()!)! : null;
 	}
 }
 
@@ -614,7 +614,7 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		return this.canLoadRecur(false);
 	}
 
-	private canLoadRecur(isPreload: boolean, range?: string | undefined) {
+	private canLoadRecur(isPreload: boolean, range?: string) {
 		if (this.isLoaded()) {
 			return true;
 		}
