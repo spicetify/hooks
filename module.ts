@@ -569,8 +569,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
 
-	#loadCss() {
-		this.#loadCssIndex();
+	async #loadCss() {
+		await this.#loadCssIndex();
 		if (!this.cssIndex) {
 			return;
 		}
