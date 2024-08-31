@@ -10,7 +10,6 @@ import { parse, parseRange, satisfies } from "./std/semver.js";
 // @deno-types="./std/collections.ts"
 import { deepMerge } from "./std/collections.js";
 
-
 // @deno-types="./util/transition.ts"
 import { Transition } from "./util/transition.js";
 // @deno-types="./util/fetch.ts"
@@ -26,8 +25,12 @@ import { SPOTIFY_VERSION } from "./static.js";
 import { createTransformer, type Transformer } from "./transform.js";
 
 export type IndexMixinFn = (transformer: Transformer) => void;
-export type IndexPreloadFn = (module: ModuleInstance) => Promise<() => void>;
-export type IndexLoadFn = (module: ModuleInstance) => Promise<() => void>;
+export type IndexPreloadFn = (
+	module: ModuleInstance,
+) => Promise<void | (() => void)>;
+export type IndexLoadFn = (
+	module: ModuleInstance,
+) => Promise<void | (() => void)>;
 
 export type JSIndex = {
 	mixin?: IndexMixinFn;
@@ -389,7 +392,7 @@ export abstract class ModuleInstanceBase<
 		public metadata: Metadata | null,
 		public artifacts: Array<string>,
 		public checksum: string,
-	) { }
+	) {}
 
 	// ?
 	public updateMetadata(metadata: Metadata) {
@@ -615,7 +618,10 @@ export class ModuleInstance extends ModuleInstanceBase<Module>
 		if (!isPreload && !this.mixinsLoaded && this.metadata.hasMixins) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it has unloaded mixins`;
 		}
-		if (!this.canLoad() || (range && !satisfies(parse(this.version), parseRange(range)))) {
+		if (
+			!this.canLoad() ||
+			(range && !satisfies(parse(this.version), parseRange(range)))
+		) {
 			throw `can't load \`${this.getModuleIdentifier()}\` because it is not enabled, installed, or satisfies the range \`${range}\``;
 		}
 
