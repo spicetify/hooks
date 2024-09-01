@@ -24,13 +24,13 @@ import { SPOTIFY_VERSION } from "./static.js";
 // @deno-types="./transform.ts"
 import { createTransformer, type Transformer } from "./transform.js";
 
-export type IndexMixinFn = (transformer: Transformer) => void;
+export type IndexMixinFn = (context: MixinContext) => void | PromiseLike<void>;
 export type IndexPreloadFn = (
-	module: ModuleInstance,
-) => Promise<void | (() => void)>;
+	context: PreloadContext,
+) => void | PromiseLike<void> | PromiseLike<(() => void)> | PromiseLike<(() => PromiseLike<void>)>;
 export type IndexLoadFn = (
-	module: ModuleInstance,
-) => Promise<void | (() => void)>;
+	context: LoadContext,
+) => void | PromiseLike<void> | PromiseLike<(() => void)> | PromiseLike<(() => PromiseLike<void>)>;
 
 export type JSIndex = {
 	mixin?: IndexMixinFn;
@@ -491,7 +491,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		console.time(`${this.getModuleIdentifier()}#loadMixins`);
 		try {
-			await this.jsIndex.mixin?.(this.transformer);
+			const mixinContext: MixinContext = { module: this, transformer: this.transformer };
+			await this.jsIndex.mixin?.(mixinContext);
 		} catch (e) {
 			console.error(
 				new Error(
@@ -522,7 +523,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		console.time(`${this.getModuleIdentifier()}#preloadJs`);
 		try {
-			const predispose = await this.jsIndex.preload?.(this);
+			const preloadContext: PreloadContext = { module: this };
+			const predispose = await this.jsIndex.preload?.(preloadContext);
 			const unloadJs = this._unloadJs;
 			this._unloadJs = async () => {
 				await predispose?.();
@@ -551,7 +553,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		console.time(`${this.getModuleIdentifier()}#loadJs`);
 		try {
-			const dispose = await this.jsIndex.load?.(this);
+			const loadContext: PreloadContext = { module: this };
+			const dispose = await this.jsIndex.load?.(loadContext);
 			const predispose = this._unloadJs!;
 			this._unloadJs = async () => {
 				await dispose?.();
@@ -1095,3 +1098,51 @@ export const enableAllLoadable = () =>
 	Promise.all(
 		getLoadableChildrenInstances().map((instance) => instance.load()),
 	);
+
+export type DisposeFn = () => void | PromiseLike<void>;
+export type PreloadContext = { module: ModuleInstance };
+export type LoadContext = { module: ModuleInstance };
+export type MixinContext = { module: ModuleInstance; transformer: Transformer };
+export type ContextWithDispose<C extends {}> = C & { dispose: PromiseWithResolvers<DisposeFn> };
+export const hotwire = <C extends {}>(
+	meta: ImportMeta,
+	url: string,
+	_import: () => Promise<any>,
+	raw = false,
+) => {
+	const p = Promise.withResolvers<ContextWithDispose<C>>();
+
+	const nurl = normalizeUrl(url, meta.url, raw);
+	globalThis["__HOTWIRED__"][nurl]?.reject(`outdated hotwire: ${nurl}`);
+	globalThis["__HOTWIRED__"][nurl] = p;
+
+	return async (ctx: C): Promise<DisposeFn> => {
+		const dispose = Promise.withResolvers<DisposeFn>();
+		p.resolve({ ...ctx, dispose } as ContextWithDispose<C>);
+		return await Promise.race([dispose.promise, _import()]);
+	};
+};
+export const hotwired = <C extends {}>(meta: ImportMeta): Promise<ContextWithDispose<C>> => {
+	const nurl = normalizeUrl(meta.url);
+	const p = globalThis["__HOTWIRED__"][nurl];
+	if (!p) {
+		throw new Error(`hotwired called before hotwiring: ${nurl}`);
+	}
+	return p.promise;
+};
+
+declare global {
+	var __HOTWIRED__: Record<string, PromiseWithResolvers<ContextWithDispose<any>>>;
+}
+
+globalThis["__HOTWIRED__"] = {};
+
+function normalizeUrl(url: string, base?: string, raw = false) {
+	const u = new URL(url, base);
+	u.search = u.hash = "";
+	const nurl = u.href;
+	if (raw) {
+		return nurl;
+	}
+	return nurl.slice(0, nurl.lastIndexOf(".")) + ".js";
+}
