@@ -14,6 +14,10 @@ import {
 	loadLocalModules,
 	loadRemoteModules,
 } from "./module.js";
+// @deno-types="./util.ts"
+import { registerReactDevtoolsHook } from "./util.js";
+
+registerReactDevtoolsHook();
 
 await Promise.all([mixin(INTERNAL_TRANSFORMER), loadLocalModules()]);
 console.time("onSpotifyPreInit");
@@ -22,9 +26,7 @@ console.timeEnd("onSpotifyPreInit");
 
 console.time("onSpotifyInit");
 await Promise.all(
-	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) =>
-		import(await p)
-	),
+	["/vendor~xpui.js", "/xpui.js"].map(applyTransforms).map(async (p) => import(await p)),
 );
 console.timeEnd("onSpotifyInit");
 

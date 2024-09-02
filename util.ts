@@ -46,7 +46,6 @@ export const matchLast = (str: string, pattern: RegExp) => {
 	return Array.from(matches).at(-1)!;
 };
 
-
 export function stringifyUrlSearchParams(
 	params: Record<string, string | string[]>,
 ) {
@@ -61,4 +60,25 @@ export function stringifyUrlSearchParams(
 		}
 	}
 	return searchParams.toString();
+}
+
+declare global {
+	var __REACT_DEVTOOLS_GLOBAL_HOOK__: {
+		isDisabled: boolean;
+		supportsFiber: boolean;
+		inject: ($: any) => void;
+	};
+	var findHostInstanceByFiber: (fiber: any) => any;
+	var findFiberByHostInstance: (hostInstance: any) => any;
+}
+
+export function registerReactDevtoolsHook() {
+	globalThis["__REACT_DEVTOOLS_GLOBAL_HOOK__"] = {
+		isDisabled: false,
+		supportsFiber: true,
+		inject($) {
+			globalThis["findHostInstanceByFiber"] = $.findHostInstanceByFiber;
+			globalThis["findFiberByHostInstance"] = $.findFiberByHostInstance;
+		},
+	};
 }
