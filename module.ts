@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+// @deno-types="./polyfills/async-disposable-stack.ts"
+import { AsyncDisposableStack } from "./polyfills/async-disposable-stack.js";
+
 // @ts-ignore
 // @deno-types="./std/semver.ts"
 import { parse, parseRange, satisfies } from "./std/semver.js";
@@ -24,23 +27,21 @@ import { SPOTIFY_VERSION } from "./static.js";
 // @deno-types="./transform.ts"
 import { createTransformer, type Transformer } from "./transform.js";
 
-export type IndexMixinFn = (context: MixinContext) => void | PromiseLike<void>;
-export type IndexPreloadFn = (
-	context: PreloadContext,
-) => void | PromiseLike<void> | PromiseLike<(() => void)> | PromiseLike<(() => PromiseLike<void>)>;
-export type IndexLoadFn = (
-	context: LoadContext,
-) => void | PromiseLike<void> | PromiseLike<(() => void)> | PromiseLike<(() => PromiseLike<void>)>;
+export type IndexMixinFn = (context: MixinContext) => SyncOrAsync<void>;
+export type IndexPreloadFn = (context: PreloadContext) => SyncOrAsync<void> | PromiseLike<DisposeFn | void>;
+export type IndexLoadFn = (context: LoadContext) => SyncOrAsync<void> | PromiseLike<DisposeFn | void>;
 
-export type JSIndex = {
+export interface JSIndex {
 	mixin?: IndexMixinFn;
 	preload?: IndexPreloadFn;
 	load?: IndexLoadFn;
-};
+	disposableStack: AsyncDisposableStack;
+}
 
-export type CSSIndex = {
+export interface CSSIndex {
 	default: CSSStyleSheet;
-};
+	disposableStack: AsyncDisposableStack;
+}
 
 export type ModuleIdentifier = string;
 export type Version = string;
@@ -431,12 +432,10 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 	public awaitedMixins = new Array<Promise<void>>();
 
-	_unloadJs: (() => Promise<void>) | null = null;
-	_unloadCss: (() => void) | null = null;
 	private mixinsLoaded = false;
 	private loaded = false;
-	private jsIndex: JSIndex | null = null;
-	private cssIndex: CSSIndex | null = null;
+	_jsIndex: JSIndex | null = null;
+	_cssIndex: CSSIndex | null = null;
 
 	public transition = new Transition();
 	private dependants = new Set<ModuleInstance>();
@@ -485,14 +484,14 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 	async #loadMixins() {
 		await this.#loadJsIndex();
-		if (!this.jsIndex) {
+		if (!this._jsIndex) {
 			return;
 		}
 
 		console.time(`${this.getModuleIdentifier()}#loadMixins`);
 		try {
 			const mixinContext: MixinContext = { module: this, transformer: this.transformer };
-			await this.jsIndex.mixin?.(mixinContext);
+			await this._jsIndex.mixin?.(mixinContext);
 		} catch (e) {
 			console.error(
 				new Error(
@@ -513,25 +512,20 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 	async #preloadJs() {
 		await this.#loadJsIndex();
-		if (!this.jsIndex) {
+		const index = this._jsIndex;
+		if (!index) {
 			return;
 		}
-
-		this._unloadJs = async () => {
-			this._unloadJs = null;
-		};
 
 		console.time(`${this.getModuleIdentifier()}#preloadJs`);
 		try {
 			const preloadContext: PreloadContext = { module: this };
-			const predispose = await this.jsIndex.preload?.(preloadContext);
-			const unloadJs = this._unloadJs;
-			this._unloadJs = async () => {
-				await predispose?.();
-				await unloadJs();
-			};
+			const predispose = await index.preload?.(preloadContext);
+			if (predispose) {
+				index.disposableStack.defer(predispose);
+			}
 		} catch (e) {
-			await this._unloadJs!();
+			await index.disposableStack.disposeAsync();
 			console.error(
 				new Error(
 					`Error preloading javascript for \`${this.getModuleIdentifier()}\``,
@@ -543,25 +537,20 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 	}
 
 	async #loadJs() {
-		if (!this.jsIndex) {
-			return;
-		}
-
-		if (!this._unloadJs) {
+		const index = this._jsIndex;
+		if (!index || index.disposableStack.disposed) {
 			return;
 		}
 
 		console.time(`${this.getModuleIdentifier()}#loadJs`);
 		try {
 			const loadContext: PreloadContext = { module: this };
-			const dispose = await this.jsIndex.load?.(loadContext);
-			const predispose = this._unloadJs!;
-			this._unloadJs = async () => {
-				await dispose?.();
-				await predispose();
-			};
+			const dispose = await index.load?.(loadContext);
+			if (dispose) {
+				index.disposableStack.defer(dispose);
+			}
 		} catch (e) {
-			await this._unloadJs!();
+			await index.disposableStack.disposeAsync();
 			console.error(
 				new Error(
 					`Error loading javascript for \`${this.getModuleIdentifier()}\``,
@@ -574,20 +563,32 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 	async #loadCss() {
 		await this.#loadCssIndex();
-		if (!this.cssIndex) {
+		const index = this._cssIndex;
+		if (!index) {
 			return;
 		}
 
-		const styleSheet = this.cssIndex.default;
-		document.adoptedStyleSheets.push(styleSheet);
-
-		this._unloadCss = () => {
-			this._unloadCss = null;
-			document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== styleSheet);
-		};
+		console.time(`${this.getModuleIdentifier()}#loadCss`);
+		try {
+			const styleSheet = index.default;
+			document.adoptedStyleSheets.push(styleSheet);
+			index.disposableStack.defer(() => {
+				document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== styleSheet);
+			});
+		} catch (e) {
+			await index.disposableStack.disposeAsync();
+			console.error(
+				new Error(
+					`Error loading css for \`${this.getModuleIdentifier()}\``,
+					{ cause: e },
+				),
+			);
+		}
+		console.timeEnd(`${this.getModuleIdentifier()}#loadCss`);
 	}
 
 	async #loadJsIndex() {
+		this._jsIndex = null;
 		const { js } = this.metadata?.entries ?? {};
 		if (!js) {
 			return;
@@ -595,10 +596,13 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		const now = Date.now();
 		const uniqueEntry = `${this.getRelPath(js)!}?t=${now}`;
-		this.jsIndex = await import(uniqueEntry);
+		this._jsIndex = Object.assign({}, await import(uniqueEntry), {
+			disposableStack: new AsyncDisposableStack(),
+		});
 	}
 
 	async #loadCssIndex() {
+		this._cssIndex = null;
 		const { css } = this.metadata?.entries ?? {};
 		if (!css) {
 			return;
@@ -606,7 +610,9 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 
 		const now = Date.now();
 		const uniqueEntry = `${this.getRelPath(css)!}?t=${now}`;
-		this.cssIndex = await import(uniqueEntry, { with: { type: "css" } });
+		this._cssIndex = Object.assign({}, await import(uniqueEntry, { with: { type: "css" } }), {
+			disposableStack: new AsyncDisposableStack(),
+		});
 	}
 
 	private canLoadMixinsRecur() {
@@ -718,8 +724,8 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 			Array.from(this.dependants).map((dependant) => dependant.unloadRecur()),
 		);
 
-		await this._unloadJs?.();
-		await this._unloadCss?.();
+		await this._jsIndex?.disposableStack.disposeAsync();
+		await this._cssIndex?.disposableStack.disposeAsync();
 
 		resolve();
 	}
@@ -1099,30 +1105,47 @@ export const enableAllLoadable = () =>
 		getLoadableChildrenInstances().map((instance) => instance.load()),
 	);
 
-export type DisposeFn = () => void | PromiseLike<void>;
+// ...
+
+export type ContextPromise =
+	& PromiseWithResolvers<DisposeFn | void>
+	& {
+		wrap: (promise: Promise<DisposeFn | void>) => Promise<DisposeFn | void>;
+	};
+
+function createContextPromise(): ContextPromise {
+	const promise = Promise.withResolvers<DisposeFn | void>();
+	return Object.assign(promise, {
+		wrap: ($: Promise<DisposeFn | void>) => $.then((v) => promise.resolve(v), (e) => promise.reject(e)),
+	});
+}
+
+export type SyncOrAsync<T> = T | PromiseLike<T>;
+export type DisposeFn = () => SyncOrAsync<void>;
 export type PreloadContext = { module: ModuleInstance };
 export type LoadContext = { module: ModuleInstance };
 export type MixinContext = { module: ModuleInstance; transformer: Transformer };
-export type ContextWithDispose<C extends {}> = C & { dispose: PromiseWithResolvers<DisposeFn> };
+export type ContextWithPromise<C extends {}> = C & { promise: ContextPromise };
 export const hotwire = <C extends {}>(
 	meta: ImportMeta,
 	url: string,
 	_import: () => Promise<any>,
 	raw = false,
 ) => {
-	const p = Promise.withResolvers<ContextWithDispose<C>>();
+	const p = Promise.withResolvers<ContextWithPromise<C>>();
 
 	const nurl = normalizeUrl(url, meta.url, raw);
 	globalThis["__HOTWIRED__"][nurl]?.reject(`outdated hotwire: ${nurl}`);
 	globalThis["__HOTWIRED__"][nurl] = p;
 
-	return async (ctx: C): Promise<DisposeFn> => {
-		const dispose = Promise.withResolvers<DisposeFn>();
-		p.resolve({ ...ctx, dispose } as ContextWithDispose<C>);
-		return await Promise.race([dispose.promise, _import()]);
+	return async <R extends void | DisposeFn>(ctx: C): Promise<R> => {
+		const promise = createContextPromise();
+		p.resolve({ ...ctx, promise } as ContextWithPromise<C>);
+		_import().catch((e) => promise.reject(e));
+		return (await promise.promise) as R;
 	};
 };
-export const hotwired = <C extends {}>(meta: ImportMeta): Promise<ContextWithDispose<C>> => {
+export const hotwired = <C extends {}>(meta: ImportMeta): Promise<ContextWithPromise<C>> => {
 	const nurl = normalizeUrl(meta.url);
 	const p = globalThis["__HOTWIRED__"][nurl];
 	if (!p) {
@@ -1132,7 +1155,7 @@ export const hotwired = <C extends {}>(meta: ImportMeta): Promise<ContextWithDis
 };
 
 declare global {
-	var __HOTWIRED__: Record<string, PromiseWithResolvers<ContextWithDispose<any>>>;
+	var __HOTWIRED__: Record<string, PromiseWithResolvers<ContextWithPromise<any>>>;
 }
 
 globalThis["__HOTWIRED__"] = {};
