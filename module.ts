@@ -525,13 +525,13 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				index.disposableStack.defer(predispose);
 			}
 		} catch (e) {
-			await index.disposableStack.disposeAsync();
 			console.error(
 				new Error(
 					`Error preloading javascript for \`${this.getModuleIdentifier()}\``,
 					{ cause: e },
 				),
 			);
+			await index.disposableStack.disposeAsync();
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#preloadJs`);
 	}
@@ -550,13 +550,13 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				index.disposableStack.defer(dispose);
 			}
 		} catch (e) {
-			await index.disposableStack.disposeAsync();
 			console.error(
 				new Error(
 					`Error loading javascript for \`${this.getModuleIdentifier()}\``,
 					{ cause: e },
 				),
 			);
+			await index.disposableStack.disposeAsync();
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadJs`);
 	}
@@ -576,13 +576,13 @@ export class ModuleInstance extends ModuleInstanceBase<Module> implements MixinL
 				document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== styleSheet);
 			});
 		} catch (e) {
-			await index.disposableStack.disposeAsync();
 			console.error(
 				new Error(
 					`Error loading css for \`${this.getModuleIdentifier()}\``,
 					{ cause: e },
 				),
 			);
+			await index.disposableStack.disposeAsync();
 		}
 		console.timeEnd(`${this.getModuleIdentifier()}#loadCss`);
 	}
