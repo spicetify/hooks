@@ -31,7 +31,7 @@ export const findMatchingPos = (
 	let l = scopes;
 	let i = start + direction;
 
-	while (l > 0) {
+	while (l > 0 && i >= 0 && i < str.length) {
 		const c = str[i];
 		i += direction;
 		if (c === pair[0]) l++;
